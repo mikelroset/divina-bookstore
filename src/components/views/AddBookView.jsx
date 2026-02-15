@@ -1,16 +1,8 @@
 import React, { useState } from "react";
-import {
-  X,
-  Star,
-  Hash,
-  FileText,
-  Building2,
-  Calendar,
-  Globe,
-} from "lucide-react";
 
+import { BOOK_GENRES } from "../../utils/constants";
 export const AddBookView = ({ onSave, onCancel, editingBook }) => {
-  const [formData, setFormData] = React.useState(
+  const [formData, setFormData] = useState(
     editingBook || {
       title: "",
       author: "",
@@ -91,14 +83,20 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Gènere
             </label>
-            <input
-              type="text"
+            <select
               value={formData.genre}
               onChange={(e) =>
                 setFormData({ ...formData, genre: e.target.value })
               }
-              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
-            />
+              className="w-full px-4 py-2 border border-primary-600 rounded-lg focus:outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-200"
+            >
+              <option value="">Selecciona un gènere</option>
+              {BOOK_GENRES.map((genre) => (
+                <option key={genre} value={genre}>
+                  {genre}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
