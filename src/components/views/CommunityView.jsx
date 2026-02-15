@@ -9,15 +9,14 @@ export const CommunityView = ({ currentUser, userBooks }) => {
 
   const currentUserReading = userBooks.find((b) => b.status === "reading");
 
-  // Carregar lectors de la comunitat
+  // Carregar lectors de la comunitat (tots, incloent el propi usuari)
   useEffect(() => {
     const loadCommunity = async () => {
       try {
         setLoading(true);
         const readers = await communityService.getCommunityReaders();
-        // Filtrar l'usuari actual
-        const otherReaders = readers.filter((r) => r.uid !== currentUser?.uid);
-        setCommunityReaders(otherReaders);
+        // Mostrar TOTS els lectors (sense filtrar) - cada usuari apareix amb un indicador "(Tu)" si és ell
+        setCommunityReaders(readers);
       } catch (error) {
         console.error("Error carregant comunitat:", error);
       } finally {
@@ -26,7 +25,7 @@ export const CommunityView = ({ currentUser, userBooks }) => {
     };
 
     loadCommunity();
-  }, [currentUser]);
+  }, [currentUser?.uid]);
 
   return (
     <div className="space-y-6">
@@ -96,11 +95,11 @@ export const CommunityView = ({ currentUser, userBooks }) => {
         </div>
       )}
 
-      {/* Altres lectors */}
+      {/* Tots els lectors */}
       <div>
         <h3 className="text-xl font-serif text-slate-800 mb-4 flex items-center gap-2">
           <Users className="w-6 h-6 text-slate-700" />
-          Altres lectors ara mateix
+          Tots els lectors ara mateix
         </h3>
 
         {loading ? (
@@ -112,7 +111,7 @@ export const CommunityView = ({ currentUser, userBooks }) => {
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 border border-primary-500 shadow-lg text-center">
             <Users className="w-16 h-16 mx-auto text-slate-300 mb-4" />
             <h4 className="text-lg font-serif text-slate-800 mb-2">
-              Encara no hi ha altres lectors
+              Encara no hi ha lectors actius
             </h4>
             <p className="text-slate-600">
               Sigues el primer en compartir què estàs llegint!
@@ -123,7 +122,11 @@ export const CommunityView = ({ currentUser, userBooks }) => {
             {communityReaders.map((reader) => (
               <div
                 key={reader.uid}
-                className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-primary-500 shadow-lg hover:shadow-xl transition-all"
+                className={`bg-white/80 backdrop-blur-sm rounded-2xl p-5 border shadow-lg hover:shadow-xl transition-all ${
+                  reader.uid === currentUser?.uid
+                    ? "border-2 border-primary-500"
+                    : "border-primary-500"
+                }`}
               >
                 <div className="flex items-center gap-3 mb-4">
                   <img
@@ -132,8 +135,13 @@ export const CommunityView = ({ currentUser, userBooks }) => {
                     className="w-12 h-12 rounded-full border-2 border-primary-500"
                   />
                   <div>
-                    <h4 className="font-medium text-slate-800">
+                    <h4 className="font-medium text-slate-800 flex items-center gap-2">
                       {reader.displayName}
+                      {reader.uid === currentUser?.uid && (
+                        <span className="text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-medium">
+                          Tu
+                        </span>
+                      )}
                     </h4>
                     <p className="text-xs text-slate-500">està llegint</p>
                   </div>
@@ -203,13 +211,13 @@ export const CommunityView = ({ currentUser, userBooks }) => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
               <p className="text-3xl font-serif text-slate-800">
-                {communityReaders.length + 1}
+                {communityReaders.length}
               </p>
               <p className="text-sm text-slate-600">Lectors actius</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-serif text-slate-800">
-                {communityReaders.length + 1}
+                {communityReaders.length}
               </p>
               <p className="text-sm text-slate-600">Llibres en curs</p>
             </div>
@@ -223,12 +231,8 @@ export const CommunityView = ({ currentUser, userBooks }) => {
                         r.currentBook?.currentPage,
                         r.currentBook?.pages,
                       ),
-                    calculateProgress(
-                      currentUserReading?.currentPage,
-                      currentUserReading?.pages,
-                    ),
-                  ) /
-                    (communityReaders.length + 1),
+                    0,
+                  ) / communityReaders.length,
                 )}
                 %
               </p>
@@ -238,10 +242,9 @@ export const CommunityView = ({ currentUser, userBooks }) => {
               <p className="text-3xl font-serif text-slate-800">
                 {
                   new Set(
-                    [
-                      ...communityReaders.map((r) => r.currentBook?.genre),
-                      currentUserReading?.genre,
-                    ].filter(Boolean),
+                    communityReaders
+                      .map((r) => r.currentBook?.genre)
+                      .filter(Boolean),
                   ).size
                 }
               </p>

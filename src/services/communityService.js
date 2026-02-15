@@ -3,7 +3,6 @@ import {
   doc,
   setDoc,
   getDocs,
-  query,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
@@ -36,18 +35,22 @@ export const communityService = {
     }
   },
 
-  // Obtenir tots els lectors de la comunitat
+  // Obtenir tots els lectors de la comunitat (tots els usuaris amb currentBook)
   getCommunityReaders: async () => {
     try {
       const communityRef = collection(db, "community");
-      const querySnapshot = await getDocs(query(communityRef));
+      const querySnapshot = await getDocs(communityRef);
 
-      return querySnapshot.docs
-        .map((doc) => ({
-          uid: doc.id,
-          ...doc.data(),
+      const readers = querySnapshot.docs
+        .map((docSnap) => ({
+          uid: docSnap.id,
+          ...docSnap.data(),
         }))
-        .filter((reader) => reader.currentBook !== null);
+        .filter((reader) => reader.currentBook != null); // != per detectar null i undefined
+
+      console.log("📚 Comunitat - documents llegits:", querySnapshot.docs.length);
+      console.log("📚 Comunitat - lectors amb llibre:", readers.length, readers);
+      return readers;
     } catch (error) {
       console.error("Error al obtenir comunitat:", error);
       throw error;
