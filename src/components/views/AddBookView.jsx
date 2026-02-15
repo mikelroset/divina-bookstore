@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { coverService } from "../../services/coverService";
 import { descriptionService } from "../../services/descriptionService";
 import { BOOK_GENRES } from "../../utils/constants";
@@ -12,7 +12,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
       rating: 0,
       description: "",
       comments: "",
-      coverUrl: "https://...",
+      coverUrl: "",
       isbn: "",
       pages: "",
       publisher: "",
@@ -25,6 +25,11 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
   );
   const [searchingCover, setSearchingCover] = useState(false);
   const [searchingDescription, setSearchingDescription] = useState(false);
+  const [coverImageError, setCoverImageError] = useState(false);
+
+  useEffect(() => {
+    setCoverImageError(false);
+  }, [formData.coverUrl]);
 
   const handleSearchCover = async () => {
     if (!formData.title) {
@@ -360,31 +365,30 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
               className="flex-1 px-4 py-2 border border-primary-600 rounded-lg focus:outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-200"
             />
           </div>
-          {formData.coverUrl && (
-            <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-primary-600">
+          {formData.coverUrl &&
+            formData.coverUrl.startsWith("http") &&
+            !formData.coverUrl.startsWith("https://...") && (
               <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-primary-600">
                 <p className="text-xs text-slate-600 mb-2">
                   Preview de la portada:
                 </p>
-                <img
-                  src={formData.coverUrl}
-                  alt="Preview portada"
-                  className="w-32 h-44 object-cover rounded-lg shadow-md"
-                  onError={(e) => {
-                    console.error(
-                      "❌ Error carregant imatge:",
-                      formData.coverUrl,
-                    );
-                    e.target.parentElement.innerHTML =
-                      '<p class="text-xs text-red-600">Error carregant la imatge</p>';
-                  }}
-                  onLoad={() => {
-                    console.log("✅ Imatge carregada correctament");
-                  }}
-                />
+                {coverImageError ? (
+                  <p className="text-xs text-red-600">
+                    Error carregant la imatge
+                  </p>
+                ) : (
+                  <img
+                    key={formData.coverUrl}
+                    src={formData.coverUrl}
+                    alt="Preview portada"
+                    className="w-32 h-44 object-cover rounded-lg shadow-md"
+                    referrerPolicy="no-referrer"
+                    onError={() => setCoverImageError(true)}
+                    onLoad={() => setCoverImageError(false)}
+                  />
+                )}
               </div>
-            </div>
-          )}
+            )}
         </div>
 
         <div>
