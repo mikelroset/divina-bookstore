@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { coverService } from "../../services/coverService";
 import { BOOK_GENRES } from "../../utils/constants";
 export const AddBookView = ({ onSave, onCancel, editingBook }) => {
   const [formData, setFormData] = useState(
@@ -11,8 +11,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
       rating: 0,
       description: "",
       comments: "",
-      coverUrl:
-        "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=300&h=450&fit=crop",
+      coverUrl: "https://...",
       isbn: "",
       pages: "",
       publisher: "",
@@ -23,6 +22,42 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
       currentPage: "",
     },
   );
+  const [searchingCover, setSearchingCover] = useState(false);
+
+  const handleSearchCover = async () => {
+    if (!formData.title) {
+      alert("Escriu primer el títol del llibre");
+      return;
+    }
+
+    setSearchingCover(true);
+    try {
+      // Provar primer amb Open Library
+      let coverUrl = await coverService.searchCover(
+        formData.title,
+        formData.author,
+      );
+
+      // Si no es troba, provar amb Google Books
+      if (!coverUrl) {
+        coverUrl = await coverService.searchCoverGoogle(
+          formData.title,
+          formData.author,
+        );
+      }
+
+      if (coverUrl) {
+        setFormData({ ...formData, coverUrl });
+      } else {
+        alert("No s'ha trobat cap portada. Pots afegir-la manualment.");
+      }
+    } catch (error) {
+      console.error("Error buscant portada:", error);
+      alert("Error al buscar la portada. Torna-ho a intentar.");
+    } finally {
+      setSearchingCover(false);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -254,14 +289,59 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
           <label className="block text-sm font-medium text-slate-700 mb-2">
             URL de la Portada
           </label>
-          <input
-            type="url"
-            value={formData.coverUrl}
-            onChange={(e) =>
-              setFormData({ ...formData, coverUrl: e.target.value })
-            }
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
-          />
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={formData.coverUrl}
+              onChange={(e) =>
+                setFormData({ ...formData, coverUrl: e.target.value })
+              }
+              placeholder="https://..."
+              className="flex-1 px-4 py-2 border border-primary-600 rounded-lg focus:outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-200"
+            />
+            <button
+              type="button"
+              onClick={handleSearchCover}
+              disabled={searchingCover || !formData.title}
+              className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors whitespace-nowrap"
+            >
+              {searchingCover ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Buscant...
+                </span>
+              ) : (
+                "🔍 Buscar portada"
+              )}
+            </button>
+          </div>
+          {formData.coverUrl && (
+            <div className="mt-2">
+              <img
+                src={formData.coverUrl}
+                alt="Preview"
+                className="w-24 h-32 object-cover rounded-lg shadow-md"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                }}
+              />
+            </div>
+          )}
         </div>
 
         <div>
