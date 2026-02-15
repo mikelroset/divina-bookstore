@@ -35,11 +35,11 @@ export const BooksProvider = ({ children }) => {
   useEffect(() => {
     if (user && books.length > 0) {
       // Trobar el llibre que està llegint
-      const currentReading = books.find((b) => b.status === "reading");
+      const currentReading = books.find((b) => b.status === "Llegint");
 
-      // Actualitzar la comunitat
+      // Actualitzar la comunitat (userId ha de ser string per al path del document)
       communityService
-        .updateCurrentReading(user, user, currentReading)
+        .updateCurrentReading(user.uid, user, currentReading)
         .catch((err) => console.error("Error actualitzant comunitat:", err));
     }
   }, [user, books]);
