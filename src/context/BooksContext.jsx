@@ -35,7 +35,7 @@ export const BooksProvider = ({ children }) => {
   useEffect(() => {
     if (user && books.length > 0) {
       // Trobar el llibre que està llegint
-      const currentReading = books.find((b) => b.status === "Llegint");
+      const currentReading = books.find((b) => b.status === "reading");
 
       // Actualitzar la comunitat (userId ha de ser string per al path del document)
       communityService
