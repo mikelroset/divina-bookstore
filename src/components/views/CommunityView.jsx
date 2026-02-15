@@ -41,10 +41,10 @@ export const CommunityView = ({ currentUser, userBooks }) => {
 
       {/* Llibre actual de l'usuari */}
       {currentUserReading && (
-        <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 backdrop-blur-sm rounded-2xl p-6 border-2 border-amber-300 shadow-lg">
+        <div className="bg-gradient-to-br from-primary-50 to-primary-100/50 backdrop-blur-sm rounded-2xl p-6 border-2 border-primary-500 shadow-lg">
           <div className="flex items-center gap-2 mb-4">
-            <BookMarked className="w-5 h-5 text-amber-600" />
-            <h3 className="text-sm font-medium text-amber-800 uppercase tracking-wide">
+            <BookMarked className="w-5 h-5 text-primary-600" />
+            <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
               Estàs llegint
             </h3>
           </div>
@@ -76,7 +76,7 @@ export const CommunityView = ({ currentUser, userBooks }) => {
                   </div>
                   <div className="bg-white/60 rounded-full h-3 overflow-hidden">
                     <div
-                      className="bg-gradient-to-r from-amber-500 to-amber-600 h-full rounded-full transition-all"
+                      className="bg-gradient-to-r from-primary-500 to-primary-600 h-full rounded-full transition-all"
                       style={{
                         width: `${calculateProgress(currentUserReading.currentPage, currentUserReading.pages)}%`,
                       }}
@@ -105,11 +105,11 @@ export const CommunityView = ({ currentUser, userBooks }) => {
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-amber-500 border-t-transparent"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary-500 border-t-transparent"></div>
             <p className="text-slate-600 mt-4">Carregant comunitat...</p>
           </div>
         ) : communityReaders.length === 0 ? (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 border border-amber-200 shadow-lg text-center">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 border border-primary-500 shadow-lg text-center">
             <Users className="w-16 h-16 mx-auto text-slate-300 mb-4" />
             <h4 className="text-lg font-serif text-slate-800 mb-2">
               Encara no hi ha altres lectors
@@ -123,13 +123,13 @@ export const CommunityView = ({ currentUser, userBooks }) => {
             {communityReaders.map((reader) => (
               <div
                 key={reader.uid}
-                className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-amber-200 shadow-lg hover:shadow-xl transition-all"
+                className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-primary-500 shadow-lg hover:shadow-xl transition-all"
               >
                 <div className="flex items-center gap-3 mb-4">
                   <img
                     src={reader.photoURL}
                     alt={reader.displayName}
-                    className="w-12 h-12 rounded-full border-2 border-amber-300"
+                    className="w-12 h-12 rounded-full border-2 border-primary-500"
                   />
                   <div>
                     <h4 className="font-medium text-slate-800">
@@ -196,7 +196,7 @@ export const CommunityView = ({ currentUser, userBooks }) => {
 
       {/* Estadístiques */}
       {!loading && communityReaders.length > 0 && (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-200 shadow-lg">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
           <h3 className="text-lg font-serif text-slate-800 mb-4">
             Estadístiques de la Comunitat
           </h3>

@@ -54,7 +54,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
         </button>
       </div>
 
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-200 shadow-lg space-y-5">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -67,7 +67,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             />
           </div>
           <div>
@@ -81,7 +81,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
               onChange={(e) =>
                 setFormData({ ...formData, author: e.target.value })
               }
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             />
           </div>
         </div>
@@ -97,7 +97,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
               onChange={(e) =>
                 setFormData({ ...formData, genre: e.target.value })
               }
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             />
           </div>
           <div>
@@ -109,7 +109,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
               onChange={(e) =>
                 setFormData({ ...formData, status: e.target.value })
               }
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             >
               <option value="pending">Pendent</option>
               <option value="reading">Llegint</option>
@@ -130,7 +130,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
                 setFormData({ ...formData, isbn: e.target.value })
               }
               placeholder="978-0-123456-78-9"
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             />
           </div>
           <div>
@@ -143,7 +143,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
               onChange={(e) =>
                 setFormData({ ...formData, pages: e.target.value })
               }
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             />
           </div>
           <div>
@@ -156,7 +156,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
               onChange={(e) =>
                 setFormData({ ...formData, currentPage: e.target.value })
               }
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             />
           </div>
         </div>
@@ -172,7 +172,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
               onChange={(e) =>
                 setFormData({ ...formData, publisher: e.target.value })
               }
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             />
           </div>
           <div>
@@ -186,7 +186,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
                 setFormData({ ...formData, year: e.target.value })
               }
               placeholder="2024"
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             />
           </div>
           <div>
@@ -200,7 +200,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
                 setFormData({ ...formData, language: e.target.value })
               }
               placeholder="Català"
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             />
           </div>
         </div>
@@ -216,7 +216,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
               onChange={(e) =>
                 setFormData({ ...formData, startDate: e.target.value })
               }
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             />
           </div>
           <div>
@@ -229,7 +229,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
               onChange={(e) =>
                 setFormData({ ...formData, endDate: e.target.value })
               }
-              className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
             />
           </div>
         </div>
@@ -262,7 +262,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
             onChange={(e) =>
               setFormData({ ...formData, coverUrl: e.target.value })
             }
-            className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
 
@@ -276,7 +276,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
               setFormData({ ...formData, description: e.target.value })
             }
             rows="3"
-            className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
 
@@ -291,7 +291,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
             }
             rows="3"
             placeholder="Les teves notes i impressions..."
-            className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
 
@@ -299,7 +299,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
           <button
             type="button"
             onClick={handleSubmit}
-            className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
+            className="flex-1 bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
           >
             {editingBook ? "Actualitzar Llibre" : "Afegir Llibre"}
           </button>

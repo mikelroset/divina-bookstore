@@ -11,7 +11,7 @@ export const BottomNav = ({ currentView, setCurrentView, setEditingBook }) => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-amber-200 shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-primary-500 shadow-lg">
       <div className="max-w-4xl mx-auto px-3 py-3 flex justify-around">
         {navItems.map((item) => (
           <button
@@ -22,8 +22,8 @@ export const BottomNav = ({ currentView, setCurrentView, setEditingBook }) => {
             }}
             className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
               currentView === item.id
-                ? "text-amber-600 bg-amber-50"
-                : "text-slate-600 hover:text-amber-600 hover:bg-amber-50/50"
+                ? "text-primary-600 bg-primary-50"
+                : "text-slate-600 hover:text-primary-600 hover:bg-primary-50/50"
             }`}
           >
             {/* Aquí aniria <item.icon className="w-6 h-6" /> */}

@@ -27,13 +27,13 @@ export const LibraryView = ({
             placeholder="Cerca per títol o autor..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-white/80 border border-amber-200 rounded-xl focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+            className="w-full pl-10 pr-4 py-3 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="px-4 py-3 bg-white/80 border border-amber-200 rounded-xl focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+          className="px-4 py-3 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
         >
           <option value="all">Tots els llibres</option>
           <option value="pending">Pendents</option>

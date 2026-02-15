@@ -4,12 +4,12 @@ import { getDaysReading, calculateProgress } from "../../utils/helpers";
 
 export const ReaderCard = ({ reader }) => {
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-amber-200 shadow-lg hover:shadow-xl transition-all">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-primary-500 shadow-lg hover:shadow-xl transition-all">
       <div className="flex items-center gap-3 mb-4">
         <img
           src={reader.photoURL}
           alt={reader.displayName}
-          className="w-12 h-12 rounded-full border-2 border-amber-300"
+          className="w-12 h-12 rounded-full border-2 border-primary-500"
         />
         <div>
           <h4 className="font-medium text-slate-800">{reader.displayName}</h4>

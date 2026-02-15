@@ -38,7 +38,7 @@ export const HomeView = ({ stats, books }) => {
         />
       </div>
 
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-200 shadow-lg">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
         <h3 className="text-lg font-serif text-slate-800 mb-4">
           Progrés Global de Lectura
         </h3>
@@ -46,7 +46,7 @@ export const HomeView = ({ stats, books }) => {
       </div>
 
       {readingBook && (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-amber-200 shadow-lg">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
           <h3 className="text-lg font-serif text-slate-800 mb-4">
             Llegint Ara
           </h3>

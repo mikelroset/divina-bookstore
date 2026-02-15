@@ -1,20 +1,35 @@
+// ============================================
+// FILE: src/components/layout/WelcomeScreen.jsx
+// ============================================
 import React from "react";
-import { BookOpen } from "lucide-react";
 
 export const WelcomeScreen = ({ onLogin }) => {
+  const handleClick = () => {
+    console.log("🔵 WelcomeScreen: Botó clicat!");
+    if (onLogin) {
+      onLogin();
+    } else {
+      console.error("❌ onLogin no està definit!");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-stone-50 to-slate-100 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-stone-50 to-accent-100 flex items-center justify-center p-6">
       <div className="text-center max-w-md">
         <div className="mb-8">
-          {/* <BookOpen className="w-20 h-20 mx-auto text-amber-600 mb-4" /> */}
+          <img
+            src="/logo.svg"
+            alt="Logo DivinaBookStore"
+            className="w-20 h-20 mx-auto mb-4"
+          />
           <h1 className="text-5xl font-serif text-slate-800 mb-2">
             DivinaBookStore
           </h1>
           <p className="text-slate-600 text-lg">La teva biblioteca personal</p>
         </div>
         <button
-          onClick={onLogin}
-          className="bg-white hover:bg-amber-50 text-slate-800 px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 mx-auto border border-amber-200"
+          onClick={handleClick}
+          className="bg-white hover:bg-primary-50 text-slate-800 px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 mx-auto border border-primary-500"
         >
           <svg className="w-6 h-6" viewBox="0 0 24 24">
             <path

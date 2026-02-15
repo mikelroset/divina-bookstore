@@ -137,7 +137,7 @@ const App = () => {
 
   // App principal (quan hi ha usuari autenticat)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-stone-50 to-slate-100 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-stone-50 to-slate-100 pb-20">
       <Header user={user} />
 
       <div className="max-w-4xl mx-auto px-6 py-8">

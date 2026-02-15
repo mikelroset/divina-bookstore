@@ -4,7 +4,7 @@ import { STATUS_LABELS, STATUS_COLORS } from "../../utils/constants";
 
 export const BookCard = ({ book, onEdit, onDelete }) => {
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300 group">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-primary-500 shadow-lg hover:shadow-xl transition-all duration-300 group">
       <div className="relative mb-3">
         <img
           src={book.coverUrl}
@@ -24,13 +24,13 @@ export const BookCard = ({ book, onEdit, onDelete }) => {
       <div className="flex items-center gap-1 mb-3">
         {[...Array(5)].map((_, i) => (
           <span key={i}>⭐</span>
-          // En el fitxer real seria: <Star className={`w-4 h-4 ${i < book.rating ? 'fill-amber-500 text-amber-500' : 'text-slate-300'}`} />
+          // En el fitxer real seria: <Star className={`w-4 h-4 ${i < book.rating ? 'fill-primary-500 text-primary-500' : 'text-slate-300'}`} />
         ))}
       </div>
       <div className="flex gap-2">
         <button
           onClick={() => onEdit(book)}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary-50 hover:bg-primary-100 text-primary-700 rounded-lg transition-colors"
         >
           <span className="text-sm">Editar</span>
         </button>
