@@ -34,13 +34,11 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
 
     setSearchingCover(true);
     try {
-      // Provar primer amb Open Library
       let coverUrl = await coverService.searchCover(
         formData.title,
         formData.author,
       );
 
-      // Si no es troba, provar amb Google Books
       if (!coverUrl) {
         coverUrl = await coverService.searchCoverGoogle(
           formData.title,
@@ -49,7 +47,11 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
       }
 
       if (coverUrl) {
-        setFormData({ ...formData, coverUrl });
+        // Usar setFormData amb callback per assegurar l'actualització
+        setFormData((prevData) => ({
+          ...prevData,
+          coverUrl: coverUrl,
+        }));
       } else {
         alert("No s'ha trobat cap portada. Pots afegir-la manualment.");
       }
@@ -313,6 +315,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
           </div>
         </div>
 
+        {/* URL Portada amb botó de cerca */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             URL de la Portada
@@ -354,18 +357,31 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
                   Buscant...
                 </span>
               ) : (
-                "🔍 Buscar portada"
+                "🔍 Buscar"
               )}
             </button>
           </div>
+
+          {/* PREVIEW DE LA PORTADA - Aquí mateix */}
           {formData.coverUrl && (
-            <div className="mt-2">
+            <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-primary-600">
+              <p className="text-xs text-slate-600 mb-2">
+                Preview de la portada:
+              </p>
               <img
                 src={formData.coverUrl}
-                alt="Preview"
-                className="w-24 h-32 object-cover rounded-lg shadow-md"
+                alt="Preview portada"
+                className="w-32 h-44 object-cover rounded-lg shadow-md"
                 onError={(e) => {
-                  e.target.style.display = "none";
+                  console.error(
+                    "❌ Error carregant imatge:",
+                    formData.coverUrl,
+                  );
+                  e.target.parentElement.innerHTML =
+                    '<p class="text-xs text-red-600">Error carregant la imatge</p>';
+                }}
+                onLoad={() => {
+                  console.log("✅ Imatge carregada correctament");
                 }}
               />
             </div>
