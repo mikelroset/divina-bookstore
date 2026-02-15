@@ -34,11 +34,13 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
 
     setSearchingCover(true);
     try {
+      // Provar primer amb Open Library
       let coverUrl = await coverService.searchCover(
         formData.title,
         formData.author,
       );
 
+      // Si no es troba, provar amb Google Books
       if (!coverUrl) {
         coverUrl = await coverService.searchCoverGoogle(
           formData.title,
@@ -47,11 +49,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
       }
 
       if (coverUrl) {
-        // Usar setFormData amb callback per assegurar l'actualització
-        setFormData((prevData) => ({
-          ...prevData,
-          coverUrl: coverUrl,
-        }));
+        setFormData({ ...formData, coverUrl });
       } else {
         alert("No s'ha trobat cap portada. Pots afegir-la manualment.");
       }
@@ -315,26 +313,16 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
           </div>
         </div>
 
-        {/* URL Portada amb botó de cerca */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            URL de la Portada
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="url"
-              value={formData.coverUrl}
-              onChange={(e) =>
-                setFormData({ ...formData, coverUrl: e.target.value })
-              }
-              placeholder="https://..."
-              className="flex-1 px-4 py-2 border border-primary-600 rounded-lg focus:outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-200"
-            />
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              URL de la Portada
+            </label>
             <button
               type="button"
               onClick={handleSearchCover}
               disabled={searchingCover || !formData.title}
-              className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors whitespace-nowrap"
+              className="text-sm px-3 py-1 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
             >
               {searchingCover ? (
                 <span className="flex items-center gap-2">
@@ -357,33 +345,44 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
                   Buscant...
                 </span>
               ) : (
-                "🔍 Buscar"
+                "🔍 Buscar portada"
               )}
             </button>
           </div>
-
-          {/* PREVIEW DE LA PORTADA - Aquí mateix */}
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={formData.coverUrl}
+              onChange={(e) =>
+                setFormData({ ...formData, coverUrl: e.target.value })
+              }
+              placeholder="https://..."
+              className="flex-1 px-4 py-2 border border-primary-600 rounded-lg focus:outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-200"
+            />
+          </div>
           {formData.coverUrl && (
             <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-primary-600">
-              <p className="text-xs text-slate-600 mb-2">
-                Preview de la portada:
-              </p>
-              <img
-                src={formData.coverUrl}
-                alt="Preview portada"
-                className="w-32 h-44 object-cover rounded-lg shadow-md"
-                onError={(e) => {
-                  console.error(
-                    "❌ Error carregant imatge:",
-                    formData.coverUrl,
-                  );
-                  e.target.parentElement.innerHTML =
-                    '<p class="text-xs text-red-600">Error carregant la imatge</p>';
-                }}
-                onLoad={() => {
-                  console.log("✅ Imatge carregada correctament");
-                }}
-              />
+              <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-primary-600">
+                <p className="text-xs text-slate-600 mb-2">
+                  Preview de la portada:
+                </p>
+                <img
+                  src={formData.coverUrl}
+                  alt="Preview portada"
+                  className="w-32 h-44 object-cover rounded-lg shadow-md"
+                  onError={(e) => {
+                    console.error(
+                      "❌ Error carregant imatge:",
+                      formData.coverUrl,
+                    );
+                    e.target.parentElement.innerHTML =
+                      '<p class="text-xs text-red-600">Error carregant la imatge</p>';
+                  }}
+                  onLoad={() => {
+                    console.log("✅ Imatge carregada correctament");
+                  }}
+                />
+              </div>
             </div>
           )}
         </div>
