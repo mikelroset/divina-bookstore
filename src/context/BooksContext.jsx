@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from "react";
 import { bookService } from "../services/bookService";
+import { communityService } from "../services/communityService";
 import { useAuth } from "../hooks/useAuth";
 
 export const BooksContext = createContext();
@@ -30,6 +31,18 @@ export const BooksProvider = ({ children }) => {
       setBooks([]);
     }
   }, [user, loadBooks]);
+
+  useEffect(() => {
+    if (user && books.length > 0) {
+      // Trobar el llibre que està llegint
+      const currentReading = books.find((b) => b.status === "reading");
+
+      // Actualitzar la comunitat
+      communityService
+        .updateCurrentReading(user, user, currentReading)
+        .catch((err) => console.error("Error actualitzant comunitat:", err));
+    }
+  }, [user, books]);
 
   const addBook = async (bookData) => {
     if (!user) return;
