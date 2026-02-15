@@ -10,8 +10,8 @@ import { LibraryView } from "./components/views/LibraryView";
 import { CommunityView } from "./components/views/CommunityView";
 import { AddBookView } from "./components/views/AddBookView";
 import { ProfileView } from "./components/views/ProfileView";
-import { useAuth } from "./context/AuthContext";
-import { useBooks } from "./context/BooksContext";
+import { useAuth } from "./hooks/useAuth";
+import { useBooks } from "./hooks/useBooks";
 
 const App = () => {
   // Hooks de Context (donen accés a user, login, logout, books, etc.)

@@ -1,32 +1,15 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import { bookService } from "../services/bookService";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
-const BooksContext = React.createContext();
-
-export const useBooks = () => {
-  const context = React.useContext(BooksContext);
-  if (!context) {
-    throw new Error("useBooks ha de ser utilitzat dins d'un BooksProvider");
-  }
-  return context;
-};
+export const BooksContext = createContext();
 
 export const BooksProvider = ({ children }) => {
   const { user } = useAuth();
-  const [books, setBooks] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Carregar llibres quan l'usuari canvia
-  React.useEffect(() => {
-    if (user) {
-      loadBooks();
-    } else {
-      setBooks([]);
-    }
-  }, [user]);
-
-  const loadBooks = async () => {
+  const loadBooks = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -38,14 +21,22 @@ export const BooksProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadBooks();
+    } else {
+      setBooks([]);
+    }
+  }, [user, loadBooks]);
 
   const addBook = async (bookData) => {
     if (!user) return;
 
     try {
       const newBook = await bookService.addBook(user.uid, bookData);
-      setBooks([...books, newBook]);
+      setBooks((prevBooks) => [newBook, ...prevBooks]);
       return newBook;
     } catch (error) {
       console.error("Error al afegir llibre:", error);
@@ -62,7 +53,9 @@ export const BooksProvider = ({ children }) => {
         bookId,
         bookData,
       );
-      setBooks(books.map((book) => (book.id === bookId ? updatedBook : book)));
+      setBooks((prevBooks) =>
+        prevBooks.map((book) => (book.id === bookId ? updatedBook : book)),
+      );
       return updatedBook;
     } catch (error) {
       console.error("Error al actualitzar llibre:", error);
@@ -75,7 +68,7 @@ export const BooksProvider = ({ children }) => {
 
     try {
       await bookService.deleteBook(user.uid, bookId);
-      setBooks(books.filter((book) => book.id !== bookId));
+      setBooks((prevBooks) => prevBooks.filter((book) => book.id !== bookId));
     } catch (error) {
       console.error("Error al eliminar llibre:", error);
       throw error;
