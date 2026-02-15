@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { coverService } from "../../services/coverService";
+import { descriptionService } from "../../services/descriptionService";
 import { BOOK_GENRES } from "../../utils/constants";
 export const AddBookView = ({ onSave, onCancel, editingBook }) => {
   const [formData, setFormData] = useState(
@@ -23,6 +24,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
     },
   );
   const [searchingCover, setSearchingCover] = useState(false);
+  const [searchingDescription, setSearchingDescription] = useState(false);
 
   const handleSearchCover = async () => {
     if (!formData.title) {
@@ -56,6 +58,32 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
       alert("Error al buscar la portada. Torna-ho a intentar.");
     } finally {
       setSearchingCover(false);
+    }
+  };
+
+  const handleSearchDescription = async () => {
+    if (!formData.title) {
+      alert("Escriu primer el títol del llibre");
+      return;
+    }
+
+    setSearchingDescription(true);
+    try {
+      const description = await descriptionService.searchDescription(
+        formData.title,
+        formData.author,
+      );
+
+      if (description) {
+        setFormData({ ...formData, description });
+      } else {
+        alert("No s'ha trobat cap descripció per aquest llibre.");
+      }
+    } catch (error) {
+      console.error("Error buscant descripció:", error);
+      alert("Error al buscar la descripció. Torna-ho a intentar.");
+    } finally {
+      setSearchingDescription(false);
     }
   };
 
@@ -345,16 +373,49 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Descripció
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-slate-700">
+              Descripció
+            </label>
+            <button
+              type="button"
+              onClick={handleSearchDescription}
+              disabled={searchingDescription || !formData.title}
+              className="text-sm px-3 py-1 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+            >
+              {searchingDescription ? (
+                <span className="flex items-center gap-1">
+                  <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Traduint...
+                </span>
+              ) : (
+                "🌐 Buscar descripció"
+              )}
+            </button>
+          </div>
           <textarea
             value={formData.description}
             onChange={(e) =>
               setFormData({ ...formData, description: e.target.value })
             }
-            rows="3"
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            rows="4"
+            placeholder="Descripció del llibre..."
+            className="w-full px-4 py-2 border border-primary-600 rounded-lg focus:outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-200"
           />
         </div>
 
