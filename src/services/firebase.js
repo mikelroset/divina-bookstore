@@ -20,13 +20,3 @@ export const db = getFirestore(app);
 googleProvider.setCustomParameters({
   prompt: "select_account",
 });
-
-console.log("Firebase Config:", {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? "✅ Loaded" : "❌ Missing",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN
-    ? "✅ Loaded"
-    : "❌ Missing",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID
-    ? "✅ Loaded"
-    : "❌ Missing",
-});

@@ -10,17 +10,23 @@ import { ProfileView } from "./components/views/ProfileView";
 import { useAuth } from "./hooks/useAuth";
 import { useBooks } from "./hooks/useBooks";
 import { useStats } from "./hooks/useStats";
+import { useLibraryFilters } from "./hooks/useLibraryFilters";
 import { VIEW_IDS } from "./utils/constants";
 
 const App = () => {
   const { user, login, logout } = useAuth();
   const { books, addBook, updateBook, deleteBook } = useBooks();
   const stats = useStats();
+  const {
+    searchTerm,
+    setSearchTerm,
+    filterStatus,
+    setFilterStatus,
+    filteredBooks,
+  } = useLibraryFilters(books);
 
   const [currentView, setCurrentView] = React.useState(VIEW_IDS.HOME);
   const [editingBook, setEditingBook] = React.useState(null);
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [filterStatus, setFilterStatus] = React.useState("all");
 
   const handleGoogleLogin = async () => {
     try {
@@ -69,15 +75,6 @@ const App = () => {
     setEditingBook(book);
     setCurrentView(VIEW_IDS.ADD);
   };
-
-  const filteredBooks = books.filter((book) => {
-    const matchesSearch =
-      book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.author?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter =
-      filterStatus === "all" || book.status === filterStatus;
-    return matchesSearch && matchesFilter;
-  });
 
   if (!user) {
     return <WelcomeScreen onLogin={handleGoogleLogin} />;

@@ -17,7 +17,6 @@ export const authService = {
   logout: async () => {
     try {
       await signOut(auth);
-      console.log("Logout successful");
     } catch (error) {
       console.error("Error al fer logout:", error);
       throw error;

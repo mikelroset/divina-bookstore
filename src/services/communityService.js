@@ -48,8 +48,6 @@ export const communityService = {
         }))
         .filter((reader) => reader.currentBook != null); // != per detectar null i undefined
 
-      console.log("📚 Comunitat - documents llegits:", querySnapshot.docs.length);
-      console.log("📚 Comunitat - lectors amb llibre:", readers.length, readers);
       return readers;
     } catch (error) {
       console.error("Error al obtenir comunitat:", error);

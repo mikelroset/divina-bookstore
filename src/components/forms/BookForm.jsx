@@ -1,38 +1,68 @@
-import React, { useState } from "react";
-import {
-  X,
-  Star,
-  Hash,
-  FileText,
-  Building2,
-  Calendar,
-  Globe,
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
 
-export const BookForm = ({ initialData, onSubmit, onCancel }) => {
-  const [formData, setFormData] = React.useState(
-    initialData || {
-      title: "",
-      author: "",
-      genre: "",
-      status: "pending",
-      rating: 0,
-      description: "",
-      comments: "",
-      coverUrl:
-        "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=300&h=450&fit=crop",
-      isbn: "",
-      pages: "",
-      publisher: "",
-      year: "",
-      language: "",
-      startDate: "",
-      endDate: "",
-      currentPage: "",
-    },
-  );
+const defaultBook = {
+  title: "",
+  author: "",
+  genre: "",
+  status: "pending",
+  rating: 0,
+  description: "",
+  comments: "",
+  coverUrl: "",
+  isbn: "",
+  pages: "",
+  publisher: "",
+  year: "",
+  language: "",
+  startDate: "",
+  endDate: "",
+  currentPage: "",
+};
 
-  const [errors, setErrors] = React.useState({});
+/** Spinner petit per als botons de cerca */
+const Spinner = ({ className = "h-4 w-4" }) => (
+  <svg
+    className={`animate-spin ${className}`}
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden
+  >
+    <circle
+      className="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="4"
+    />
+    <path
+      className="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+    />
+  </svg>
+);
+
+export const BookForm = ({
+  initialData,
+  onSubmit,
+  onCancel,
+  genreOptions,
+  onSearchCover,
+  onSearchDescription,
+}) => {
+  const [formData, setFormData] = useState(() => ({
+    ...defaultBook,
+    ...(initialData || {}),
+  }));
+  const [errors, setErrors] = useState({});
+  const [searchingCover, setSearchingCover] = useState(false);
+  const [searchingDescription, setSearchingDescription] = useState(false);
+  const [coverImageError, setCoverImageError] = useState(false);
+
+  useEffect(() => {
+    setCoverImageError(false);
+  }, [formData.coverUrl]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -125,13 +155,28 @@ export const BookForm = ({ initialData, onSubmit, onCancel }) => {
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Gènere
           </label>
-          <input
-            type="text"
-            value={formData.genre}
-            onChange={(e) => handleChange("genre", e.target.value)}
-            placeholder="Fantasia, Novel·la, Assaig..."
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
-          />
+          {genreOptions?.length > 0 ? (
+            <select
+              value={formData.genre}
+              onChange={(e) => handleChange("genre", e.target.value)}
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            >
+              <option value="">Selecciona un gènere</option>
+              {genreOptions.map((genre) => (
+                <option key={genre} value={genre}>
+                  {genre}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type="text"
+              value={formData.genre}
+              onChange={(e) => handleChange("genre", e.target.value)}
+              placeholder="Fantasia, Novel·la, Assaig..."
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            />
+          )}
         </div>
 
         <div>
@@ -285,9 +330,45 @@ export const BookForm = ({ initialData, onSubmit, onCancel }) => {
 
       {/* URL Portada */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">
-          URL de la Portada
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-sm font-medium text-slate-700">
+            URL de la Portada
+          </label>
+          {onSearchCover && (
+            <button
+              type="button"
+              onClick={async () => {
+                if (!formData.title?.trim()) {
+                  alert("Escriu primer el títol del llibre");
+                  return;
+                }
+                setSearchingCover(true);
+                try {
+                  const url = await onSearchCover(
+                    formData.title,
+                    formData.author,
+                  );
+                  if (url) handleChange("coverUrl", url);
+                  else alert("No s'ha trobat cap portada. Pots afegir-la manualment.");
+                } catch {
+                  alert("Error al buscar la portada. Torna-ho a intentar.");
+                } finally {
+                  setSearchingCover(false);
+                }
+              }}
+              disabled={searchingCover || !formData.title?.trim()}
+              className="text-sm px-3 py-1 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+            >
+              {searchingCover ? (
+                <span className="flex items-center gap-2">
+                  <Spinner /> Buscant...
+                </span>
+              ) : (
+                "🔍 Buscar portada"
+              )}
+            </button>
+          )}
+        </div>
         <input
           type="url"
           value={formData.coverUrl}
@@ -295,27 +376,69 @@ export const BookForm = ({ initialData, onSubmit, onCancel }) => {
           placeholder="https://..."
           className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
         />
-        {formData.coverUrl && (
+        {formData.coverUrl && formData.coverUrl.startsWith("http") && (
           <div className="mt-2">
-            <img
-              src={formData.coverUrl}
-              alt="Preview"
-              className="w-24 h-32 object-cover rounded-lg shadow-md"
-              onError={(e) => (e.target.style.display = "none")}
-            />
+            {coverImageError ? (
+              <p className="text-xs text-red-600">Error carregant la imatge</p>
+            ) : (
+              <img
+                src={formData.coverUrl}
+                alt="Preview portada"
+                className="w-24 h-32 object-cover rounded-lg shadow-md"
+                referrerPolicy="no-referrer"
+                onError={() => setCoverImageError(true)}
+                onLoad={() => setCoverImageError(false)}
+              />
+            )}
           </div>
         )}
       </div>
 
       {/* Descripció */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">
-          Descripció
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-sm font-medium text-slate-700">
+            Descripció
+          </label>
+          {onSearchDescription && (
+            <button
+              type="button"
+              onClick={async () => {
+                if (!formData.title?.trim()) {
+                  alert("Escriu primer el títol del llibre");
+                  return;
+                }
+                setSearchingDescription(true);
+                try {
+                  const description = await onSearchDescription(
+                    formData.title,
+                    formData.author,
+                  );
+                  if (description) handleChange("description", description);
+                  else alert("No s'ha trobat cap descripció per aquest llibre.");
+                } catch {
+                  alert("Error al buscar la descripció. Torna-ho a intentar.");
+                } finally {
+                  setSearchingDescription(false);
+                }
+              }}
+              disabled={searchingDescription || !formData.title?.trim()}
+              className="text-sm px-3 py-1 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+            >
+              {searchingDescription ? (
+                <span className="flex items-center gap-2">
+                  <Spinner /> Traduint...
+                </span>
+              ) : (
+                "🌐 Buscar descripció"
+              )}
+            </button>
+          )}
+        </div>
         <textarea
           value={formData.description}
           onChange={(e) => handleChange("description", e.target.value)}
-          rows="3"
+          rows="4"
           placeholder="Sinopsi del llibre..."
           className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
         />

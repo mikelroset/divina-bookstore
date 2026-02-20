@@ -1,11 +1,7 @@
-// ============================================
-// FILE: src/components/layout/WelcomeScreen.jsx
-// ============================================
 import React from "react";
 
 export const WelcomeScreen = ({ onLogin }) => {
   const handleClick = () => {
-    console.log("🔵 WelcomeScreen: Botó clicat!");
     if (onLogin) {
       onLogin();
     } else {

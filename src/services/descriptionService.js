@@ -2,8 +2,6 @@ export const descriptionService = {
   // Buscar descripcio del llibre
   searchDescription: async (title, author = "") => {
     try {
-      console.log("🔍 Buscant descripcio per:", title, author);
-
       const query = `${title} ${author}`.trim();
       if (!query) return null;
 
@@ -17,27 +15,12 @@ export const descriptionService = {
         const description = book.volumeInfo.description;
 
         if (description) {
-          console.log("📖 Descripcio trobada");
-
-          // Netejar HTML tags
           const cleanDescription = description.replace(/<[^>]*>/g, "");
-
-          // Traduir al catala
-          console.log("🌐 Traduint al catala...");
           const translatedDescription =
             await descriptionService.translateToCatalan(cleanDescription);
-
-          if (translatedDescription) {
-            console.log("✅ Traduccio exitosa");
-            return translatedDescription;
-          } else {
-            console.log("⚠️ Usant descripcio original");
-            return cleanDescription;
-          }
+          return translatedDescription || cleanDescription;
         }
       }
-
-      console.log("❌ No s'ha trobat cap descripcio");
       return null;
     } catch (error) {
       console.error("❌ Error buscant descripcio:", error);
