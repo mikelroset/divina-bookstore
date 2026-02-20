@@ -1,6 +1,6 @@
 import React from "react";
-import { Search, Library } from "lucide-react";
 import { BookCard } from "../common/BookCard";
+import { LIBRARY_FILTER_OPTIONS } from "../../utils/constants";
 
 export const LibraryView = ({
   books,
@@ -35,10 +35,11 @@ export const LibraryView = ({
           onChange={(e) => setFilterStatus(e.target.value)}
           className="px-4 py-3 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
         >
-          <option value="all">Tots els llibres</option>
-          <option value="pending">Pendents</option>
-          <option value="reading">Llegint</option>
-          <option value="completed">Completats</option>
+          {LIBRARY_FILTER_OPTIONS.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
         </select>
       </div>
 

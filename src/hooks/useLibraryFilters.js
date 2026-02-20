@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { LIBRARY_FILTER_ALL } from "../utils/constants";
 
 /**
  * Gestiona la cerca i el filtre per estat de la biblioteca.
@@ -6,7 +7,7 @@ import { useState, useMemo } from "react";
  */
 export const useLibraryFilters = (books) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterStatus, setFilterStatus] = useState(LIBRARY_FILTER_ALL);
 
   const filteredBooks = useMemo(() => {
     return books.filter((book) => {
@@ -14,7 +15,7 @@ export const useLibraryFilters = (books) => {
         book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         book.author?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesFilter =
-        filterStatus === "all" || book.status === filterStatus;
+        filterStatus === LIBRARY_FILTER_ALL || book.status === filterStatus;
       return matchesSearch && matchesFilter;
     });
   }, [books, searchTerm, filterStatus]);

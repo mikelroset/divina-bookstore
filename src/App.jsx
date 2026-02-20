@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, useNavigate, useParams, Navigate } from "react-router-dom";
 import { Header } from "./components/layout/Header";
 import { BottomNav } from "./components/layout/BottomNav";
 import { WelcomeScreen } from "./components/layout/WelcomeScreen";
+import { ConfirmModal } from "./components/common/ConfirmModal";
 import { HomeView } from "./components/views/HomeView";
 import { LibraryView } from "./components/views/LibraryView";
 import { CommunityView } from "./components/views/CommunityView";
@@ -59,6 +60,7 @@ const App = () => {
   const { books, addBook, updateBook, deleteBook } = useBooks();
   const stats = useStats();
   const navigate = useNavigate();
+  const [bookIdToDelete, setBookIdToDelete] = useState(null);
   const {
     searchTerm,
     setSearchTerm,
@@ -66,6 +68,19 @@ const App = () => {
     setFilterStatus,
     filteredBooks,
   } = useLibraryFilters(books);
+
+  const handleDeleteRequest = (id) => setBookIdToDelete(id);
+
+  const handleDeleteConfirm = async () => {
+    if (!bookIdToDelete) return;
+    try {
+      await deleteBook(bookIdToDelete);
+    } catch (error) {
+      console.error("Error al eliminar llibre:", error);
+      alert("Error al eliminar el llibre. Torna-ho a intentar.");
+    }
+    setBookIdToDelete(null);
+  };
 
   const handleGoogleLogin = async () => {
     try {
@@ -82,17 +97,6 @@ const App = () => {
       navigate(ROUTES.HOME);
     } catch (error) {
       console.error("Error al fer logout:", error);
-    }
-  };
-
-  const handleDeleteBook = async (id) => {
-    if (confirm("Estàs segur que vols eliminar aquest llibre?")) {
-      try {
-        await deleteBook(id);
-      } catch (error) {
-        console.error("Error al eliminar llibre:", error);
-        alert("Error al eliminar el llibre. Torna-ho a intentar.");
-      }
     }
   };
 
@@ -117,7 +121,7 @@ const App = () => {
               <LibraryView
                 books={filteredBooks}
                 onEdit={handleEditBook}
-                onDelete={handleDeleteBook}
+                onDelete={handleDeleteRequest}
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 filterStatus={filterStatus}
@@ -138,6 +142,17 @@ const App = () => {
           <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>
       </div>
+
+      <ConfirmModal
+        open={bookIdToDelete != null}
+        title="Eliminar llibre"
+        message="Estàs segur que vols eliminar aquest llibre? Aquesta acció no es pot desfer."
+        confirmLabel="Eliminar"
+        cancelLabel="Cancel·lar"
+        confirmVariant="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setBookIdToDelete(null)}
+      />
 
       <BottomNav />
     </div>
