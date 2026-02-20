@@ -7,6 +7,15 @@ export const VIEW_IDS = {
   PROFILE: "profile",
 };
 
+/** Paths de React Router (URLs) */
+export const ROUTES = {
+  HOME: "/",
+  LIBRARY: "/library",
+  COMMUNITY: "/community",
+  ADD: "/add",
+  PROFILE: "/profile",
+};
+
 export const BOOK_GENRES = [
   "Novel·la",
   "Fantasia",
