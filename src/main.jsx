@@ -14,6 +14,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </AuthProvider>
   </React.StrictMode>,
 );
-
-//Mock per aquest fitxer
-console.log("main.jsx - Entry point de l'aplicació");

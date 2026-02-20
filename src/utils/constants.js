@@ -1,3 +1,12 @@
+/** Identificadors de les pantalles principals (eviten magic strings) */
+export const VIEW_IDS = {
+  HOME: "home",
+  LIBRARY: "library",
+  COMMUNITY: "community",
+  ADD: "add",
+  PROFILE: "profile",
+};
+
 export const BOOK_GENRES = [
   "Novel·la",
   "Fantasia",

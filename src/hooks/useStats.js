@@ -1,12 +1,14 @@
 import { useMemo } from "react";
-import { useBooks } from "../context/BooksContext";
+import { useBooks } from "./useBooks";
 
+/**
+ * Calcula les estadístiques de lectura a partir dels llibres de l'usuari.
+ * Única font de veritat per a aquests càlculs (evita duplicar getStats a App).
+ */
 export const useStats = () => {
-  // const { books } = useBooks();
+  const { books } = useBooks();
 
-  const books = []; // Mock per desenvolupament
-
-  const stats = React.useMemo(() => {
+  return useMemo(() => {
     const completedBooks = books.filter((b) => b.status === "completed");
     const currentMonth = new Date().getMonth();
 
@@ -15,7 +17,6 @@ export const useStats = () => {
       return new Date(b.endDate).getMonth() === currentMonth;
     });
 
-    // Calcular gènere preferit
     const genreCounts = {};
     completedBooks.forEach((book) => {
       genreCounts[book.genre] = (genreCounts[book.genre] || 0) + 1;
@@ -27,7 +28,6 @@ export const useStats = () => {
           )
         : "N/A";
 
-    // Calcular progrés global
     const totalPages = books.reduce((sum, book) => sum + (book.pages || 0), 0);
     const readPages = books.reduce((sum, book) => {
       if (book.status === "completed") return sum + (book.pages || 0);
@@ -49,6 +49,4 @@ export const useStats = () => {
       readPages,
     };
   }, [books]);
-
-  return stats;
 };
