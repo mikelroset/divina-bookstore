@@ -22,7 +22,7 @@ export const HomeView = ({ stats, books }) => {
           title="Aquest Mes"
           value={stats.booksThisMonth}
           subtitle="Llibres completats"
-          color="amber"
+          color="primary"
         />
         <StatCard
           title="Gènere Preferit"

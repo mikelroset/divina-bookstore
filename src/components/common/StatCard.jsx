@@ -5,10 +5,10 @@ export const StatCard = ({
   title,
   value,
   subtitle,
-  color = "amber",
+  color = "primary",
 }) => {
   const colorClasses = {
-    amber: "text-primary-600",
+    primary: "text-primary-600",
     slate: "text-slate-700",
   };
 

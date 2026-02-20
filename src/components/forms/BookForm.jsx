@@ -121,7 +121,7 @@ export const BookForm = ({
             className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
               errors.title
                 ? "border-red-300 focus:border-red-400 focus:ring-red-200"
-                : "border-primary-500 focus:border-amber-400 focus:ring-primary-200"
+                : "border-primary-500 focus:border-primary-400 focus:ring-primary-200"
             }`}
           />
           {errors.title && (
@@ -140,7 +140,7 @@ export const BookForm = ({
             className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
               errors.author
                 ? "border-red-300 focus:border-red-400 focus:ring-red-200"
-                : "border-primary-500 focus:border-amber-400 focus:ring-primary-200"
+                : "border-primary-500 focus:border-primary-400 focus:ring-primary-200"
             }`}
           />
           {errors.author && (
@@ -159,7 +159,7 @@ export const BookForm = ({
             <select
               value={formData.genre}
               onChange={(e) => handleChange("genre", e.target.value)}
-              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
             >
               <option value="">Selecciona un gènere</option>
               {genreOptions.map((genre) => (
@@ -174,7 +174,7 @@ export const BookForm = ({
               value={formData.genre}
               onChange={(e) => handleChange("genre", e.target.value)}
               placeholder="Fantasia, Novel·la, Assaig..."
-              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
             />
           )}
         </div>
@@ -186,7 +186,7 @@ export const BookForm = ({
           <select
             value={formData.status}
             onChange={(e) => handleChange("status", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           >
             <option value="pending">Pendent</option>
             <option value="reading">Llegint</option>
@@ -206,7 +206,7 @@ export const BookForm = ({
             value={formData.isbn}
             onChange={(e) => handleChange("isbn", e.target.value)}
             placeholder="978-0-123456-78-9"
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
 
@@ -218,7 +218,7 @@ export const BookForm = ({
             type="number"
             value={formData.pages}
             onChange={(e) => handleChange("pages", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           />
           {errors.pages && (
             <p className="text-red-500 text-xs mt-1">{errors.pages}</p>
@@ -233,7 +233,7 @@ export const BookForm = ({
             type="number"
             value={formData.currentPage}
             onChange={(e) => handleChange("currentPage", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           />
           {errors.currentPage && (
             <p className="text-red-500 text-xs mt-1">{errors.currentPage}</p>
@@ -251,7 +251,7 @@ export const BookForm = ({
             type="text"
             value={formData.publisher}
             onChange={(e) => handleChange("publisher", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
 
@@ -264,7 +264,7 @@ export const BookForm = ({
             value={formData.year}
             onChange={(e) => handleChange("year", e.target.value)}
             placeholder="2024"
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
 
@@ -277,7 +277,7 @@ export const BookForm = ({
             value={formData.language}
             onChange={(e) => handleChange("language", e.target.value)}
             placeholder="Català, Castellà..."
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
       </div>
@@ -292,7 +292,7 @@ export const BookForm = ({
             type="date"
             value={formData.startDate}
             onChange={(e) => handleChange("startDate", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
 
@@ -304,7 +304,7 @@ export const BookForm = ({
             type="date"
             value={formData.endDate}
             onChange={(e) => handleChange("endDate", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
       </div>
@@ -374,7 +374,7 @@ export const BookForm = ({
           value={formData.coverUrl}
           onChange={(e) => handleChange("coverUrl", e.target.value)}
           placeholder="https://..."
-          className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+          className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
         />
         {formData.coverUrl && formData.coverUrl.startsWith("http") && (
           <div className="mt-2">
@@ -440,7 +440,7 @@ export const BookForm = ({
           onChange={(e) => handleChange("description", e.target.value)}
           rows="4"
           placeholder="Sinopsi del llibre..."
-          className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+          className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
         />
       </div>
 
@@ -454,7 +454,7 @@ export const BookForm = ({
           onChange={(e) => handleChange("comments", e.target.value)}
           rows="3"
           placeholder="Les teves notes i impressions..."
-          className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-primary-200"
+          className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
         />
       </div>
 
@@ -463,7 +463,7 @@ export const BookForm = ({
         <button
           type="button"
           onClick={handleSubmit}
-          className="flex-1 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-amber-700 text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
+          className="flex-1 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
         >
           {initialData ? "Actualitzar Llibre" : "Afegir Llibre"}
         </button>

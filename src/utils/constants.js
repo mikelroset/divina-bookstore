@@ -72,6 +72,6 @@ export const LIBRARY_FILTER_OPTIONS = [
 
 export const STATUS_COLORS = {
   pending: "bg-slate-100 text-slate-700 border-slate-300",
-  reading: "bg-amber-100 text-amber-700 border-amber-300",
+  reading: "bg-primary-100 text-primary-700 border-primary-300",
   completed: "bg-emerald-100 text-emerald-700 border-emerald-300",
 };

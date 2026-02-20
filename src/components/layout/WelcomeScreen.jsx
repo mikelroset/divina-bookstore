@@ -10,7 +10,7 @@ export const WelcomeScreen = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-stone-50 to-accent-100 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-stone-50 to-primary-100 flex items-center justify-center p-6">
       <div className="text-center max-w-md">
         <div className="mb-8">
           <img
