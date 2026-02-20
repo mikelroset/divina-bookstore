@@ -24,12 +24,16 @@ export function computeStats(books) {
         )
       : "N/A";
 
-  const totalPages = books.reduce((sum, book) => sum + (book.pages || 0), 0);
-  const readPages = books.reduce((sum, book) => {
-    if (book.status === "completed") return sum + (book.pages || 0);
-    if (book.status === "reading") return sum + (book.currentPage || 0);
-    return sum;
-  }, 0);
+  // Progrés només dels llibres que s’estan llegint (no pendents ni completats)
+  const readingBooksList = books.filter((b) => b.status === "reading");
+  const totalPages = readingBooksList.reduce(
+    (sum, book) => sum + (book.pages || 0),
+    0,
+  );
+  const readPages = readingBooksList.reduce(
+    (sum, book) => sum + (book.currentPage || 0),
+    0,
+  );
   const progressPercentage =
     totalPages > 0 ? Math.round((readPages / totalPages) * 100) : 0;
 

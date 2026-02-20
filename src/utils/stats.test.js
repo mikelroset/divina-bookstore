@@ -59,16 +59,27 @@ describe("computeStats", () => {
     expect(result.favoriteGenre).toBe("Novel·la");
   });
 
-  it("calcula progressPercentage (pàgines llegides / total)", () => {
+  it("calcula progressPercentage només dels llibres 'reading' (no pendents ni completats)", () => {
     const books = [
       { status: "completed", pages: 100 },
       { status: "reading", pages: 100, currentPage: 50 },
       { status: "pending", pages: 100 },
     ];
     const result = computeStats(books);
-    expect(result.totalPages).toBe(300);
-    expect(result.readPages).toBe(150); // 100 + 50
+    expect(result.totalPages).toBe(100); // només el llibre "reading"
+    expect(result.readPages).toBe(50); // currentPage del "reading"
     expect(result.progressPercentage).toBe(50);
+  });
+
+  it("no inclou pendents ni completats en totalPages/readPages del progrés", () => {
+    const books = [
+      { status: "pending", pages: 200 },
+      { status: "completed", pages: 300 },
+    ];
+    const result = computeStats(books);
+    expect(result.totalPages).toBe(0);
+    expect(result.readPages).toBe(0);
+    expect(result.progressPercentage).toBe(0);
   });
 
   it("progressPercentage és 0 si totalPages és 0", () => {
