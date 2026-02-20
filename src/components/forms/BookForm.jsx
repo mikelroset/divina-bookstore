@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { STATUS_LABELS } from "../../utils/constants";
 
 const defaultBook = {
   title: "",
@@ -188,9 +189,11 @@ export const BookForm = ({
             onChange={(e) => handleChange("status", e.target.value)}
             className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           >
-            <option value="pending">Pendent</option>
-            <option value="reading">Llegint</option>
-            <option value="completed">Completat</option>
+            {Object.entries(STATUS_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
           </select>
         </div>
       </div>

@@ -54,6 +54,7 @@ export const BOOK_GENRES = [
 ];
 
 export const STATUS_LABELS = {
+  wishlist: "Desitjat",
   pending: "Pendent",
   reading: "Llegint",
   completed: "Completat",
@@ -65,6 +66,7 @@ export const LIBRARY_FILTER_ALL = "all";
 /** Opcions del select de filtre a la biblioteca (value + label) */
 export const LIBRARY_FILTER_OPTIONS = [
   { value: "all", label: "Tots els llibres" },
+  { value: "wishlist", label: "Desitjats" },
   { value: "pending", label: "Pendents" },
   { value: "reading", label: "Llegint" },
   { value: "completed", label: "Completats" },
@@ -72,6 +74,7 @@ export const LIBRARY_FILTER_OPTIONS = [
 
 export const STATUS_COLORS = {
   pending: "bg-slate-100 text-slate-700 border-slate-300",
-  reading: "bg-primary-100 text-primary-700 border-primary-300",
+  reading: "bg-blue-100 text-blue-700 border-blue-300",
   completed: "bg-emerald-100 text-emerald-700 border-emerald-300",
+  wishlist: "bg-amber-100 text-amber-700 border-amber-300",
 };
