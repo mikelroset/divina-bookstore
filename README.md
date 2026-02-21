@@ -62,6 +62,8 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
 2. **Configurar Firebase**  
    Crea un projecte a [Firebase Console](https://console.firebase.google.com/) i configura Autenticació (Google) i Firestore. Afegeix les variables d’entorn en un fitxer `.env` a l’arrel (veure `.env.example` si existeix o la documentació de Vite per `VITE_*`).
 
+   **Firestore – encoratjaments:** La col·lecció `encouragements` emmagatzema qui envia un encoratjament a qui. Regles recomanades a Firebase Console: (1) Crear: només si `request.auth.uid == request.resource.data.fromUserId`. (2) Llegir: només si `request.auth.uid == resource.data.toUserId`. Crea un índex compost: col·lecció `encouragements`, camps `toUserId` (Ascending) i `createdAt` (Descending).
+
 3. **Arrencar en desenvolupament**
    ```bash
    npm run dev
@@ -90,7 +92,7 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
 - `src/components/views/` – `HomeView`, `LibraryView`, `CommunityView`, `AddBookView`, `ProfileView`.
 - `src/components/forms/` – `BookForm` (formulari únic per afegir/editar).
 - `src/components/common/` – `BookCard`, `StatCard`, `ProgressBar`, `ConfirmModal`, etc.
-- `src/services/` – Firebase, `bookService`, `authService`, `communityService`, `coverService`, `descriptionService`.
+- `src/services/` – Firebase, `bookService`, `authService`, `communityService`, `encouragementService`, `coverService`, `descriptionService`.
 - `src/utils/` – `constants.js` (estats, gèneres, rutes), `stats.js`, `helpers.js`, etc.
 - `src/hooks/` – `useAuth`, `useBooks`, `useStats`, `useLibraryFilters`.
 - `openspec/` – Spec-Driven Development (Open Spec): `specs/` (especificacions per capacitat), `changes/` (proposal, design, tasks per canvi).
