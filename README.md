@@ -93,3 +93,16 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
 - `src/services/` – Firebase, `bookService`, `authService`, `communityService`, `coverService`, `descriptionService`.
 - `src/utils/` – `constants.js` (estats, gèneres, rutes), `stats.js`, `helpers.js`, etc.
 - `src/hooks/` – `useAuth`, `useBooks`, `useStats`, `useLibraryFilters`.
+- `openspec/` – Spec-Driven Development (Open Spec): `specs/` (especificacions per capacitat), `changes/` (proposal, design, tasks per canvi).
+
+## Spec-Driven Development (Open Spec)
+
+Aquest projecte utilitza [Open Spec](https://openspec.dev/) per al flux SDD. A Cursor tens les comandes:
+
+- **`/opsx:new <nom>`** – Crear un nou canvi (feature/fix).
+- **`/opsx:ff`** – Generar proposal, specs, design i tasks (fast-forward).
+- **`/opsx:apply`** – Implementar les tasques del canvi actual.
+- **`/opsx:archive`** – Arxivar el canvi i actualitzar les specs.
+- **`/opsx:onboard`** – Guia d’onboarding al flux.
+
+Requisit: `npm install -g @fission-ai/openspec@latest`. Reinicia l’IDE perquè les comandes slash estiguin actives.
