@@ -1,10 +1,20 @@
-import React from "react";
-import { TrendingUp, Award, BookOpen } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { TrendingUp, Award, BookOpen, Heart } from "lucide-react";
 import { StatCard } from "../common/StatCard";
 import { ProgressBar } from "../common/ProgressBar";
+import { encouragementService } from "../../services/encouragementService";
 
-export const HomeView = ({ stats, books }) => {
+export const HomeView = ({ user, stats, books }) => {
   const readingBook = books.find((b) => b.status === "reading");
+  const [encouragements, setEncouragements] = useState([]);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    encouragementService
+      .getEncouragementsForUser(user.uid)
+      .then(setEncouragements)
+      .catch((err) => console.error("Error carregant encoratjaments:", err));
+  }, [user?.uid]);
 
   return (
     <div className="space-y-6">
@@ -16,6 +26,28 @@ export const HomeView = ({ stats, books }) => {
           Aquí tens un resum de la teva biblioteca
         </p>
       </div>
+
+      {encouragements.length > 0 && (
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+          <h3 className="text-lg font-serif text-slate-800 mb-4 flex items-center gap-2">
+            <Heart className="w-5 h-5 text-primary-600" />
+            Encoratjaments
+          </h3>
+          <ul className="space-y-2">
+            {encouragements.map((enc) => (
+              <li
+                key={enc.id}
+                className="text-slate-700 py-2 border-b border-slate-100 last:border-0"
+              >
+                <span className="font-medium text-primary-700">
+                  {enc.fromUserName ?? "Algú"}
+                </span>{" "}
+                t&apos;anima a seguir llegint
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard

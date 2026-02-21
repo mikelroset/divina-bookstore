@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { BookMarked, Users, Clock } from "lucide-react";
+import { BookMarked, Users, Clock, Heart } from "lucide-react";
 import { getDaysReading, calculateProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
+import { encouragementService } from "../../services/encouragementService";
 
 export const CommunityView = ({ currentUser, userBooks }) => {
   const [communityReaders, setCommunityReaders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sendingToUid, setSendingToUid] = useState(null);
+  const [sendError, setSendError] = useState(null);
 
   const currentUserReading = userBooks.find((b) => b.status === "reading");
 
@@ -187,6 +190,36 @@ export const CommunityView = ({ currentUser, userBooks }) => {
                     </div>
                   </div>
                 )}
+                <div className="mt-4 pt-3 border-t border-slate-200">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setSendError(null);
+                      setSendingToUid(reader.uid);
+                      try {
+                        await encouragementService.sendEncouragement(
+                          currentUser.uid,
+                          currentUser.displayName ?? "Algú",
+                          reader.uid,
+                        );
+                      } catch (err) {
+                        setSendError(reader.uid);
+                        console.error(err);
+                      } finally {
+                        setSendingToUid(null);
+                      }
+                    }}
+                    disabled={sendingToUid !== null}
+                    className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-primary-100 hover:bg-primary-200 text-primary-800 font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Heart className="w-4 h-4" />
+                    {sendingToUid === reader.uid
+                      ? "Enviant..."
+                      : sendError === reader.uid
+                        ? "Error. Torna-ho a intentar"
+                        : "Encoratja"}
+                  </button>
+                </div>
               </div>
             ))}
           </div>

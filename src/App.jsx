@@ -97,6 +97,7 @@ const App = () => {
       navigate(ROUTES.HOME);
     } catch (error) {
       console.error("Error al fer logout:", error);
+      alert("No s'ha pogut tancar la sessió. Torna-ho a intentar.");
     }
   };
 
@@ -114,7 +115,7 @@ const App = () => {
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         <Routes>
-          <Route path={ROUTES.HOME} element={<HomeView stats={stats} books={books} />} />
+          <Route path={ROUTES.HOME} element={<HomeView user={user} stats={stats} books={books} />} />
           <Route
             path={ROUTES.LIBRARY}
             element={
