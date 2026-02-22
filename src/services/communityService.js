@@ -18,6 +18,7 @@ export const communityService = {
         photoURL: userData.photoURL,
         currentBook: currentBook
           ? {
+              id: currentBook.id,
               title: currentBook.title,
               author: currentBook.author,
               genre: currentBook.genre,

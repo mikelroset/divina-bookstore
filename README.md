@@ -62,7 +62,20 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
 2. **Configurar Firebase**  
    Crea un projecte a [Firebase Console](https://console.firebase.google.com/) i configura Autenticació (Google) i Firestore. Afegeix les variables d’entorn en un fitxer `.env` a l’arrel (veure `.env.example` si existeix o la documentació de Vite per `VITE_*`).
 
-   **Firestore – encoratjaments:** La col·lecció `encouragements` emmagatzema qui envia un encoratjament a qui. Regles recomanades a Firebase Console: (1) Crear: només si `request.auth.uid == request.resource.data.fromUserId`. (2) Llegir: només si `request.auth.uid == resource.data.toUserId`. Crea un índex compost: col·lecció `encouragements`, camps `toUserId` (Ascending) i `createdAt` (Descending).
+   **Firestore – encoratjaments:** La col·lecció `encouragements` emmagatzema qui envia un encoratjament a qui (i per quin llibre). A Firebase Console → Firestore → Rules, afegeix (o actualitza) el bloc per `encouragements`:
+
+   ```firestore
+   match /encouragements/{docId} {
+     allow create: if request.auth != null
+       && request.auth.uid == request.resource.data.fromUserId;
+     allow read: if request.auth != null
+       && (request.auth.uid == resource.data.toUserId
+           || request.auth.uid == resource.data.fromUserId);
+     allow update, delete: if false;
+   }
+   ```
+
+   El receptor pot llegir (inbox); l'enviador pot llegir els seus enviaments (per al cooldown de 3 dies). Crea un índex compost: col·lecció `encouragements`, camps `toUserId` (Ascending) i `createdAt` (Descending). La comprovació de cooldown fa una query només per `fromUserId` i filtra en client; no cal cap índex compost addicional.
 
 3. **Arrencar en desenvolupament**
    ```bash

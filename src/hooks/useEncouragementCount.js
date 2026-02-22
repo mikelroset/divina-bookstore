@@ -3,6 +3,7 @@ import { encouragementService } from "../services/encouragementService";
 
 /**
  * Retorna el nombre d'encoratjaments rebuts per l'usuari (per mostrar badge a la nav).
+ * El comptador reflecteix només els dels últims 3 dies (getEncouragementsForUser ja filtra).
  * @param {string | undefined} userId - UID de l'usuari autenticat
  * @returns {{ count: number, loading: boolean }}
  */

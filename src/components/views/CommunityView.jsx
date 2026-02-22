@@ -4,12 +4,18 @@ import { getDaysReading, calculateProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
 import { encouragementService } from "../../services/encouragementService";
 
+function readerBookKey(reader) {
+  const bookId = reader.currentBook?.id ?? "";
+  return `${reader.uid}-${bookId}`;
+}
+
 export const CommunityView = ({ currentUser, userBooks }) => {
   const [communityReaders, setCommunityReaders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sendingToUid, setSendingToUid] = useState(null);
   const [sendError, setSendError] = useState(null);
-  const [sentToUids, setSentToUids] = useState([]);
+  const [sentKeys, setSentKeys] = useState(() => new Set());
+  const [cooldownKeys, setCooldownKeys] = useState(new Set());
 
   const currentUserReading = userBooks.find((b) => b.status === "reading");
 
@@ -30,6 +36,27 @@ export const CommunityView = ({ currentUser, userBooks }) => {
 
     loadCommunity();
   }, [currentUser?.uid]);
+
+  // Comprovar cooldown (3 dies) per a cada lector+llibre
+  useEffect(() => {
+    if (!currentUser?.uid || communityReaders.length === 0) return;
+    const check = async () => {
+      const inCooldown = new Set();
+      await Promise.all(
+        communityReaders.map(async (reader) => {
+          if (!reader.currentBook) return;
+          const canSend = await encouragementService.canSendEncouragement(
+            currentUser.uid,
+            reader.uid,
+            reader.currentBook.id,
+          );
+          if (!canSend) inCooldown.add(readerBookKey(reader));
+        }),
+      );
+      setCooldownKeys(inCooldown);
+    };
+    check();
+  }, [currentUser?.uid, communityReaders]);
 
   return (
     <div className="space-y-6">
@@ -195,6 +222,7 @@ export const CommunityView = ({ currentUser, userBooks }) => {
                   <button
                     type="button"
                     onClick={async () => {
+                      if (!reader.currentBook) return;
                       setSendError(null);
                       setSendingToUid(reader.uid);
                       try {
@@ -202,8 +230,12 @@ export const CommunityView = ({ currentUser, userBooks }) => {
                           currentUser.uid,
                           currentUser.displayName ?? "Algú",
                           reader.uid,
+                          reader.currentBook.id,
+                          reader.currentBook.title,
                         );
-                        setSentToUids((prev) => [...prev, reader.uid]);
+                        const key = readerBookKey(reader);
+                        setSentKeys((prev) => new Set([...prev, key]));
+                        setCooldownKeys((prev) => new Set([...prev, key]));
                       } catch (err) {
                         setSendError(reader.uid);
                         console.error(err);
@@ -211,17 +243,24 @@ export const CommunityView = ({ currentUser, userBooks }) => {
                         setSendingToUid(null);
                       }
                     }}
-                    disabled={sendingToUid !== null || sentToUids.includes(reader.uid)}
+                    disabled={
+                      sendingToUid !== null ||
+                      sentKeys.has(readerBookKey(reader)) ||
+                      !reader.currentBook ||
+                      cooldownKeys.has(readerBookKey(reader))
+                    }
                     className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-primary-100 hover:bg-primary-200 text-primary-800 font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Heart className="w-4 h-4" />
-                    {sentToUids.includes(reader.uid)
+                    {sentKeys.has(readerBookKey(reader))
                       ? "Enviat ✓"
-                      : sendingToUid === reader.uid
-                        ? "Enviant..."
-                        : sendError === reader.uid
-                          ? "Error. Torna-ho a intentar"
-                          : "Encoratja"}
+                      : cooldownKeys.has(readerBookKey(reader))
+                        ? "Enviat"
+                        : sendingToUid === reader.uid
+                          ? "Enviant..."
+                          : sendError === reader.uid
+                            ? "Error. Torna-ho a intentar"
+                            : "Encoratja"}
                   </button>
                 </div>
               </div>

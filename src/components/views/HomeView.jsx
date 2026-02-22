@@ -43,6 +43,9 @@ export const HomeView = ({ user, stats, books }) => {
                   {enc.fromUserName ?? "Algú"}
                 </span>{" "}
                 t&apos;anima a seguir llegint
+                {enc.bookTitle ? (
+                  <> {enc.bookTitle}</>
+                ) : null}
               </li>
             ))}
           </ul>
