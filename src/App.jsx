@@ -14,12 +14,15 @@ import { useBooks } from "./hooks/useBooks";
 import { useStats } from "./hooks/useStats";
 import { useLibraryFilters } from "./hooks/useLibraryFilters";
 import { useEncouragementCount } from "./hooks/useEncouragementCount";
+import { useUserPrefs } from "./hooks/useUserPrefs";
 import { ROUTES } from "./utils/constants";
 
 /** Ruta /add i /add/:id: resol editingBook des del param i llibres, navega després de guardar/cancel·lar */
 function AddBookRoute() {
   const { id } = useParams();
+  const { user } = useAuth();
   const { books, addBook, updateBook } = useBooks();
+  const { recordReadingActivity } = useUserPrefs(user?.uid);
   const navigate = useNavigate();
   const editingBook =
     id != null ? books.find((b) => b.id === id) ?? null : null;
@@ -32,10 +35,23 @@ function AddBookRoute() {
 
   const handleSave = async (bookData) => {
     try {
+      let dataToSave = { ...bookData };
+      if (bookData.currentPage != null) {
+        const prevLog = editingBook?.pageLog || [];
+        const now = Date.now();
+        const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+        const newLog = [
+          ...prevLog.filter((e) => e.at >= sevenDaysAgo),
+          { at: now, page: parseInt(bookData.currentPage, 10) || 0 },
+        ];
+        dataToSave = { ...dataToSave, pageLog: newLog };
+      }
       if (editingBook) {
-        await updateBook(editingBook.id, bookData);
+        await updateBook(editingBook.id, dataToSave);
+        if (bookData.currentPage != null) recordReadingActivity?.();
       } else {
-        await addBook(bookData);
+        await addBook(dataToSave);
+        if (bookData.currentPage != null) recordReadingActivity?.();
       }
       navigate(ROUTES.LIBRARY);
     } catch (error) {
@@ -61,6 +77,7 @@ const App = () => {
   const { books, addBook, updateBook, deleteBook } = useBooks();
   const stats = useStats();
   const { count: encouragementCount } = useEncouragementCount(user?.uid);
+  const { annualGoal, setAnnualGoal, streak } = useUserPrefs(user?.uid);
   const navigate = useNavigate();
   const [bookIdToDelete, setBookIdToDelete] = useState(null);
   const {
@@ -117,7 +134,7 @@ const App = () => {
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         <Routes>
-          <Route path={ROUTES.HOME} element={<HomeView user={user} stats={stats} books={books} />} />
+          <Route path={ROUTES.HOME} element={<HomeView user={user} stats={stats} books={books} annualGoal={annualGoal} streak={streak} />} />
           <Route
             path={ROUTES.LIBRARY}
             element={
@@ -140,7 +157,7 @@ const App = () => {
           <Route path={`${ROUTES.ADD}/:id`} element={<AddBookRoute />} />
           <Route
             path={ROUTES.PROFILE}
-            element={<ProfileView user={user} onLogout={handleLogout} stats={stats} />}
+            element={<ProfileView user={user} onLogout={handleLogout} stats={stats} annualGoal={annualGoal} setAnnualGoal={setAnnualGoal} />}
           />
           <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>

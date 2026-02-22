@@ -77,6 +77,14 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
 
    El receptor pot llegir (inbox); l'enviador pot llegir els seus enviaments (per al cooldown de 3 dies). Crea un índex compost: col·lecció `encouragements`, camps `toUserId` (Ascending) i `createdAt` (Descending). La comprovació de cooldown fa una query només per `fromUserId` i filtra en client; no cal cap índex compost addicional.
 
+   **Firestore – preferències d'usuari (objectiu anual, ratxa):** El document `users/{userId}/prefs` emmagatzema `annualGoal` i `readingActivityDays`. Afegeix regles per permetre que cada usuari llegeixi i escrigui només el seu propi document:
+
+   ```firestore
+   match /users/{userId}/prefs {
+     allow read, write: if request.auth != null && request.auth.uid == userId;
+   }
+   ```
+
 3. **Arrencar en desenvolupament**
    ```bash
    npm run dev
@@ -121,3 +129,31 @@ Aquest projecte utilitza [Open Spec](https://openspec.dev/) per al flux SDD. A C
 - **`/opsx:onboard`** – Guia d’onboarding al flux.
 
 Requisit: `npm install -g @fission-ai/openspec@latest`. Reinicia l’IDE perquè les comandes slash estiguin actives.
+
+### Notion → PR (comanda `/notion-to-pr`)
+
+Pots crear un canvi OpenSpec i un PR des d’una pàgina de Notion: l’agent llegeix la pàgina, crea la branca, omple proposal/design/tasks i obre el PR.
+
+1. **Integració de Notion**
+   - A [Notion Integrations](https://www.notion.so/my-integrations), crea una integració i copia el **Internal Integration Token**.
+   - A la pàgina (o al pare) que vulguis usar, obre **Connections** i afegeix la teva integració per donar-li accés.
+
+2. **Variables d’entorn**
+   - Al teu `.env` a l’arrel, afegeix:
+     ```bash
+     NOTION_API_KEY=secret_...
+     ```
+   - No commitis el token; `.env` ha d’estar a `.gitignore`.
+
+3. **GitHub CLI**
+   - Instal·la i autentica `gh` per poder crear PRs: [GitHub CLI](https://cli.github.com/).
+
+4. **Estructura de la pàgina Notion**
+   - **Title** → nom del canvi (en kebab-case).
+   - **Why** / Context / Problem → motivació per a `proposal.md`.
+   - **What** / Solution / Scope → abast i solució per a `proposal.md`.
+   - **Design** (opcional) → `design.md`.
+   - **Acceptance criteria** / **Tasks** → `tasks.md`.
+
+5. **Ús**
+   - Executa la comanda **`/notion-to-pr`** i enganxa la **URL de la pàgina de Notion** (o el page ID) quan et demani. L’agent seguirà la skill i farà: fetch Notion → branca → OpenSpec → commit → push → PR.

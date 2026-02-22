@@ -1,10 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { TrendingUp, Award, BookOpen, Heart } from "lucide-react";
+import { TrendingUp, Award, BookOpen, Heart, Flame } from "lucide-react";
 import { StatCard } from "../common/StatCard";
 import { ProgressBar } from "../common/ProgressBar";
 import { encouragementService } from "../../services/encouragementService";
+import { computeETA, getWeeklyProgress } from "../../utils/readingInsights";
 
-export const HomeView = ({ user, stats, books }) => {
+function WeeklyMiniChart({ data }) {
+  const withPage = data.filter((d) => d.page != null);
+  const maxPage = Math.max(1, ...withPage.map((d) => d.page));
+  return (
+    <div className="flex items-end gap-1 h-14">
+      {data.map((d) => (
+        <div key={d.date} className="flex-1 flex flex-col items-center gap-0.5">
+          <div className="w-full h-8 flex items-end">
+            <div
+              className="w-full bg-primary-300 rounded-t"
+              style={{
+                height: d.page != null ? `${(d.page / maxPage) * 100}%` : "2px",
+                minHeight: d.page != null ? "4px" : "2px",
+              }}
+            />
+          </div>
+          <span className="text-[10px] text-slate-500">
+            {new Date(d.date + "T12:00:00").toLocaleDateString("ca-ES", { weekday: "short" }).slice(0, 2)}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0 }) => {
   const readingBook = books.find((b) => b.status === "reading");
   const [encouragements, setEncouragements] = useState([]);
 
@@ -53,6 +79,15 @@ export const HomeView = ({ user, stats, books }) => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {streak >= 0 && (
+          <StatCard
+            title="Ratxa"
+            value={streak}
+            subtitle={streak === 1 ? "dia consecutiu" : "dies consecutius"}
+            color="primary"
+            icon={Flame}
+          />
+        )}
         <StatCard
           title="Aquest Mes"
           value={stats.booksThisMonth}
@@ -72,6 +107,25 @@ export const HomeView = ({ user, stats, books }) => {
           color="slate"
         />
       </div>
+
+      {annualGoal > 0 && (
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+          <h3 className="text-lg font-serif text-slate-800 mb-2">
+            Objectiu anual
+          </h3>
+          <p className="text-sm text-slate-600 mb-2">
+            {stats.completedBooks} / {annualGoal} llibres
+          </p>
+          <div className="bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-primary-500 h-full rounded-full transition-all"
+              style={{
+                width: `${Math.min(100, Math.round((stats.completedBooks / annualGoal) * 100))}%`,
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
         <h3 className="text-lg font-serif text-slate-800 mb-4">
@@ -98,7 +152,7 @@ export const HomeView = ({ user, stats, books }) => {
               <p className="text-slate-600 text-sm mb-3">
                 {readingBook.author}
               </p>
-              {readingBook.currentPage && readingBook.pages && (
+              {readingBook.currentPage != null && readingBook.pages > 0 && (
                 <div>
                   <div className="bg-slate-100 rounded-full h-2 overflow-hidden mb-2">
                     <div
@@ -108,13 +162,45 @@ export const HomeView = ({ user, stats, books }) => {
                       }}
                     />
                   </div>
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-slate-600 mb-2">
                     {readingBook.currentPage} / {readingBook.pages} pàgines
                   </p>
+                  {(() => {
+                    const eta = computeETA(readingBook);
+                    if (eta) {
+                      return (
+                        <p className="text-sm text-primary-700">
+                          Al teu ritme actual, acabaràs aquest llibre en{" "}
+                          {eta.daysLeft} {eta.daysLeft === 1 ? "dia" : "dies"} (Data
+                          estimada: {eta.dateStr})
+                        </p>
+                      );
+                    }
+                    if (readingBook.pageLog && readingBook.pageLog.length > 0) {
+                      return (
+                        <p className="text-sm text-slate-600 italic">
+                          Llegeix unes quantes pàgines per calcular el teu ritme!
+                        </p>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
               )}
+              {readingBook.pages == null || readingBook.pages === 0 ? (
+                <p className="text-sm text-amber-700">
+                  Afegeix el número de pàgines del llibre per veure progrés i
+                  predicció.
+                </p>
+              ) : null}
             </div>
           </div>
+          {readingBook.pages > 0 && (readingBook.pageLog?.length > 0 || readingBook.currentPage > 0) && (
+            <div className="mt-4 pt-4 border-t border-slate-100">
+              <p className="text-xs text-slate-600 mb-2">Progrés última setmana</p>
+              <WeeklyMiniChart data={getWeeklyProgress(readingBook.pageLog || [])} />
+            </div>
+          )}
         </div>
       )}
     </div>
