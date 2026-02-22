@@ -13,6 +13,7 @@ import { useAuth } from "./hooks/useAuth";
 import { useBooks } from "./hooks/useBooks";
 import { useStats } from "./hooks/useStats";
 import { useLibraryFilters } from "./hooks/useLibraryFilters";
+import { useEncouragementCount } from "./hooks/useEncouragementCount";
 import { ROUTES } from "./utils/constants";
 
 /** Ruta /add i /add/:id: resol editingBook des del param i llibres, navega després de guardar/cancel·lar */
@@ -59,6 +60,7 @@ const App = () => {
   const { user, login, logout } = useAuth();
   const { books, addBook, updateBook, deleteBook } = useBooks();
   const stats = useStats();
+  const { count: encouragementCount } = useEncouragementCount(user?.uid);
   const navigate = useNavigate();
   const [bookIdToDelete, setBookIdToDelete] = useState(null);
   const {
@@ -155,7 +157,7 @@ const App = () => {
         onCancel={() => setBookIdToDelete(null)}
       />
 
-      <BottomNav />
+      <BottomNav encouragementCount={encouragementCount} />
     </div>
   );
 };

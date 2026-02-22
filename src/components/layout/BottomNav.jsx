@@ -11,7 +11,7 @@ const navItems = [
   { to: ROUTES.PROFILE, Icon: User, label: "Perfil" },
 ];
 
-export const BottomNav = () => {
+export const BottomNav = ({ encouragementCount = 0 }) => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-primary-500 shadow-lg">
       <div className="max-w-4xl mx-auto px-3 py-3 flex justify-around">
@@ -22,6 +22,8 @@ export const BottomNav = () => {
                   location.pathname === ROUTES.ADD ||
                   location.pathname.startsWith(`${ROUTES.ADD}/`)
               : undefined;
+          const showEncouragementBadge =
+            to === ROUTES.HOME && encouragementCount > 0;
           return (
             <NavLink
               key={to}
@@ -29,14 +31,24 @@ export const BottomNav = () => {
               end={to === ROUTES.HOME}
               isActive={addIsActive}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
+                `flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all relative ${
                   isActive
                     ? "text-primary-600 bg-primary-50"
                     : "text-slate-600 hover:text-primary-600 hover:bg-primary-50/50"
                 }`
               }
             >
-              <Icon className="w-6 h-6" />
+              <span className="relative inline-block">
+                <Icon className="w-6 h-6" />
+                {showEncouragementBadge && (
+                  <span
+                    className="absolute -top-1.5 -right-2 min-w-[1.25rem] h-5 px-1 flex items-center justify-center rounded-full bg-primary-500 text-white text-xs font-bold"
+                    aria-label={`${encouragementCount} encoratjaments`}
+                  >
+                    {encouragementCount > 99 ? "99+" : encouragementCount}
+                  </span>
+                )}
+              </span>
               <span className="text-xs font-medium">{label}</span>
             </NavLink>
           );

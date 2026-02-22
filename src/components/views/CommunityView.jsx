@@ -9,6 +9,7 @@ export const CommunityView = ({ currentUser, userBooks }) => {
   const [loading, setLoading] = useState(true);
   const [sendingToUid, setSendingToUid] = useState(null);
   const [sendError, setSendError] = useState(null);
+  const [sentToUids, setSentToUids] = useState([]);
 
   const currentUserReading = userBooks.find((b) => b.status === "reading");
 
@@ -202,6 +203,7 @@ export const CommunityView = ({ currentUser, userBooks }) => {
                           currentUser.displayName ?? "Algú",
                           reader.uid,
                         );
+                        setSentToUids((prev) => [...prev, reader.uid]);
                       } catch (err) {
                         setSendError(reader.uid);
                         console.error(err);
@@ -209,15 +211,17 @@ export const CommunityView = ({ currentUser, userBooks }) => {
                         setSendingToUid(null);
                       }
                     }}
-                    disabled={sendingToUid !== null}
+                    disabled={sendingToUid !== null || sentToUids.includes(reader.uid)}
                     className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-primary-100 hover:bg-primary-200 text-primary-800 font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Heart className="w-4 h-4" />
-                    {sendingToUid === reader.uid
-                      ? "Enviant..."
-                      : sendError === reader.uid
-                        ? "Error. Torna-ho a intentar"
-                        : "Encoratja"}
+                    {sentToUids.includes(reader.uid)
+                      ? "Enviat ✓"
+                      : sendingToUid === reader.uid
+                        ? "Enviant..."
+                        : sendError === reader.uid
+                          ? "Error. Torna-ho a intentar"
+                          : "Encoratja"}
                   </button>
                 </div>
               </div>
