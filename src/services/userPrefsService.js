@@ -1,16 +1,17 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
-const PREFS_PATH = "prefs";
+const PREFS_COLLECTION = "prefs";
+const PREFS_DOC_ID = "settings";
 
 /**
  * Get user prefs (annual goal, reading activity days for streak).
- * Firestore: users/{uid}/prefs with { annualGoal?: number, readingActivityDays?: string[] }
+ * Firestore: users/{uid}/prefs/settings with { annualGoal?: number, readingActivityDays?: string[] }
  */
 export async function getUserPrefs(userId) {
   if (!userId) return { annualGoal: 0, readingActivityDays: [] };
   try {
-    const ref = doc(db, "users", userId, PREFS_PATH);
+    const ref = doc(db, "users", userId, PREFS_COLLECTION, PREFS_DOC_ID);
     const snap = await getDoc(ref);
     const data = snap.exists() ? snap.data() : {};
     return {
@@ -31,7 +32,7 @@ export async function getUserPrefs(userId) {
 export async function updateUserPrefs(userId, updates) {
   if (!userId) return;
   try {
-    const ref = doc(db, "users", userId, PREFS_PATH);
+    const ref = doc(db, "users", userId, PREFS_COLLECTION, PREFS_DOC_ID);
     const current = await getUserPrefs(userId);
     await setDoc(ref, { ...current, ...updates }, { merge: true });
   } catch (error) {
@@ -59,7 +60,7 @@ export async function addReadingActivityDay(userId) {
     let days = prefs.readingActivityDays || [];
     if (!days.includes(today)) {
       days = [today, ...days].slice(0, STREAK_DAYS_CAP);
-      const ref = doc(db, "users", userId, PREFS_PATH);
+      const ref = doc(db, "users", userId, PREFS_COLLECTION, PREFS_DOC_ID);
       await setDoc(ref, { ...prefs, readingActivityDays: days }, { merge: true });
     }
   } catch (error) {
