@@ -22,6 +22,13 @@ The system SHALL record the current calendar day in the user's reading activity 
 
 Within the book detail view (for the book being read), the system SHALL include a simple mini-chart showing page progress over the last week.
 
+### Requirement: Home dashboard block UI consistency
+
+On the home page (dashboard), all blocks SHALL share the same visual format:
+
+- **Icons:** Each block SHALL display an icon at the start of its title. Icons SHALL be themed to the block (e.g. streak block with flame; other blocks with an appropriate icon each). Affected blocks include: Ratxa, Aquest mes, Gènere preferit, Total llibres, Objectiu anual, Progrés global de lectura, Llegint ara.
+- **Typography:** All block titles SHALL use the same typography and SHALL use sentence case (only the first letter of the title in uppercase). Target titles: "Ratxa", "Aquest mes", "Gènere preferit", "Total llibres", "Objectiu anual", "Progrés global de lectura", "Llegint ara".
+
 ### Requirement: Edge cases and data protection
 
 - If average pages per day over the last 7 days is ≤ 0, the system SHALL NOT show an estimated completion date and SHALL show the motivational empty state.
