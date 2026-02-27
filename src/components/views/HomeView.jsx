@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TrendingUp, Award, BookOpen, Heart, Flame } from "lucide-react";
+import { TrendingUp, Award, BookOpen, Heart, Flame, Calendar, Tag, Target, BarChart2, BookMarked } from "lucide-react";
 import { StatCard } from "../common/StatCard";
 import { ProgressBar } from "../common/ProgressBar";
 import { encouragementService } from "../../services/encouragementService";
@@ -89,28 +89,32 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0 }) => 
           />
         )}
         <StatCard
-          title="Aquest Mes"
+          title="Aquest mes"
           value={stats.booksThisMonth}
           subtitle="Llibres completats"
           color="primary"
+          icon={Calendar}
         />
         <StatCard
-          title="Gènere Preferit"
+          title="Gènere preferit"
           value={stats.favoriteGenre}
           subtitle="El teu favorit"
           color="slate"
+          icon={Tag}
         />
         <StatCard
-          title="Total Llibres"
+          title="Total llibres"
           value={stats.totalBooks}
           subtitle={`${stats.completedBooks} completats`}
           color="slate"
+          icon={BookOpen}
         />
       </div>
 
       {annualGoal > 0 && (
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-          <h3 className="text-lg font-serif text-slate-800 mb-2">
+          <h3 className="text-sm font-medium text-slate-600 mb-2 flex items-center gap-3">
+            <Target className="w-6 h-6 text-primary-600" />
             Objectiu anual
           </h3>
           <p className="text-sm text-slate-600 mb-2">
@@ -128,16 +132,18 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0 }) => 
       )}
 
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-        <h3 className="text-lg font-serif text-slate-800 mb-4">
-          Progrés Global de Lectura
+        <h3 className="text-sm font-medium text-slate-600 mb-4 flex items-center gap-3">
+          <BarChart2 className="w-6 h-6 text-primary-600" />
+          Progrés global de lectura
         </h3>
         <ProgressBar percentage={stats.progressPercentage} />
       </div>
 
       {readingBook && (
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-          <h3 className="text-lg font-serif text-slate-800 mb-4">
-            Llegint Ara
+          <h3 className="text-sm font-medium text-slate-600 mb-4 flex items-center gap-3">
+            <BookMarked className="w-6 h-6 text-primary-600" />
+            Llegint ara
           </h3>
           <div className="flex gap-4">
             <img
