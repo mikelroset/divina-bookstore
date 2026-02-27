@@ -18,11 +18,9 @@ import { useUserPrefs } from "./hooks/useUserPrefs";
 import { ROUTES } from "./utils/constants";
 
 /** Ruta /add i /add/:id: resol editingBook des del param i llibres, navega després de guardar/cancel·lar */
-function AddBookRoute() {
+function AddBookRoute({ recordReadingActivity }) {
   const { id } = useParams();
-  const { user } = useAuth();
   const { books, addBook, updateBook } = useBooks();
-  const { recordReadingActivity } = useUserPrefs(user?.uid);
   const navigate = useNavigate();
   const editingBook =
     id != null ? books.find((b) => b.id === id) ?? null : null;
@@ -48,10 +46,10 @@ function AddBookRoute() {
       }
       if (editingBook) {
         await updateBook(editingBook.id, dataToSave);
-        if (bookData.currentPage != null) recordReadingActivity?.();
+        if (bookData.currentPage != null && recordReadingActivity) recordReadingActivity();
       } else {
         await addBook(dataToSave);
-        if (bookData.currentPage != null) recordReadingActivity?.();
+        if (bookData.currentPage != null && recordReadingActivity) recordReadingActivity();
       }
       navigate(ROUTES.LIBRARY);
     } catch (error) {
@@ -77,7 +75,7 @@ const App = () => {
   const { books, addBook, updateBook, deleteBook } = useBooks();
   const stats = useStats();
   const { count: encouragementCount } = useEncouragementCount(user?.uid);
-  const { annualGoal, setAnnualGoal, streak } = useUserPrefs(user?.uid);
+  const { annualGoal, setAnnualGoal, streak, recordReadingActivity } = useUserPrefs(user?.uid);
   const navigate = useNavigate();
   const [bookIdToDelete, setBookIdToDelete] = useState(null);
   const {
@@ -153,8 +151,8 @@ const App = () => {
             path={ROUTES.COMMUNITY}
             element={<CommunityView currentUser={user} userBooks={books} />}
           />
-          <Route path={ROUTES.ADD} element={<AddBookRoute />} />
-          <Route path={`${ROUTES.ADD}/:id`} element={<AddBookRoute />} />
+          <Route path={ROUTES.ADD} element={<AddBookRoute recordReadingActivity={recordReadingActivity} />} />
+          <Route path={`${ROUTES.ADD}/:id`} element={<AddBookRoute recordReadingActivity={recordReadingActivity} />} />
           <Route
             path={ROUTES.PROFILE}
             element={<ProfileView user={user} onLogout={handleLogout} stats={stats} annualGoal={annualGoal} setAnnualGoal={setAnnualGoal} />}

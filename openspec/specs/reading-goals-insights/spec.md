@@ -16,6 +16,8 @@ The system SHALL compute the user's average reading pace (pages per day) from "c
 
 The system SHALL show a "streak" (fire) icon on the Dashboard. The streak SHALL increase each day the user updates "current page" on any book. If a day passes with no such activity, the streak SHALL reset to zero.
 
+The system SHALL record the current calendar day in the user's reading activity when the user saves a book with an updated "current page" (e.g. from the Add/Edit book form). The streak SHALL be computed from this stored list of activity days (consecutive days up to and including today) and SHALL be loaded and displayed on the Dashboard so that it is not always zero when the user has been reading on consecutive days.
+
 ### Requirement: Mini-chart of weekly progress
 
 Within the book detail view (for the book being read), the system SHALL include a simple mini-chart showing page progress over the last week.
