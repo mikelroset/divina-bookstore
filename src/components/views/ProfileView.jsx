@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal }) => {
   const completed = stats?.completedBooks ?? 0;
   const goal = Math.max(0, parseInt(annualGoal, 10) || 0);
   const progressPct = goal > 0 ? Math.min(100, Math.round((completed / goal) * 100)) : 0;
+
+  const [inputStr, setInputStr] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (!isFocused) {
+      setInputStr(goal > 0 ? String(goal) : "");
+    }
+  }, [goal, isFocused]);
 
   return (
     <div className="space-y-6">
@@ -50,10 +59,19 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
               Objectiu de llibres aquest any
             </label>
             <input
-              type="number"
-              min={0}
-              value={goal}
-              onChange={(e) => setAnnualGoal(e.target.value)}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={inputStr}
+              onChange={(e) => setInputStr(e.target.value.replace(/\D/g, ""))}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => {
+                setIsFocused(false);
+                const num = Math.max(0, parseInt(inputStr, 10) || 0);
+                setAnnualGoal(num);
+                setInputStr(num > 0 ? String(num) : "");
+              }}
+              placeholder="0"
               className="w-full rounded-xl border border-primary-500 px-4 py-2 text-slate-800"
             />
           </div>

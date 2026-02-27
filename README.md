@@ -77,10 +77,10 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
 
    El receptor pot llegir (inbox); l'enviador pot llegir els seus enviaments (per al cooldown de 3 dies). Crea un índex compost: col·lecció `encouragements`, camps `toUserId` (Ascending) i `createdAt` (Descending). La comprovació de cooldown fa una query només per `fromUserId` i filtra en client; no cal cap índex compost addicional.
 
-   **Firestore – preferències d'usuari (objectiu anual, ratxa):** El document `users/{userId}/prefs` emmagatzema `annualGoal` i `readingActivityDays`. Afegeix regles per permetre que cada usuari llegeixi i escrigui només el seu propi document:
+   **Firestore – preferències d'usuari (objectiu anual, ratxa):** El document `users/{userId}/prefs/settings` emmagatzema `annualGoal` i `readingActivityDays`. Afegeix regles per la subcol·lecció `prefs`:
 
    ```firestore
-   match /users/{userId}/prefs {
+   match /users/{userId}/prefs/{docId} {
      allow read, write: if request.auth != null && request.auth.uid == userId;
    }
    ```
