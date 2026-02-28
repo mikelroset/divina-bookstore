@@ -18,9 +18,14 @@ The system SHALL show a "streak" (fire) icon on the Dashboard. The streak SHALL 
 
 The system SHALL record the current calendar day in the user's reading activity when the user saves a book with an updated "current page" (e.g. from the Add/Edit book form). The streak SHALL be computed from this stored list of activity days (consecutive days up to and including today) and SHALL be loaded and displayed on the Dashboard so that it is not always zero when the user has been reading on consecutive days.
 
-### Requirement: Mini-chart of weekly progress
+### Requirement: Mini-chart of weekly progress (Llegint ara)
 
-Within the book detail view (for the book being read), the system SHALL include a simple mini-chart showing page progress over the last week.
+Within the "Llegint ara" block (home) and the book edit view when the book is in "Llegint" status, the system SHALL include a simple mini-chart showing page progress over the last 7 days.
+
+- **Pages read per day:** The chart SHALL show the number of pages read per day (not only a proportional bar). Each bar SHALL display a visible label with the numeric value (integer) of pages read that day.
+- **Aggregation:** If there are multiple log entries on the same day, the value for that day SHALL be the sum of pages read (positive deltas between consecutive entries). Negative deltas SHALL count as 0 for that transition.
+- **Empty state:** When there is no reading data in the period, the chart SHALL show an empty state consistent with the UI; no page labels SHALL be shown.
+- **Format:** The label SHALL be short (e.g. "12" or "12 pàg.") and the UI SHALL be in Catalan.
 
 ### Requirement: Home dashboard block UI consistency
 
