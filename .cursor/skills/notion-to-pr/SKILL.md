@@ -1,17 +1,17 @@
 ---
 name: notion-to-pr
-description: Create OpenSpec change and PR from a Notion page (fetch page → branch → OpenSpec artifacts → commit → push → PR)
+description: Create OpenSpec change and PR from a Notion page (fetch → branch → OpenSpec → apply → archive → commit → push → PR)
 license: MIT
 metadata:
   author: divina-bookstore
-  version: "1.0"
+  version: "1.1"
 ---
 
-Create a new OpenSpec change from a Notion page: fetch content, create a git branch, scaffold the change, fill proposal/design/tasks from the page, commit, push, and open a PR.
+Create a new OpenSpec change from a Notion page: fetch content, create a git branch, scaffold the change, fill proposal/design/tasks from the page, **apply** the change (implement tasks), **archive** it (sync specs, move to archive), then commit, push, and open a PR.
 
 **Input**
 - Notion page **URL** or **page ID** (provided by the user or by the command).
-- Environment: `NOTION_API_KEY` must be set; `gh` must be installed and authenticated.
+- Environment: `NOTION_API_KEY` must be set. `gh` (GitHub CLI) is optional for creating the PR; if missing, output the manual PR link and installation instructions.
 
 **Expected Notion page structure**
 Map page content to OpenSpec artifacts as follows:
@@ -53,19 +53,30 @@ If the page uses different headings, infer the mapping from context (e.g. "Probl
    - If the schema includes other artifacts (e.g. specs), create them from "Requirements" or equivalent sections when present.
    - Run `openspec status --change "<name>"` and create any remaining required artifacts so the change is ready for implementation.
 
-6. **Commit and push**
-   - Stage: `git add openspec/changes/<name>/` and any new files.
-   - Commit: `git commit -m "chore(openspec): add change <name> from Notion"` (or similar).
+6. **Apply OpenSpec change**
+   - Follow the apply flow for change `<name>`: read context files from `openspec instructions apply --change "<name>" --json`, implement each pending task, mark tasks complete in `tasks.md`.
+   - If a task is blocked or unclear, stop and report; do not commit half-done.
+   - Verification-only tasks (e.g. "Revisar visualment") may be left unchecked; the user can confirm later.
+
+7. **Archive the change**
+   - Sync delta specs to main specs (apply the delta spec content to `openspec/specs/<capability>/spec.md` as per the archive flow).
+   - Move the change to archive: `mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>` (use current date for YYYY-MM-DD). If the target already exists, fail and suggest renaming or another date.
+   - Do not skip sync if the change has delta specs; archiving implies the change is done and main specs are up to date.
+
+8. **Commit and push**
+   - Stage all relevant changes: implementation files (e.g. under `src/`), `openspec/specs/**` (if synced), and the archive directory (new path) plus removal of `openspec/changes/<name>/` (if git sees it as renames, that is fine).
+   - Commit: `git commit -m "feat|fix|chore(scope): <short description>; arxiva canvi <name> i sync spec"` (or similar). Include both the implementation and the archive in one commit (or split into two commits if preferred: one for implementation, one for archive + spec sync).
    - Push: `git push -u origin feature/<name>`.
 
-7. **Create PR**
-   - Run: `gh pr create --title "<human-readable title from Notion>" --body "<body>"`.
-   - Body should include: link to the Notion page, short summary (e.g. from proposal), and optionally "Implements OpenSpec change: \<name\>".
+9. **Create PR**
+   - If **`gh` is available**: run `gh pr create --title "<human-readable title from Notion>" --body "<body>"`. Body should include: link to the Notion page, short summary (e.g. from proposal), and "Implements OpenSpec change: \<name\> (applied and archived)."
+   - If **`gh` is not available**: do not fail. After push, GitHub often prints a one-time URL to create the PR; output it. Otherwise tell the user to open the repo on GitHub and use "Compare & pull request" for branch `feature/<name>`. Add: "Per crear PRs des de la terminal: instal·la gh (ex. sudo snap install gh) i gh auth login."
 
 **Output**
-- Summarize: branch name, change name, link to the new PR, and next step (e.g. "Run `/opsx:apply` to implement tasks").
+- Summarize: branch name, change name, link to the new PR (or manual PR link if no `gh`), and that implementation and archive are already done (next step: review and merge).
 
 **Guardrails**
 - Do not skip steps; do not create the PR before pushing.
 - Do not store or log `NOTION_API_KEY`.
-- If `openspec` or `gh` is not available, stop and tell the user what to install or configure.
+- If `openspec` is not available, stop and tell the user what to install or configure.
+- If `gh` is not available, continue after push and provide the manual PR link and installation hint; do not block the flow.
