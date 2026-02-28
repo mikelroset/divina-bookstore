@@ -40,6 +40,7 @@ On the home page, within the "Llegint ara" block, the system SHALL allow the use
 - On network or persistence error, the system SHALL show an error message and keep the previous value visible in the UI.
 - If there is no book in "Llegint" status, the block SHALL NOT be shown or SHALL show a clear empty state (e.g. "No tens cap llibre en lectura").
 - On desktop, the layout of the block SHALL not show visible blank gaps (e.g. when a row does not fill all columns).
+- When the user updates book data (e.g. total pages) from the edit form for a book in "Llegint" status, the system SHALL preserve the book's status and existing fields (e.g. by merging the update with the existing book) so that the "Llegint ara" block remains visible after save.
 
 ### Requirement: Edge cases and data protection
 
