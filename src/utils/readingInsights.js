@@ -73,3 +73,39 @@ export function getWeeklyProgress(pageLog) {
   }
   return days;
 }
+
+/**
+ * Pages read per day for the last 7 days (deltas; negative deltas count as 0).
+ * Multiple entries on the same day are summed.
+ * @param {Array<{ at: number, page: number }>} pageLog
+ * @returns {Array<{ date: string, pagesRead: number }>} last 7 days, ascending by date
+ */
+export function getWeeklyPagesRead(pageLog) {
+  if (!pageLog || pageLog.length === 0) {
+    return getLast7DaysWithPagesRead([]);
+  }
+  const sorted = [...pageLog].sort((a, b) => a.at - b.at);
+  const now = Date.now();
+  const sevenDaysAgo = now - 7 * MS_PER_DAY;
+  const inWindow = sorted.filter((e) => e.at >= sevenDaysAgo);
+  const byDate = {};
+  for (let i = 1; i < inWindow.length; i++) {
+    const delta = inWindow[i].page - inWindow[i - 1].page;
+    const pagesRead = delta > 0 ? delta : 0;
+    const key = new Date(inWindow[i].at).toISOString().slice(0, 10);
+    byDate[key] = (byDate[key] || 0) + pagesRead;
+  }
+  return getLast7DaysWithPagesRead(byDate);
+}
+
+function getLast7DaysWithPagesRead(byDate) {
+  const days = [];
+  const now = Date.now();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    days.push({ date: key, pagesRead: byDate[key] || 0 });
+  }
+  return days;
+}

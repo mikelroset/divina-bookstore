@@ -2,30 +2,41 @@ import React from "react";
 import { coverService } from "../../services/coverService";
 import { descriptionService } from "../../services/descriptionService";
 import { BOOK_GENRES } from "../../utils/constants";
-import { computeETA, getWeeklyProgress } from "../../utils/readingInsights";
+import { computeETA, getWeeklyPagesRead } from "../../utils/readingInsights";
 import { BookForm } from "../forms/BookForm";
 
 function WeeklyMiniChart({ data }) {
-  const withPage = data.filter((d) => d.page != null);
-  const maxPage = Math.max(1, ...withPage.map((d) => d.page));
+  const maxPages = Math.max(1, ...data.map((d) => d.pagesRead ?? 0));
+  const hasData = data.some((d) => (d.pagesRead ?? 0) > 0);
   return (
-    <div className="flex items-end gap-1 h-14">
-      {data.map((d) => (
-        <div key={d.date} className="flex-1 flex flex-col items-center gap-0.5">
-          <div className="w-full h-8 flex items-end">
-            <div
-              className="w-full bg-primary-300 rounded-t"
-              style={{
-                height: d.page != null ? `${(d.page / maxPage) * 100}%` : "2px",
-                minHeight: d.page != null ? "4px" : "2px",
-              }}
-            />
+    <div className="flex items-end gap-1 h-16">
+      {data.map((d) => {
+        const pagesRead = d.pagesRead ?? 0;
+        const heightPct = maxPages > 0 ? (pagesRead / maxPages) * 100 : 0;
+        return (
+          <div key={d.date} className="flex-1 flex flex-col items-center gap-0.5">
+            <div className="w-full h-9 flex flex-col justify-end items-center gap-0.5">
+              {hasData && (
+                <span className="text-[10px] font-medium text-slate-700 leading-none">
+                  {pagesRead}
+                </span>
+              )}
+              <div className="w-full h-6 flex items-end">
+                <div
+                  className="w-full bg-primary-300 rounded-t"
+                  style={{
+                    height: heightPct > 0 ? `${Math.max(heightPct, 8)}%` : "2px",
+                    minHeight: heightPct > 0 ? "4px" : "2px",
+                  }}
+                />
+              </div>
+            </div>
+            <span className="text-[10px] text-slate-500">
+              {new Date(d.date + "T12:00:00").toLocaleDateString("ca-ES", { weekday: "short" }).slice(0, 2)}
+            </span>
           </div>
-          <span className="text-[10px] text-slate-500">
-            {new Date(d.date + "T12:00:00").toLocaleDateString("ca-ES", { weekday: "short" }).slice(0, 2)}
-          </span>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -86,7 +97,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
           {(editingBook.pageLog?.length > 0 || editingBook.currentPage > 0) && (
             <div className="mt-3">
               <p className="text-xs text-slate-600 mb-1">Progrés última setmana</p>
-              <WeeklyMiniChart data={getWeeklyProgress(editingBook.pageLog || [])} />
+              <WeeklyMiniChart data={getWeeklyPagesRead(editingBook.pageLog || [])} />
             </div>
           )}
         </div>
