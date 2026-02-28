@@ -99,14 +99,14 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0 }) => 
           title="Gènere preferit"
           value={stats.favoriteGenre}
           subtitle="El teu favorit"
-          color="slate"
+          color="primary"
           icon={Tag}
         />
         <StatCard
           title="Total llibres"
           value={stats.totalBooks}
           subtitle={`${stats.completedBooks} completats`}
-          color="slate"
+          color="primary"
           icon={BookOpen}
         />
       </div>
