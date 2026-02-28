@@ -67,7 +67,11 @@ export const BooksProvider = ({ children }) => {
         bookData,
       );
       setBooks((prevBooks) =>
-        prevBooks.map((book) => (book.id === bookId ? updatedBook : book)),
+        prevBooks.map((book) =>
+          book.id === bookId
+            ? { ...book, ...updatedBook, id: bookId }
+            : book,
+        ),
       );
       return updatedBook;
     } catch (error) {

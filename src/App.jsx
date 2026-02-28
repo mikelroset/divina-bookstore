@@ -33,7 +33,10 @@ function AddBookRoute({ recordReadingActivity }) {
 
   const handleSave = async (bookData) => {
     try {
-      let dataToSave = { ...bookData };
+      let dataToSave =
+        editingBook != null
+          ? { ...editingBook, ...bookData }
+          : { ...bookData };
       if (bookData.currentPage != null) {
         const prevLog = editingBook?.pageLog || [];
         const now = Date.now();
