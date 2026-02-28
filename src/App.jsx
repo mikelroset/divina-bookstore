@@ -122,6 +122,20 @@ const App = () => {
     navigate(`${ROUTES.ADD}/${book.id}`);
   };
 
+  const handleUpdateCurrentPageFromHome = async (bookId, newCurrentPage) => {
+    const book = books.find((b) => b.id === bookId);
+    if (!book) return;
+    const prevLog = book.pageLog || [];
+    const now = Date.now();
+    const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+    const newLog = [
+      ...prevLog.filter((e) => e.at >= sevenDaysAgo),
+      { at: now, page: newCurrentPage },
+    ];
+    await updateBook(bookId, { currentPage: newCurrentPage, pageLog: newLog });
+    if (recordReadingActivity) recordReadingActivity();
+  };
+
   if (!user) {
     return <WelcomeScreen onLogin={handleGoogleLogin} />;
   }
@@ -132,7 +146,7 @@ const App = () => {
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         <Routes>
-          <Route path={ROUTES.HOME} element={<HomeView user={user} stats={stats} books={books} annualGoal={annualGoal} streak={streak} />} />
+          <Route path={ROUTES.HOME} element={<HomeView user={user} stats={stats} books={books} annualGoal={annualGoal} streak={streak} onUpdateCurrentPage={handleUpdateCurrentPageFromHome} />} />
           <Route
             path={ROUTES.LIBRARY}
             element={

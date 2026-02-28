@@ -30,9 +30,20 @@ function WeeklyMiniChart({ data }) {
   );
 }
 
-export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0 }) => {
+export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpdateCurrentPage }) => {
   const readingBook = books.find((b) => b.status === "reading");
   const [encouragements, setEncouragements] = useState([]);
+  const [currentPageInput, setCurrentPageInput] = useState("");
+  const [saveError, setSaveError] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (readingBook) {
+      const val = readingBook.currentPage ?? 0;
+      setCurrentPageInput(String(val));
+      setSaveError(null);
+    }
+  }, [readingBook?.id, readingBook?.currentPage]);
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -41,6 +52,39 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0 }) => 
       .then(setEncouragements)
       .catch((err) => console.error("Error carregant encoratjaments:", err));
   }, [user?.uid]);
+
+  const handleSaveCurrentPage = async () => {
+    if (!readingBook || !onUpdateCurrentPage) return;
+    const trimmed = currentPageInput.trim();
+    if (trimmed === "") {
+      setSaveError("Introdueix un número de pàgines.");
+      return;
+    }
+    const parsed = parseInt(trimmed, 10);
+    if (Number.isNaN(parsed) || parsed < 0) {
+      setSaveError("El valor ha de ser un número igual o superior a 0.");
+      return;
+    }
+    const current = readingBook.currentPage ?? 0;
+    if (parsed < current) {
+      setSaveError("El valor no pot ser menor que el progrés actual.");
+      return;
+    }
+    const totalPages = readingBook.pages;
+    if (totalPages != null && totalPages > 0 && parsed > totalPages) {
+      setSaveError(`El valor no pot ser major que el total de pàgines (${totalPages}).`);
+      return;
+    }
+    setSaveError(null);
+    setSaving(true);
+    try {
+      await onUpdateCurrentPage(readingBook.id, parsed);
+    } catch (err) {
+      setSaveError("Error al desar. Torna-ho a intentar.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -199,6 +243,39 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0 }) => 
                   predicció.
                 </p>
               ) : null}
+              {onUpdateCurrentPage && (
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <label className="text-sm text-slate-600 sr-only" htmlFor="home-current-page">
+                    Pàgines llegides
+                  </label>
+                  <input
+                    id="home-current-page"
+                    type="number"
+                    min={0}
+                    max={readingBook.pages > 0 ? readingBook.pages : undefined}
+                    value={currentPageInput}
+                    onChange={(e) => {
+                      setCurrentPageInput(e.target.value);
+                      setSaveError(null);
+                    }}
+                    disabled={saving}
+                    className="w-20 px-2 py-1.5 text-sm border border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 disabled:opacity-50"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveCurrentPage}
+                    disabled={saving}
+                    className="px-3 py-1.5 text-sm font-medium bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white rounded-lg transition-colors"
+                  >
+                    {saving ? "Desant…" : "Actualitza progrés"}
+                  </button>
+                  {saveError && (
+                    <p className="text-sm text-red-600 w-full" role="alert">
+                      {saveError}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
           {readingBook.pages > 0 && (readingBook.pageLog?.length > 0 || readingBook.currentPage > 0) && (
