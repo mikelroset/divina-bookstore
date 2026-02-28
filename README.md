@@ -156,4 +156,4 @@ Pots crear un canvi OpenSpec i un PR des d’una pàgina de Notion: l’agent ll
    - **Acceptance criteria** / **Tasks** → `tasks.md`.
 
 5. **Ús**
-   - Executa la comanda **`/notion-to-pr`** i enganxa la **URL de la pàgina de Notion** (o el page ID) quan et demani. L’agent seguirà la skill i farà: fetch Notion → branca → OpenSpec → commit → push → PR.
+   - Executa la comanda **`/notion-to-pr`** i enganxa la **URL de la pàgina de Notion** (o el page ID) quan et demani. L’agent seguirà la skill i farà: fetch Notion → branca → OpenSpec → commit → push → PR. Si tens **GitHub CLI (`gh`)** instal·lat i autenticat, el PR es crearà automàticament.
