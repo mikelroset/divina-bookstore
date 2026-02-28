@@ -23,8 +23,14 @@ export const BookCard = ({ book, onEdit, onDelete }) => {
       <p className="text-slate-600 text-sm mb-2">{book.author}</p>
       <div className="flex items-center gap-1 mb-3">
         {[...Array(5)].map((_, i) => (
-          <span key={i}>⭐</span>
-          // En el fitxer real seria: <Star className={`w-4 h-4 ${i < book.rating ? 'fill-primary-500 text-primary-500' : 'text-slate-300'}`} />
+          <Star
+            key={i}
+            className={`w-4 h-4 ${
+              i < (book.rating || 0)
+                ? "fill-primary-500 text-primary-500"
+                : "text-slate-300"
+            }`}
+          />
         ))}
       </div>
       <div className="flex gap-2">
