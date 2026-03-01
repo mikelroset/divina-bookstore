@@ -12,6 +12,7 @@ export const ROUTES = {
   HOME: "/",
   LIBRARY: "/library",
   COMMUNITY: "/community",
+  COMMUNITY_INVITE: "/community/invite",
   ADD: "/add",
   PROFILE: "/profile",
 };

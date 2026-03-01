@@ -100,6 +100,8 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
 
    **Fase 3 – comunitats obertes:** Índex compost a `communities`: camps `visibility` (Ascending) i `status` (Ascending) per llistar comunitats obertes.
 
+   **Invitacions per correu (enllaç d’acceptació):** Format de l’enllaç que es pot incloure al correu d’invitació: `{baseUrl}/community/invite/{inviteId}?token={inviteToken}`. Les invitacions emmagatzemen `inviteToken` i `lastEmailSentAt` (idempotència 10 min). L’enviament del correu es fa des d’un backend (Cloud Function o similar).
+
 3. **Arrencar en desenvolupament**
    ```bash
    npm run dev

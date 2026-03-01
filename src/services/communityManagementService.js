@@ -22,6 +22,11 @@ const COMMUNITIES_COLLECTION = "communities";
 const MEMBERS_SUBCOLLECTION = "members";
 const INVITES_COLLECTION = "communityInvites";
 const INVITE_EXPIRY_DAYS = 14;
+const INVITE_RESEND_COOLDOWN_MS = 10 * 60 * 1000; // 10 min idempotència
+
+function generateInviteToken() {
+  return crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 15)}`;
+}
 
 /**
  * Ensure the default community document exists. Creates it if missing.
@@ -277,6 +282,8 @@ function inviteDocId(communityId, email) {
 
 /**
  * Create or resend invite. One pending per (communityId, email). Expires in INVITE_EXPIRY_DAYS.
+ * Idempotency: within 10 min of lastEmailSentAt we do not update (no second "send").
+ * Stores inviteToken for invitation link; lastEmailSentAt for cooldown.
  * @returns {Promise<{ inviteId: string }>}
  */
 export async function createOrResendInvite(communityId, email, invitedByUserId) {
@@ -284,8 +291,20 @@ export async function createOrResendInvite(communityId, email, invitedByUserId) 
   const inviteId = inviteDocId(communityId, normalizedEmail);
   const ref = doc(db, INVITES_COLLECTION, inviteId);
   const snap = await getDoc(ref);
+  const now = Date.now();
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + INVITE_EXPIRY_DAYS);
+
+  if (snap.exists()) {
+    const d = snap.data();
+    if (d?.status === "pending" && d?.lastEmailSentAt != null && now - d.lastEmailSentAt < INVITE_RESEND_COOLDOWN_MS) {
+      return { inviteId };
+    }
+  }
+
+  const inviteToken = snap.exists() && snap.data()?.inviteToken
+    ? snap.data().inviteToken
+    : generateInviteToken();
   const data = {
     communityId,
     email: normalizedEmail,
@@ -294,13 +313,36 @@ export async function createOrResendInvite(communityId, email, invitedByUserId) 
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
     expiresAt: expiresAt.getTime(),
+    inviteToken,
+    lastEmailSentAt: now,
   };
   if (snap.exists() && snap.data()?.status === "pending") {
-    await setDoc(ref, { ...data, updatedAt: serverTimestamp(), expiresAt: data.expiresAt }, { merge: true });
+    await setDoc(ref, { ...data, updatedAt: serverTimestamp(), expiresAt: data.expiresAt, inviteToken, lastEmailSentAt: now }, { merge: true });
   } else {
     await setDoc(ref, data);
   }
   return { inviteId };
+}
+
+/**
+ * Get a single invite by id (for invite acceptance page). Returns null if not found or not pending/valid.
+ * @returns {Promise<{ id: string, communityId: string, communityName?: string, email: string, expiresAt: number, inviteToken?: string }|null>}
+ */
+export async function getInviteById(inviteId) {
+  const ref = doc(db, INVITES_COLLECTION, inviteId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return null;
+  const data = snap.data();
+  if (data?.status !== "pending" || data?.expiresAt < Date.now()) return null;
+  const community = await getCommunity(data.communityId);
+  return {
+    id: snap.id,
+    communityId: data.communityId,
+    communityName: community?.name,
+    email: data.email,
+    expiresAt: data.expiresAt,
+    inviteToken: data.inviteToken,
+  };
 }
 
 /**
@@ -336,16 +378,23 @@ export async function getPendingInvitesForEmail(email) {
 }
 
 /**
- * Accept invite: add user to community, set invite status accepted, add community to user's list (caller updates prefs).
+ * Accept invite: add user to community only if user's email matches invite email.
+ * @param {string} userEmail - email of the authenticated user (must match invite)
  * @returns {Promise<{ communityId: string }>}
  */
-export async function acceptInvite(inviteId, userId, profile = {}) {
+export async function acceptInvite(inviteId, userId, userEmail, profile = {}) {
   const ref = doc(db, INVITES_COLLECTION, inviteId);
   const snap = await getDoc(ref);
   if (!snap.exists() || snap.data()?.status !== "pending" || snap.data()?.expiresAt < Date.now()) {
     throw new Error("Invitation no vàlida o caducada");
   }
-  const { communityId } = snap.data();
+  const data = snap.data();
+  const inviteEmail = (data.email ?? "").toLowerCase().trim();
+  const normalizedUserEmail = (userEmail ?? "").toLowerCase().trim();
+  if (inviteEmail !== normalizedUserEmail) {
+    throw new Error("Aquest enllaç és per a un altre correu.");
+  }
+  const { communityId } = data;
   await setDoc(ref, { status: "accepted", acceptedByUserId: userId, updatedAt: serverTimestamp() }, { merge: true });
   await setCommunityMember(communityId, userId, "participant", profile);
   return { communityId };
