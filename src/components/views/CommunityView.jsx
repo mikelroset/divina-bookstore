@@ -45,6 +45,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   const [pendingInvites, setPendingInvites] = useState([]);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteError, setInviteError] = useState(null);
+  const [inviteSuccessMessage, setInviteSuccessMessage] = useState(null);
   const [inviting, setInviting] = useState(false);
   const [dissolving, setDissolving] = useState(false);
   const [dissolveError, setDissolveError] = useState(null);
@@ -340,7 +341,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                     type="button"
                     onClick={async () => {
                       try {
-                        const { communityId } = await acceptInvite(inv.id, currentUser.uid, {
+                        const { communityId } = await acceptInvite(inv.id, currentUser.uid, currentUser.email ?? "", {
                           displayName: currentUser.displayName ?? undefined,
                           photoURL: currentUser.photoURL ?? undefined,
                         });
@@ -350,6 +351,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                         getUserCommunities(currentUser.uid, [...(userCommunityIds || []), communityId]).then(({ communities: list }) => setCommunities(list));
                       } catch (e) {
                         console.error(e);
+                        setInviteError(e.message ?? "No s’ha pogut acceptar la invitació.");
                       }
                     }}
                     className="flex items-center gap-1 px-2 py-1 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700"
@@ -411,7 +413,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
             <input
               type="email"
               value={inviteEmail}
-              onChange={(e) => { setInviteEmail(e.target.value); setInviteError(null); }}
+              onChange={(e) => { setInviteEmail(e.target.value); setInviteError(null); setInviteSuccessMessage(null); }}
               placeholder="Email a convidar"
               className="flex-1 min-w-[180px] px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
             />
@@ -420,10 +422,19 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               disabled={inviting || !inviteEmail.trim()}
               onClick={async () => {
                 setInviteError(null);
+                setInviteSuccessMessage(null);
+                const email = inviteEmail.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email || !emailRegex.test(email)) {
+                  setInviteError("Introdueix un correu vàlid.");
+                  return;
+                }
                 setInviting(true);
                 try {
-                  await createOrResendInvite(activeCommunityId, inviteEmail.trim(), currentUser.uid);
+                  await createOrResendInvite(activeCommunityId, email, currentUser.uid);
                   setInviteEmail("");
+                  setInviteSuccessMessage("Hem enviat la invitació si aquest correu és vàlid.");
+                  setTimeout(() => setInviteSuccessMessage(null), 8000);
                 } catch (err) {
                   setInviteError(err.message || "Error en enviar la invitació.");
                 } finally {
@@ -436,6 +447,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
             </button>
           </div>
           {inviteError && <p className="text-sm text-red-600 mb-2" role="alert">{inviteError}</p>}
+          {inviteSuccessMessage && <p className="text-sm text-primary-700 mb-2" role="status">{inviteSuccessMessage}</p>}
           <ul className="space-y-2">
             {members.map((m) => (
               <li key={m.userId} className="flex items-center justify-between gap-2 py-2 border-b border-slate-100 last:border-0">

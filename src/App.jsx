@@ -7,6 +7,7 @@ import { ConfirmModal } from "./components/common/ConfirmModal";
 import { HomeView } from "./components/views/HomeView";
 import { LibraryView } from "./components/views/LibraryView";
 import { CommunityView } from "./components/views/CommunityView";
+import { InviteAcceptView } from "./components/views/InviteAcceptView";
 import { AddBookView } from "./components/views/AddBookView";
 import { ProfileView } from "./components/views/ProfileView";
 import { useAuth } from "./hooks/useAuth";
@@ -167,6 +168,10 @@ const App = () => {
           <Route
             path={ROUTES.COMMUNITY}
             element={<CommunityView currentUser={user} userBooks={books} activeCommunityId={activeCommunityId} onSelectCommunity={setActiveCommunityId} userCommunityIds={userCommunityIds} addCommunityToUser={addCommunityToUser} syncUserCommunityIds={syncUserCommunityIds} />}
+          />
+          <Route
+            path={`${ROUTES.COMMUNITY_INVITE}/:inviteId`}
+            element={<InviteAcceptView currentUser={user} addCommunityToUser={addCommunityToUser} onSelectCommunity={setActiveCommunityId} />}
           />
           <Route path={ROUTES.ADD} element={<AddBookRoute recordReadingActivity={recordReadingActivity} />} />
           <Route path={`${ROUTES.ADD}/:id`} element={<AddBookRoute recordReadingActivity={recordReadingActivity} />} />
