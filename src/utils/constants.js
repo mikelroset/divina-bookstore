@@ -78,3 +78,8 @@ export const STATUS_COLORS = {
   completed: "bg-emerald-100 text-emerald-700 border-emerald-300",
   wishlist: "bg-amber-100 text-amber-700 border-amber-300",
 };
+
+/** Comunitat per defecte (AC1 Gestió de comunitat) */
+export const DEFAULT_COMMUNITY_ID = "homenatge-divina";
+export const DEFAULT_COMMUNITY_NAME = "Homenatge a la Divina";
+export const DEFAULT_COMMUNITY_OWNER_UID = "6g9VBE4EagT5yk8PuSZRHZGwAuH2";
