@@ -6,6 +6,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { getCommunityMembers } from "./communityManagementService";
 
 export const communityService = {
   // Actualitzar el llibre actual de l'usuari a la comunitat
@@ -36,9 +37,16 @@ export const communityService = {
     }
   },
 
-  // Obtenir tots els lectors de la comunitat (tots els usuaris amb currentBook)
-  getCommunityReaders: async () => {
+  /**
+   * Obtenir els lectors de la comunitat: usuaris amb currentBook que són membres actius de la comunitat.
+   * @param {string|null|undefined} activeCommunityId - ID de la comunitat activa; si és null/undefined retorna []
+   */
+  getCommunityReaders: async (activeCommunityId) => {
     try {
+      if (!activeCommunityId) return [];
+      const members = await getCommunityMembers(activeCommunityId);
+      const memberIds = new Set(members.map((m) => m.userId));
+
       const communityRef = collection(db, "community");
       const querySnapshot = await getDocs(communityRef);
 
@@ -47,7 +55,7 @@ export const communityService = {
           uid: docSnap.id,
           ...docSnap.data(),
         }))
-        .filter((reader) => reader.currentBook != null); // != per detectar null i undefined
+        .filter((reader) => reader.currentBook != null && memberIds.has(reader.uid));
 
       return readers;
     } catch (error) {

@@ -88,12 +88,12 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
       .finally(() => setLoadingOpen(false));
   }, [currentUser?.uid, communities.length]);
 
-  // Carregar lectors de la comunitat (excloent l'usuari actual, que es mostra a "Estàs llegint")
+  // Carregar lectors de la comunitat (només membres de la comunitat activa; excloent l'usuari actual a "Estàs llegint")
   useEffect(() => {
     const loadCommunity = async () => {
       try {
         setLoading(true);
-        const readers = await communityService.getCommunityReaders();
+        const readers = await communityService.getCommunityReaders(activeCommunityId);
         const otherReaders = readers.filter((r) => r.uid !== currentUser?.uid);
         setCommunityReaders(otherReaders);
       } catch (error) {
@@ -104,7 +104,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
     };
 
     loadCommunity();
-  }, [currentUser?.uid]);
+  }, [currentUser?.uid, activeCommunityId]);
 
   // Comprovar cooldown (3 dies) per a cada lector+llibre
   useEffect(() => {
