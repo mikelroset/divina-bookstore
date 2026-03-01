@@ -78,7 +78,7 @@ const App = () => {
   const { books, addBook, updateBook, deleteBook } = useBooks();
   const stats = useStats();
   const { count: encouragementCount } = useEncouragementCount(user?.uid);
-  const { annualGoal, setAnnualGoal, streak, recordReadingActivity, activeCommunityId, setActiveCommunityId } = useUserPrefs(user?.uid);
+  const { annualGoal, setAnnualGoal, streak, recordReadingActivity, activeCommunityId, setActiveCommunityId, userCommunityIds, addCommunityToUser, syncUserCommunityIds } = useUserPrefs(user?.uid);
   const navigate = useNavigate();
   const [bookIdToDelete, setBookIdToDelete] = useState(null);
   const {
@@ -166,7 +166,7 @@ const App = () => {
           />
           <Route
             path={ROUTES.COMMUNITY}
-            element={<CommunityView currentUser={user} userBooks={books} activeCommunityId={activeCommunityId} onSelectCommunity={setActiveCommunityId} />}
+            element={<CommunityView currentUser={user} userBooks={books} activeCommunityId={activeCommunityId} onSelectCommunity={setActiveCommunityId} userCommunityIds={userCommunityIds} addCommunityToUser={addCommunityToUser} syncUserCommunityIds={syncUserCommunityIds} />}
           />
           <Route path={ROUTES.ADD} element={<AddBookRoute recordReadingActivity={recordReadingActivity} />} />
           <Route path={`${ROUTES.ADD}/:id`} element={<AddBookRoute recordReadingActivity={recordReadingActivity} />} />

@@ -12,6 +12,7 @@ export function useUserPrefs(userId) {
   const [annualGoal, setAnnualGoalState] = useState(0);
   const [readingActivityDays, setReadingActivityDays] = useState([]);
   const [activeCommunityId, setActiveCommunityIdState] = useState(null);
+  const [userCommunityIds, setUserCommunityIdsState] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
@@ -19,6 +20,7 @@ export function useUserPrefs(userId) {
       setAnnualGoalState(0);
       setReadingActivityDays([]);
       setActiveCommunityIdState(null);
+      setUserCommunityIdsState([]);
       setLoading(false);
       return;
     }
@@ -28,12 +30,15 @@ export function useUserPrefs(userId) {
       setAnnualGoalState(prefs.annualGoal ?? 0);
       setReadingActivityDays(prefs.readingActivityDays ?? []);
       let communityId = prefs.activeCommunityId ?? null;
-      if (!communityId) {
+      let communityIds = prefs.userCommunityIds ?? [];
+      if (communityIds.length === 0 || !communityId) {
         await ensureUserInDefaultCommunity(userId);
-        await updateUserPrefs(userId, { activeCommunityId: DEFAULT_COMMUNITY_ID });
-        communityId = DEFAULT_COMMUNITY_ID;
+        communityIds = [DEFAULT_COMMUNITY_ID];
+        communityId = communityId || DEFAULT_COMMUNITY_ID;
+        await updateUserPrefs(userId, { activeCommunityId: communityId, userCommunityIds: communityIds });
       }
       setActiveCommunityIdState(communityId);
+      setUserCommunityIdsState(communityIds);
     } catch (err) {
       console.error("Error loading user prefs:", err);
     } finally {
@@ -85,6 +90,34 @@ export function useUserPrefs(userId) {
     [userId],
   );
 
+  const addCommunityToUser = useCallback(
+    async (communityId) => {
+      if (!userId || !communityId) return;
+      const prefs = await getUserPrefs(userId);
+      const ids = prefs.userCommunityIds ?? [];
+      if (ids.includes(communityId)) return;
+      const next = [...ids, communityId];
+      setUserCommunityIdsState(next);
+      await updateUserPrefs(userId, { userCommunityIds: next });
+    },
+    [userId],
+  );
+
+  /** Sincronitza userCommunityIds amb els ids on l'usuari és membre actiu (per ex. després d'expulsió). */
+  const syncUserCommunityIds = useCallback(
+    async (activeCommunityIds) => {
+      if (!userId || !Array.isArray(activeCommunityIds)) return;
+      setUserCommunityIdsState(activeCommunityIds);
+      setActiveCommunityIdState((current) => {
+        const next = activeCommunityIds.includes(current) ? current : (activeCommunityIds[0] ?? null);
+        return next;
+      });
+      const newActive = activeCommunityIds.length > 0 ? (activeCommunityIds.includes(activeCommunityId) ? activeCommunityId : activeCommunityIds[0]) : null;
+      await updateUserPrefs(userId, { userCommunityIds: activeCommunityIds, activeCommunityId: newActive ?? null });
+    },
+    [userId, activeCommunityId],
+  );
+
   return {
     annualGoal,
     setAnnualGoal,
@@ -93,6 +126,9 @@ export function useUserPrefs(userId) {
     recordReadingActivity,
     activeCommunityId,
     setActiveCommunityId,
+    userCommunityIds,
+    addCommunityToUser,
+    syncUserCommunityIds,
     loading,
     refreshPrefs: load,
   };
