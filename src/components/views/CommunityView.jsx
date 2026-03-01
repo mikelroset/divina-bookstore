@@ -3,6 +3,7 @@ import { BookMarked, Users, Clock, Heart, Plus, Mail, Shield, UserX, UserCheck, 
 import { getDaysReading, calculateProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
 import { encouragementService } from "../../services/encouragementService";
+import { authService } from "../../services/authService";
 import {
   getUserCommunities,
   createCommunity,
@@ -433,7 +434,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                 setInviting(true);
                 try {
                   const { inviteId } = await createOrResendInvite(activeCommunityId, email, currentUser.uid);
-                  requestSendInviteEmail(inviteId, () => currentUser.getIdToken());
+                  requestSendInviteEmail(inviteId, () => authService.getIdToken());
                   setInviteEmail("");
                   setInviteSuccessMessage("Hem enviat la invitació si aquest correu és vàlid.");
                   setTimeout(() => setInviteSuccessMessage(null), 8000);

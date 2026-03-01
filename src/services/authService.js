@@ -28,6 +28,13 @@ export const authService = {
     return auth.currentUser;
   },
 
+  /** Retorna el ID token de l'usuari actual (per APIs que requereixen Authorization Bearer). */
+  getIdToken: async () => {
+    const user = auth.currentUser;
+    if (!user || typeof user.getIdToken !== "function") return null;
+    return user.getIdToken();
+  },
+
   // Escoltar canvis d'autenticació
   onAuthStateChanged: (callback) => {
     return auth.onAuthStateChanged(callback);
