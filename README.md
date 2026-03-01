@@ -85,6 +85,19 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
    }
    ```
 
+   **Firestore – gestió de comunitat (Fase 2):** Col·leccions `communities`, `communities/{id}/members` i `communityInvites`. Regles per a `communities` i subcol·lecció `members` (lectura/escriptura per usuaris autenticats). Per a `communityInvites`:
+
+   ```firestore
+   match /communityInvites/{inviteId} {
+     allow read: if request.auth != null;
+     allow create: if request.auth != null;
+     allow update: if request.auth != null;
+     allow delete: if false;
+   }
+   ```
+
+   Índex compost per invitacions pendents: col·lecció `communityInvites`, camps `email` (Ascending) i `status` (Ascending). Si Firebase ho demana, crea'l des de l'enllaç de l'error.
+
 3. **Arrencar en desenvolupament**
    ```bash
    npm run dev
