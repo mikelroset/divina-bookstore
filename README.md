@@ -100,7 +100,40 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
 
    **Fase 3 – comunitats obertes:** Índex compost a `communities`: camps `visibility` (Ascending) i `status` (Ascending) per llistar comunitats obertes.
 
-   **Invitacions per correu (enllaç d’acceptació):** Format de l’enllaç que es pot incloure al correu d’invitació: `{baseUrl}/community/invite/{inviteId}?token={inviteToken}`. Les invitacions emmagatzemen `inviteToken` i `lastEmailSentAt` (idempotència 10 min). L’enviament del correu es fa des d’un backend (Cloud Function o similar).
+   **Invitacions per correu (enllaç d’acceptació):** Format de l’enllaç: `{baseUrl}/community/invite/{inviteId}?token={inviteToken}`. Les invitacions emmagatzemen `inviteToken` i `lastEmailSentAt` (idempotència 10 min).
+
+   **Invitacions per correu – Fase 2 (enviar correu si l’email no té compte):** Hi ha dues opcions.
+
+   **Opció A – 100 % gratuïta (Vercel, sense canviar el pla de Firebase)**  
+   L’app inclou una API route de Vercel (`/api/send-invite`) que envia el correu. Després de convidar, el client la crida; la API comprova el token, llegeix la invitació i, si l’email no té compte, envia el correu amb Resend. No cal pas a Blaze.
+
+   1. **Resend**  
+      - [resend.com](https://resend.com) → compte i API Key (*API Keys* → Create; per proves pots enviar des de `onboarding@resend.dev`).
+
+   2. **Compte de servei de Firebase**  
+      - Firebase Console → *Project settings* → *Service accounts* → *Generate new private key*.  
+      - Obre el JSON descarregat i copia’n tot el contingut (serà la variable `FIREBASE_SERVICE_ACCOUNT_JSON`).
+
+   3. **Variables d’entorn a Vercel**  
+      Al teu projecte a [vercel.com](https://vercel.com) → *Settings* → *Environment Variables*, afegeix:
+
+      | Nom | Valor |
+      |-----|--------|
+      | `RESEND_API_KEY` | La teva API key de Resend (`re_...`) |
+      | `INVITE_BASE_URL` | URL de l’app (ex: `https://divina-bookstore.vercel.app`) |
+      | `FROM_EMAIL` | Remitent (ex: `Divina Bookstore <onboarding@resend.dev>`) |
+      | `FIREBASE_SERVICE_ACCOUNT_JSON` | El contingut complet del JSON del compte de servei (pega tot l’objecte en una sola línia) |
+
+      Torna a desplegar el projecte perquè les variables tinguin efecte.
+
+   **Opció B – Firebase Cloud Functions (requereix pla Blaze)**  
+   Si prefereixes que el correu s’envïi automàticament en crear la invitació (sense que el client cridi cap API):
+
+   1. Resend: igual que a l’opció A.  
+   2. `npm install -g firebase-tools`, `firebase login`, `firebase use <project-id>`, `cd functions && npm install && cd ..`.  
+   3. Variables d’entorn de la funció al Google Cloud Console (*Cloud Functions* → la funció → *Edit* → *Runtime environment variables*): `RESEND_API_KEY`, `INVITE_BASE_URL`, `FROM_EMAIL`.  
+   4. `firebase deploy --only functions`.  
+   La funció `onCommunityInviteWritten` es dispara en crear/actualitzar `communityInvites`; idempotència 10 min i rate limit per usuari. Col·lecció `inviteRateLimit/{userId}`: recomanable regla `allow read, write: if false;`.
 
 3. **Arrencar en desenvolupament**
    ```bash

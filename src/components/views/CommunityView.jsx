@@ -10,6 +10,7 @@ import {
   getCommunityMembers,
   getMemberRole,
   createOrResendInvite,
+  requestSendInviteEmail,
   setMemberStatus,
   updateMemberRole,
   getPendingInvitesForEmail,
@@ -431,7 +432,8 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                 }
                 setInviting(true);
                 try {
-                  await createOrResendInvite(activeCommunityId, email, currentUser.uid);
+                  const { inviteId } = await createOrResendInvite(activeCommunityId, email, currentUser.uid);
+                  requestSendInviteEmail(inviteId, () => currentUser.getIdToken());
                   setInviteEmail("");
                   setInviteSuccessMessage("Hem enviat la invitació si aquest correu és vàlid.");
                   setTimeout(() => setInviteSuccessMessage(null), 8000);

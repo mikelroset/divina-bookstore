@@ -325,6 +325,30 @@ export async function createOrResendInvite(communityId, email, invitedByUserId) 
 }
 
 /**
+ * Demana a l’API (Vercel) que enviï el correu d’invitació si l’email no té compte.
+ * Opció gratuïta sense Firebase Blaze. Es crida després de createOrResendInvite.
+ * @param {string} inviteId
+ * @param {() => Promise<string>} getIdToken - ex: () => currentUser.getIdToken()
+ */
+export async function requestSendInviteEmail(inviteId, getIdToken) {
+  if (!inviteId || typeof getIdToken !== "function") return;
+  try {
+    const token = await getIdToken();
+    const base = typeof window !== "undefined" && window.location?.origin ? window.location.origin : "";
+    const res = await fetch(`${base}/api/send-invite`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ inviteId }),
+    });
+    if (!res.ok && res.status !== 200) {
+      console.warn("send-invite API:", res.status, await res.text());
+    }
+  } catch (e) {
+    console.warn("requestSendInviteEmail:", e);
+  }
+}
+
+/**
  * Get a single invite by id (for invite acceptance page). Returns null if not found or not pending/valid.
  * @returns {Promise<{ id: string, communityId: string, communityName?: string, email: string, expiresAt: number, inviteToken?: string }|null>}
  */
