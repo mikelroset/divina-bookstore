@@ -5,11 +5,11 @@ const PREFS_COLLECTION = "prefs";
 const PREFS_DOC_ID = "settings";
 
 /**
- * Get user prefs (annual goal, reading activity days for streak).
- * Firestore: users/{uid}/prefs/settings with { annualGoal?: number, readingActivityDays?: string[] }
+ * Get user prefs (annual goal, reading activity days, active community).
+ * Firestore: users/{uid}/prefs/settings with { annualGoal?, readingActivityDays?, activeCommunityId? }
  */
 export async function getUserPrefs(userId) {
-  if (!userId) return { annualGoal: 0, readingActivityDays: [] };
+  if (!userId) return { annualGoal: 0, readingActivityDays: [], activeCommunityId: null };
   try {
     const ref = doc(db, "users", userId, PREFS_COLLECTION, PREFS_DOC_ID);
     const snap = await getDoc(ref);
@@ -19,10 +19,11 @@ export async function getUserPrefs(userId) {
       readingActivityDays: Array.isArray(data.readingActivityDays)
         ? data.readingActivityDays
         : [],
+      activeCommunityId: data.activeCommunityId ?? null,
     };
   } catch (error) {
     console.error("Error al obtenir preferències:", error);
-    return { annualGoal: 0, readingActivityDays: [] };
+    return { annualGoal: 0, readingActivityDays: [], activeCommunityId: null };
   }
 }
 

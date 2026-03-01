@@ -3,13 +3,15 @@ import { BookMarked, Users, Clock, Heart } from "lucide-react";
 import { getDaysReading, calculateProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
 import { encouragementService } from "../../services/encouragementService";
+import { getUserCommunities } from "../../services/communityManagementService";
 
 function readerBookKey(reader) {
   const bookId = reader.currentBook?.id ?? "";
   return `${reader.uid}-${bookId}`;
 }
 
-export const CommunityView = ({ currentUser, userBooks }) => {
+export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSelectCommunity }) => {
+  const [communities, setCommunities] = useState([]);
   const [communityReaders, setCommunityReaders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sendingToUid, setSendingToUid] = useState(null);
@@ -18,6 +20,11 @@ export const CommunityView = ({ currentUser, userBooks }) => {
   const [cooldownKeys, setCooldownKeys] = useState(new Set());
 
   const currentUserReading = userBooks.find((b) => b.status === "reading");
+
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+    getUserCommunities(currentUser.uid).then(setCommunities);
+  }, [currentUser?.uid]);
 
   // Carregar lectors de la comunitat (excloent l'usuari actual, que es mostra a "Estàs llegint")
   useEffect(() => {
@@ -58,12 +65,30 @@ export const CommunityView = ({ currentUser, userBooks }) => {
     check();
   }, [currentUser?.uid, communityReaders]);
 
+  const activeCommunity = communities.find((c) => c.id === activeCommunityId) ?? communities[0];
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-serif text-slate-800 mb-2">
-          Comunitat de Lectors
-        </h2>
+        <div className="flex flex-wrap items-center gap-3 mb-2">
+          <h2 className="text-3xl font-serif text-slate-800">
+            Comunitat de Lectors
+          </h2>
+          {communities.length > 0 && (
+            <select
+              value={activeCommunityId ?? activeCommunity?.id ?? ""}
+              onChange={(e) => onSelectCommunity?.(e.target.value || null)}
+              className="px-3 py-1.5 text-sm bg-white/80 border border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 text-slate-700"
+              aria-label="Selecciona la comunitat"
+            >
+              {communities.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
         <p className="text-slate-600">
           Descobreix què està llegint la comunitat ara mateix
         </p>
