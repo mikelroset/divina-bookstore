@@ -8,6 +8,7 @@ import {
   collectionGroup,
   query,
   where,
+  limit,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
@@ -206,6 +207,66 @@ export async function setMemberStatus(communityId, targetUserId, status) {
  */
 export async function updateMemberRole(communityId, userId, role) {
   await setCommunityMember(communityId, userId, role);
+}
+
+/**
+ * Dissolve community. Only the owner can do it. The default community cannot be dissolved.
+ * @param {string} communityId
+ * @param {string} userId - must be owner
+ */
+export async function dissolveCommunity(communityId, userId) {
+  if (communityId === DEFAULT_COMMUNITY_ID) {
+    throw new Error("No es pot dissoldre la comunitat per defecte.");
+  }
+  const role = await getMemberRole(communityId, userId);
+  if (role !== "owner") {
+    throw new Error("Només el propietari pot dissoldre la comunitat.");
+  }
+  const ref = doc(db, COMMUNITIES_COLLECTION, communityId);
+  await setDoc(ref, { status: "dissolved", updatedAt: serverTimestamp() }, { merge: true });
+}
+
+/**
+ * List open (visibility === 'open') active communities, with optional member count for sorting.
+ * @param {number} maxCount - max communities to fetch (default 20)
+ * @param {number} topN - if set, sort by member count desc and return top N (default all)
+ * @returns {Promise<Array<{ id: string, name: string, description?: string, memberCount?: number }>>}
+ */
+export async function getOpenCommunities(maxCount = 20, topN = null) {
+  const q = query(
+    collection(db, COMMUNITIES_COLLECTION),
+    where("visibility", "==", "open"),
+    where("status", "==", "active"),
+    limit(maxCount),
+  );
+  const snap = await getDocs(q);
+  const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  const withCount = await Promise.all(
+    list.map(async (c) => {
+      const members = await getCommunityMembers(c.id);
+      return { ...c, memberCount: members.length };
+    }),
+  );
+  withCount.sort((a, b) => (b.memberCount ?? 0) - (a.memberCount ?? 0));
+  return topN != null ? withCount.slice(0, topN) : withCount;
+}
+
+/**
+ * Join an open community as participant. Fails if community is not open or user already member.
+ * @param {string} communityId
+ * @param {string} userId
+ * @param {{ displayName?: string, photoURL?: string }} [profile]
+ */
+export async function joinOpenCommunity(communityId, userId, profile = {}) {
+  const com = await getCommunity(communityId);
+  if (!com || com.status !== "active" || com.visibility !== "open") {
+    throw new Error("Aquesta comunitat no accepta nous membres ara.");
+  }
+  const existingRole = await getMemberRole(communityId, userId);
+  if (existingRole !== null) {
+    return;
+  }
+  await setCommunityMember(communityId, userId, "participant", profile);
 }
 
 // ---------- Invitations ----------

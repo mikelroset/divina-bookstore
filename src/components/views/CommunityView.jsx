@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BookMarked, Users, Clock, Heart, Plus, Mail, Shield, UserX, UserCheck } from "lucide-react";
+import { BookMarked, Users, Clock, Heart, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass } from "lucide-react";
 import { getDaysReading, calculateProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
 import { encouragementService } from "../../services/encouragementService";
@@ -15,7 +15,11 @@ import {
   getPendingInvitesForEmail,
   acceptInvite,
   rejectInvite,
+  dissolveCommunity,
+  getOpenCommunities,
+  joinOpenCommunity,
 } from "../../services/communityManagementService";
+import { DEFAULT_COMMUNITY_ID } from "../../utils/constants";
 
 function readerBookKey(reader) {
   const bookId = reader.currentBook?.id ?? "";
@@ -42,6 +46,11 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteError, setInviteError] = useState(null);
   const [inviting, setInviting] = useState(false);
+  const [dissolving, setDissolving] = useState(false);
+  const [dissolveError, setDissolveError] = useState(null);
+  const [openCommunities, setOpenCommunities] = useState([]);
+  const [loadingOpen, setLoadingOpen] = useState(false);
+  const [joiningId, setJoiningId] = useState(null);
 
   const currentUserReading = userBooks.find((b) => b.status === "reading");
   const canManageMembers = myRole === "owner" || myRole === "admin";
@@ -69,6 +78,15 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
     if (!currentUser?.email) return;
     getPendingInvitesForEmail(currentUser.email).then(setPendingInvites);
   }, [currentUser?.email]);
+
+  useEffect(() => {
+    if (!currentUser?.uid || communities.length > 0) return;
+    setLoadingOpen(true);
+    getOpenCommunities(20, 5)
+      .then(setOpenCommunities)
+      .catch(() => setOpenCommunities([]))
+      .finally(() => setLoadingOpen(false));
+  }, [currentUser?.uid, communities.length]);
 
   // Carregar lectors de la comunitat (excloent l'usuari actual, que es mostra a "Estàs llegint")
   useEffect(() => {
@@ -110,6 +128,15 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   }, [currentUser?.uid, communityReaders]);
 
   const activeCommunity = communities.find((c) => c.id === activeCommunityId) ?? communities[0];
+  const canDissolve = myRole === "owner" && activeCommunityId && activeCommunityId !== DEFAULT_COMMUNITY_ID;
+
+  const refetchCommunitiesAfterDissolve = () => {
+    getUserCommunities(currentUser.uid, userCommunityIds).then(({ communities: list, activeCommunityIds }) => {
+      setCommunities(list);
+      syncUserCommunityIds?.(activeCommunityIds);
+      onSelectCommunity?.(activeCommunityIds[0] ?? null);
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -141,9 +168,63 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
             Crear comunitat
           </button>
         </div>
-        <p className="text-slate-600">
-          Descobreix què està llegint la comunitat ara mateix
-        </p>
+        {communities.length === 0 ? (
+          <div className="mt-4 space-y-4">
+            <p className="text-slate-600">
+              No formes part de cap comunitat. Descobreix comunitats obertes o crea’n una de nova.
+            </p>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+              <h3 className="text-lg font-serif text-slate-800 mb-3 flex items-center gap-2">
+                <Compass className="w-5 h-5 text-primary-600" />
+                5 comunitats obertes més populars
+              </h3>
+              {loadingOpen ? (
+                <p className="text-slate-600">Carregant...</p>
+              ) : openCommunities.length === 0 ? (
+                <p className="text-slate-600">No hi ha comunitats obertes ara mateix.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {openCommunities.map((c) => (
+                    <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 py-2 border-b border-slate-100 last:border-0">
+                      <div>
+                        <span className="font-medium text-slate-800">{c.name}</span>
+                        {c.memberCount != null && (
+                          <span className="ml-2 text-xs text-slate-500">{c.memberCount} membres</span>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        disabled={joiningId === c.id}
+                        onClick={async () => {
+                          setJoiningId(c.id);
+                          try {
+                            await joinOpenCommunity(c.id, currentUser.uid, {
+                              displayName: currentUser.displayName ?? undefined,
+                              photoURL: currentUser.photoURL ?? undefined,
+                            });
+                            await addCommunityToUser(c.id);
+                            onSelectCommunity?.(c.id);
+                          } catch (err) {
+                            console.error(err);
+                          } finally {
+                            setJoiningId(null);
+                          }
+                        }}
+                        className="px-3 py-1.5 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+                      >
+                        {joiningId === c.id ? "Unint..." : "Unir-me"}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p className="text-slate-600">
+            Descobreix què està llegint la comunitat ara mateix
+          </p>
+        )}
       </div>
 
       {/* Modal Crear comunitat */}
@@ -292,13 +373,40 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
         </div>
       )}
 
-      {/* Gestió de membres (owner/admin) */}
-      {canManageMembers && activeCommunityId && (
+      {/* Gestió de membres (owner/admin) — només si l’usuari té comunitats */}
+      {communities.length > 0 && canManageMembers && activeCommunityId && (
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
           <h3 className="text-lg font-serif text-slate-800 mb-4 flex items-center gap-2">
             <Shield className="w-5 h-5 text-primary-600" />
             Membres
           </h3>
+          {canDissolve && (
+            <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200">
+              <p className="text-sm text-red-800 mb-2">Dissoldre la comunitat és permanent. Tots els membres deixaran de tenir accés.</p>
+              <button
+                type="button"
+                disabled={dissolving}
+                onClick={async () => {
+                  if (!window.confirm("Segur que vols dissoldre aquesta comunitat? L’acció és permanent.")) return;
+                  setDissolveError(null);
+                  setDissolving(true);
+                  try {
+                    await dissolveCommunity(activeCommunityId, currentUser.uid);
+                    refetchCommunitiesAfterDissolve();
+                  } catch (err) {
+                    setDissolveError(err.message || "Error en dissoldre la comunitat.");
+                  } finally {
+                    setDissolving(false);
+                  }
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-lg disabled:opacity-50"
+              >
+                <Trash2 className="w-4 h-4" />
+                {dissolving ? "Dissolent…" : "Dissoldre comunitat"}
+              </button>
+              {dissolveError && <p className="text-sm text-red-600 mt-2" role="alert">{dissolveError}</p>}
+            </div>
+          )}
           <div className="flex flex-wrap gap-2 mb-4">
             <input
               type="email"
@@ -369,8 +477,8 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
         </div>
       )}
 
-      {/* Llibre actual de l'usuari */}
-      {currentUserReading && (
+      {/* Llibre actual de l'usuari — només si té comunitat activa */}
+      {communities.length > 0 && currentUserReading && (
         <div className="bg-gradient-to-br from-primary-50 to-primary-100/50 backdrop-blur-sm rounded-2xl p-6 border-2 border-primary-500 shadow-lg">
           <div className="flex items-center gap-2 mb-4">
             <BookMarked className="w-5 h-5 text-primary-600" />
@@ -426,7 +534,8 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
         </div>
       )}
 
-      {/* La resta de lectors */}
+      {/* La resta de lectors — només si té comunitat activa */}
+      {communities.length > 0 && (
       <div>
         <h3 className="text-xl font-serif text-slate-800 mb-4 flex items-center gap-2">
           <Users className="w-6 h-6 text-slate-700" />
@@ -568,9 +677,10 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
           </div>
         )}
       </div>
+      )}
 
       {/* Estadístiques - inclou usuari actual + la resta de lectors */}
-      {!loading &&
+      {communities.length > 0 && !loading &&
         (communityReaders.length > 0 || currentUserReading) && (
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
             <h3 className="text-lg font-serif text-slate-800 mb-4">

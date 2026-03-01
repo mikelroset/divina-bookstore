@@ -98,6 +98,8 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
 
    Índex compost per invitacions pendents: col·lecció `communityInvites`, camps `email` (Ascending) i `status` (Ascending). Si Firebase ho demana, crea'l des de l'enllaç de l'error.
 
+   **Fase 3 – comunitats obertes:** Índex compost a `communities`: camps `visibility` (Ascending) i `status` (Ascending) per llistar comunitats obertes.
+
 3. **Arrencar en desenvolupament**
    ```bash
    npm run dev
