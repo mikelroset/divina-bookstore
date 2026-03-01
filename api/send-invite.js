@@ -5,9 +5,6 @@
  * Variables d'entorn a Vercel: RESEND_API_KEY, INVITE_BASE_URL, FROM_EMAIL, FIREBASE_SERVICE_ACCOUNT_JSON
  */
 
-import admin from "firebase-admin";
-import { Resend } from "resend";
-
 const INVITE_RESEND_COOLDOWN_MS = 10 * 60 * 1000;
 
 function escapeHtml(s) {
@@ -25,8 +22,9 @@ async function userExistsByEmail(auth, email) {
   }
 }
 
-async function sendInviteEmail(resend, fromEmail, baseUrl, { to, communityName, inviteId, inviteToken }) {
+async function sendInviteEmail(ResendClass, resendKey, fromEmail, baseUrl, { to, communityName, inviteId, inviteToken }) {
   const inviteLink = `${baseUrl.replace(/\/$/, "")}/community/invite/${inviteId}?token=${encodeURIComponent(inviteToken)}`;
+  const resend = new ResendClass(resendKey);
   const { data, error } = await resend.emails.send({
     from: fromEmail,
     to: [to],
@@ -78,9 +76,17 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Server configuration error" });
   }
 
+  let admin;
+  try {
+    admin = (await import("firebase-admin")).default;
+  } catch (e) {
+    console.error("Firebase Admin import error:", e.message);
+    return res.status(500).json({ error: "Server configuration error" });
+  }
+
   if (!admin.apps.length) {
     try {
-      const cred = JSON.parse(serviceAccountJson);
+      const cred = JSON.parse(serviceAccountJson.trim());
       admin.initializeApp({ credential: admin.credential.cert(cred) });
     } catch (e) {
       console.error("Firebase Admin init error:", e.message);
@@ -88,72 +94,77 @@ export default async function handler(req, res) {
     }
   }
 
-  const auth = admin.auth();
-  const db = admin.firestore();
-
-  let decoded;
   try {
-    decoded = await auth.verifyIdToken(token);
+    const auth = admin.auth();
+    const db = admin.firestore();
+
+    let decoded;
+    try {
+      decoded = await auth.verifyIdToken(token);
+    } catch (e) {
+      return res.status(401).json({ error: "Invalid or expired token" });
+    }
+    const uid = decoded.uid;
+
+    const inviteRef = db.collection("communityInvites").doc(inviteId);
+    const inviteSnap = await inviteRef.get();
+    if (!inviteSnap.exists) {
+      return res.status(404).json({ error: "Invite not found" });
+    }
+    const data = inviteSnap.data();
+    if (data.status !== "pending") {
+      return res.status(400).json({ error: "Invite not pending" });
+    }
+    if (data.expiresAt < Date.now()) {
+      return res.status(400).json({ error: "Invite expired" });
+    }
+    if (data.invitedByUserId !== uid) {
+      return res.status(403).json({ error: "Not authorized to send this invite" });
+    }
+
+    const emailSentAt = data.emailSentAt ?? 0;
+    if (emailSentAt && Date.now() - emailSentAt < INVITE_RESEND_COOLDOWN_MS) {
+      return res.status(200).json({ ok: true, skipped: "cooldown" });
+    }
+
+    const email = (data.email || "").toLowerCase().trim();
+    const inviteToken = data.inviteToken;
+    if (!email || !inviteToken) {
+      return res.status(400).json({ error: "Invalid invite data" });
+    }
+
+    const exists = await userExistsByEmail(auth, email);
+    if (exists) {
+      return res.status(200).json({ ok: true, skipped: "user_exists" });
+    }
+
+    if (!resendKey) {
+      console.warn("RESEND_API_KEY not set; skipping send");
+      return res.status(200).json({ ok: true, skipped: "no_resend_key" });
+    }
+
+    let communityName = "Comunitat";
+    try {
+      const comSnap = await db.collection("communities").doc(data.communityId).get();
+      if (comSnap.exists) communityName = comSnap.data().name || communityName;
+    } catch (_) {}
+
+    const { Resend: ResendClass } = await import("resend");
+    await sendInviteEmail(ResendClass, resendKey, fromEmail, baseUrl, {
+      to: email,
+      communityName,
+      inviteId,
+      inviteToken,
+    });
+
+    await inviteRef.update({
+      emailSentAt: Date.now(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    return res.status(200).json({ ok: true, sent: true });
   } catch (e) {
-    return res.status(401).json({ error: "Invalid or expired token" });
+    console.error("send-invite error:", e.message, e.stack);
+    return res.status(500).json({ error: "Server error" });
   }
-  const uid = decoded.uid;
-
-  const inviteRef = db.collection("communityInvites").doc(inviteId);
-  const inviteSnap = await inviteRef.get();
-  if (!inviteSnap.exists) {
-    return res.status(404).json({ error: "Invite not found" });
-  }
-  const data = inviteSnap.data();
-  if (data.status !== "pending") {
-    return res.status(400).json({ error: "Invite not pending" });
-  }
-  if (data.expiresAt < Date.now()) {
-    return res.status(400).json({ error: "Invite expired" });
-  }
-  if (data.invitedByUserId !== uid) {
-    return res.status(403).json({ error: "Not authorized to send this invite" });
-  }
-
-  const emailSentAt = data.emailSentAt ?? 0;
-  if (emailSentAt && Date.now() - emailSentAt < INVITE_RESEND_COOLDOWN_MS) {
-    return res.status(200).json({ ok: true, skipped: "cooldown" });
-  }
-
-  const email = (data.email || "").toLowerCase().trim();
-  const inviteToken = data.inviteToken;
-  if (!email || !inviteToken) {
-    return res.status(400).json({ error: "Invalid invite data" });
-  }
-
-  const exists = await userExistsByEmail(auth, email);
-  if (exists) {
-    return res.status(200).json({ ok: true, skipped: "user_exists" });
-  }
-
-  if (!resendKey) {
-    console.warn("RESEND_API_KEY not set; skipping send");
-    return res.status(200).json({ ok: true, skipped: "no_resend_key" });
-  }
-
-  let communityName = "Comunitat";
-  try {
-    const comSnap = await db.collection("communities").doc(data.communityId).get();
-    if (comSnap.exists) communityName = comSnap.data().name || communityName;
-  } catch (_) {}
-
-  const resend = new Resend(resendKey);
-  await sendInviteEmail(resend, fromEmail, baseUrl, {
-    to: email,
-    communityName,
-    inviteId,
-    inviteToken,
-  });
-
-  await inviteRef.update({
-    emailSentAt: Date.now(),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-  });
-
-  return res.status(200).json({ ok: true, sent: true });
 }
