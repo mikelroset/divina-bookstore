@@ -17,6 +17,7 @@
 
 ## Fase 2 (següent): Enviament de correu (backend)
 
+- **Opció API (Vercel, sense Blaze):** El client, després de crear la invitació, crida l’API amb `Authorization: Bearer <token>`. El token s’ha d’obtenir des de l’auth en viu (p. ex. `auth.currentUser.getIdToken()` o `authService.getIdToken()`), no des de l’objecte d’usuari del context, que pot ser un snapshot pla sense mètodes de Firebase.
 - **Cloud Function (onCreate o callable):** En crear/actualitzar un document a `communityInvites` amb status pending, comprovar (server-side) si existeix usuari amb aquest email (Firebase Admin Auth). Si no existeix (o en qualsevol cas, segons producte), enviar correu amb enllaç d’invitació (template amb nom comunitat, CTA, enllaç amb token). Registrar `lastEmailSentAt` i no reenviar si < 10 min (idempotència).
 - **Rate limiting:** A la funció, limitar nombre d’invitacions per usuari/IP per finestra de temps; retornar èxit neutral si s’ha superat el límit.
 - **Seguretat:** No escriure el token en clar als logs; no revelar si l’email existeix a la API pública.
