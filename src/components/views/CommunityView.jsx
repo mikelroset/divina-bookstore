@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { BookMarked, Users, Clock, Heart } from "lucide-react";
+import { BookMarked, Users, Clock, Heart, Plus, Mail, Shield, UserX, UserCheck } from "lucide-react";
 import { getDaysReading, calculateProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
 import { encouragementService } from "../../services/encouragementService";
-import { getUserCommunities } from "../../services/communityManagementService";
+import {
+  getUserCommunities,
+  createCommunity,
+  getCommunity,
+  getCommunityMembers,
+  getMemberRole,
+  createOrResendInvite,
+  setMemberStatus,
+  updateMemberRole,
+  getPendingInvitesForEmail,
+  acceptInvite,
+  rejectInvite,
+} from "../../services/communityManagementService";
 
 function readerBookKey(reader) {
   const bookId = reader.currentBook?.id ?? "";
   return `${reader.uid}-${bookId}`;
 }
 
-export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSelectCommunity }) => {
+export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSelectCommunity, userCommunityIds = [], addCommunityToUser, syncUserCommunityIds }) => {
   const [communities, setCommunities] = useState([]);
   const [communityReaders, setCommunityReaders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,13 +30,45 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   const [sendError, setSendError] = useState(null);
   const [sentKeys, setSentKeys] = useState(() => new Set());
   const [cooldownKeys, setCooldownKeys] = useState(new Set());
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createName, setCreateName] = useState("");
+  const [createDescription, setCreateDescription] = useState("");
+  const [createVisibility, setCreateVisibility] = useState("private");
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState(null);
+  const [members, setMembers] = useState([]);
+  const [myRole, setMyRole] = useState(null);
+  const [pendingInvites, setPendingInvites] = useState([]);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteError, setInviteError] = useState(null);
+  const [inviting, setInviting] = useState(false);
 
   const currentUserReading = userBooks.find((b) => b.status === "reading");
+  const canManageMembers = myRole === "owner" || myRole === "admin";
 
   useEffect(() => {
     if (!currentUser?.uid) return;
-    getUserCommunities(currentUser.uid).then(setCommunities);
-  }, [currentUser?.uid]);
+    getUserCommunities(currentUser.uid, userCommunityIds).then(({ communities: list, activeCommunityIds }) => {
+      setCommunities(list);
+      const idsChanged =
+        activeCommunityIds.length !== userCommunityIds.length ||
+        activeCommunityIds.some((id, i) => userCommunityIds[i] !== id);
+      if (idsChanged && syncUserCommunityIds) {
+        syncUserCommunityIds(activeCommunityIds);
+      }
+    });
+  }, [currentUser?.uid, userCommunityIds, syncUserCommunityIds]);
+
+  useEffect(() => {
+    if (!activeCommunityId || !currentUser?.uid) return;
+    getMemberRole(activeCommunityId, currentUser.uid).then(setMyRole);
+    getCommunityMembers(activeCommunityId).then(setMembers);
+  }, [activeCommunityId, currentUser?.uid]);
+
+  useEffect(() => {
+    if (!currentUser?.email) return;
+    getPendingInvitesForEmail(currentUser.email).then(setPendingInvites);
+  }, [currentUser?.email]);
 
   // Carregar lectors de la comunitat (excloent l'usuari actual, que es mostra a "Estàs llegint")
   useEffect(() => {
@@ -88,11 +132,242 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               ))}
             </select>
           )}
+          <button
+            type="button"
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Crear comunitat
+          </button>
         </div>
         <p className="text-slate-600">
           Descobreix què està llegint la comunitat ara mateix
         </p>
       </div>
+
+      {/* Modal Crear comunitat */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" role="dialog" aria-modal="true" aria-labelledby="create-community-title">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-primary-500">
+            <h3 id="create-community-title" className="text-xl font-serif text-slate-800 mb-4">
+              Crear comunitat
+            </h3>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setCreateError(null);
+                if (!createName.trim()) {
+                  setCreateError("El nom és obligatori.");
+                  return;
+                }
+                setCreating(true);
+                try {
+                  const { id, name } = await createCommunity(
+                    currentUser.uid,
+                    {
+                      name: createName.trim(),
+                      description: createDescription.trim() || null,
+                      visibility: createVisibility,
+                    },
+                    { displayName: currentUser.displayName ?? undefined, photoURL: currentUser.photoURL ?? undefined },
+                  );
+                  await addCommunityToUser(id);
+                  onSelectCommunity?.(id);
+                  setShowCreateModal(false);
+                  setCreateName("");
+                  setCreateDescription("");
+                  setCreateVisibility("private");
+                  getUserCommunities(currentUser.uid, [...(userCommunityIds || []), id]).then(({ communities: list }) => setCommunities(list));
+                } catch (err) {
+                  setCreateError(err.message || "Error en crear la comunitat.");
+                } finally {
+                  setCreating(false);
+                }
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Nom *</label>
+                <input
+                  type="text"
+                  value={createName}
+                  onChange={(e) => setCreateName(e.target.value)}
+                  className="w-full px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
+                  placeholder="Nom de la comunitat"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Descripció (opcional)</label>
+                <textarea
+                  value={createDescription}
+                  onChange={(e) => setCreateDescription(e.target.value)}
+                  className="w-full px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
+                  placeholder="Descripció breu"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Tipus</label>
+                <select
+                  value={createVisibility}
+                  onChange={(e) => setCreateVisibility(e.target.value)}
+                  className="w-full px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
+                >
+                  <option value="private">Privada (només per invitació)</option>
+                  <option value="open">Oberta (qualsevol pot unir-se)</option>
+                </select>
+              </div>
+              {createError && (
+                <p className="text-sm text-red-600" role="alert">{createError}</p>
+              )}
+              <div className="flex gap-2 justify-end pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowCreateModal(false); setCreateError(null); }}
+                  className="px-4 py-2 text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg"
+                >
+                  Cancel·lar
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating || !createName.trim()}
+                  className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white rounded-lg"
+                >
+                  {creating ? "Creant…" : "Crear"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Invitacions pendents */}
+      {pendingInvites.length > 0 && (
+        <div className="bg-amber-50/80 rounded-2xl p-6 border border-amber-200">
+          <h3 className="text-sm font-medium text-amber-900 mb-3 flex items-center gap-2">
+            <Mail className="w-5 h-5" />
+            Invitacions pendents
+          </h3>
+          <ul className="space-y-2">
+            {pendingInvites.map((inv) => (
+              <li key={inv.id} className="flex flex-wrap items-center justify-between gap-2 py-2 border-b border-amber-100 last:border-0">
+                <span className="text-slate-800">{inv.communityName ?? inv.communityId}</span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        const { communityId } = await acceptInvite(inv.id, currentUser.uid, {
+                          displayName: currentUser.displayName ?? undefined,
+                          photoURL: currentUser.photoURL ?? undefined,
+                        });
+                        await addCommunityToUser(communityId);
+                        onSelectCommunity?.(communityId);
+                        setPendingInvites((prev) => prev.filter((i) => i.id !== inv.id));
+                        getUserCommunities(currentUser.uid, [...(userCommunityIds || []), communityId]).then(({ communities: list }) => setCommunities(list));
+                      } catch (e) {
+                        console.error(e);
+                      }
+                    }}
+                    className="flex items-center gap-1 px-2 py-1 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                  >
+                    <UserCheck className="w-4 h-4" /> Acceptar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await rejectInvite(inv.id);
+                      setPendingInvites((prev) => prev.filter((i) => i.id !== inv.id));
+                    }}
+                    className="px-2 py-1 text-sm bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
+                  >
+                    Rebutjar
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Gestió de membres (owner/admin) */}
+      {canManageMembers && activeCommunityId && (
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+          <h3 className="text-lg font-serif text-slate-800 mb-4 flex items-center gap-2">
+            <Shield className="w-5 h-5 text-primary-600" />
+            Membres
+          </h3>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <input
+              type="email"
+              value={inviteEmail}
+              onChange={(e) => { setInviteEmail(e.target.value); setInviteError(null); }}
+              placeholder="Email a convidar"
+              className="flex-1 min-w-[180px] px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
+            />
+            <button
+              type="button"
+              disabled={inviting || !inviteEmail.trim()}
+              onClick={async () => {
+                setInviteError(null);
+                setInviting(true);
+                try {
+                  await createOrResendInvite(activeCommunityId, inviteEmail.trim(), currentUser.uid);
+                  setInviteEmail("");
+                } catch (err) {
+                  setInviteError(err.message || "Error en enviar la invitació.");
+                } finally {
+                  setInviting(false);
+                }
+              }}
+              className="flex items-center gap-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+            >
+              <Mail className="w-4 h-4" /> Convidar
+            </button>
+          </div>
+          {inviteError && <p className="text-sm text-red-600 mb-2" role="alert">{inviteError}</p>}
+          <ul className="space-y-2">
+            {members.map((m) => (
+              <li key={m.userId} className="flex items-center justify-between gap-2 py-2 border-b border-slate-100 last:border-0">
+                <span className="font-medium text-slate-800">{m.displayName || m.userId}</span>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  {m.role === "owner" ? "Propietari" : m.role === "admin" ? "Admin" : "Participant"}
+                </span>
+                {m.userId !== currentUser.uid && m.role !== "owner" && (
+                  <div className="flex gap-1">
+                    {myRole === "owner" && m.role === "participant" && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          await updateMemberRole(activeCommunityId, m.userId, "admin");
+                          getCommunityMembers(activeCommunityId).then(setMembers);
+                        }}
+                        className="px-2 py-1 text-xs bg-primary-100 text-primary-700 rounded hover:bg-primary-200"
+                      >
+                        Fer admin
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (window.confirm("Expulsar aquest membre de la comunitat?")) {
+                          await setMemberStatus(activeCommunityId, m.userId, "left");
+                          getCommunityMembers(activeCommunityId).then(setMembers);
+                        }
+                      }}
+                      className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 flex items-center gap-1"
+                    >
+                      <UserX className="w-3 h-3" /> Expulsar
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Llibre actual de l'usuari */}
       {currentUserReading && (

@@ -2,6 +2,12 @@ import {
   doc,
   getDoc,
   setDoc,
+  getDocs,
+  addDoc,
+  collection,
+  collectionGroup,
+  query,
+  where,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
@@ -13,6 +19,8 @@ import {
 
 const COMMUNITIES_COLLECTION = "communities";
 const MEMBERS_SUBCOLLECTION = "members";
+const INVITES_COLLECTION = "communityInvites";
+const INVITE_EXPIRY_DAYS = 14;
 
 /**
  * Ensure the default community document exists. Creates it if missing.
@@ -36,33 +44,38 @@ export async function ensureDefaultCommunity() {
 }
 
 /**
- * Add or update a member in a community.
+ * Add or update a member in a community. Stores userId for collection group queries.
  * @param {string} communityId
  * @param {string} userId
  * @param {string} role - owner | admin | participant
+ * @param {{ displayName?: string, photoURL?: string }} [profile]
  */
-export async function setCommunityMember(communityId, userId, role) {
+export async function setCommunityMember(communityId, userId, role, profile = {}) {
   const ref = doc(db, COMMUNITIES_COLLECTION, communityId, MEMBERS_SUBCOLLECTION, userId);
   const snap = await getDoc(ref);
   const now = serverTimestamp();
+  const data = {
+    userId,
+    role,
+    status: "active",
+    joinedAt: now,
+    updatedAt: now,
+    ...(profile.displayName && { displayName: profile.displayName }),
+    ...(profile.photoURL !== undefined && { photoURL: profile.photoURL }),
+  };
   if (!snap.exists()) {
-    await setDoc(ref, {
-      role,
-      status: "active",
-      joinedAt: now,
-      updatedAt: now,
-    });
+    await setDoc(ref, data);
   } else {
-    await setDoc(ref, { ...snap.data(), role, updatedAt: now }, { merge: true });
+    await setDoc(ref, { ...snap.data(), ...data, updatedAt: now }, { merge: true });
   }
 }
 
 /**
  * Ensure the user is a member of the default community (lazy migration).
- * Call when loading app if user has no activeCommunityId or we need to ensure membership.
  * @param {string} userId
+ * @param {{ displayName?: string, photoURL?: string }} [profile]
  */
-export async function ensureUserInDefaultCommunity(userId) {
+export async function ensureUserInDefaultCommunity(userId, profile = {}) {
   if (!userId) return;
   await ensureDefaultCommunity();
   const isOwner = userId === DEFAULT_COMMUNITY_OWNER_UID;
@@ -70,16 +83,19 @@ export async function ensureUserInDefaultCommunity(userId) {
     DEFAULT_COMMUNITY_ID,
     userId,
     isOwner ? "owner" : "participant",
+    profile,
   );
 }
 
 /**
- * Get communities the user belongs to. Phase 1: returns default community if user is member.
+ * Get communities the user belongs to. Uses denormalized userCommunityIds from prefs.
+ * Only includes communities where the user is an active member (excludes left/banned).
  * @param {string} userId
- * @returns {Promise<Array<{ id: string, name: string }>>}
+ * @param {string[]} [userCommunityIds] - from prefs; if not provided, only default is returned
+ * @returns {Promise<{ communities: Array<{ id: string, name: string, visibility?: string }>, activeCommunityIds: string[] }>}
  */
-export async function getUserCommunities(userId) {
-  if (!userId) return [];
+export async function getUserCommunities(userId, userCommunityIds = null) {
+  if (!userId) return { communities: [], activeCommunityIds: [] };
   await ensureDefaultCommunity();
   const memberRef = doc(
     db,
@@ -92,5 +108,192 @@ export async function getUserCommunities(userId) {
   if (!memberSnap.exists() || memberSnap.data()?.status !== "active") {
     await ensureUserInDefaultCommunity(userId);
   }
-  return [{ id: DEFAULT_COMMUNITY_ID, name: DEFAULT_COMMUNITY_NAME }];
+  const ids = Array.isArray(userCommunityIds) && userCommunityIds.length > 0
+    ? userCommunityIds
+    : [DEFAULT_COMMUNITY_ID];
+  const list = [];
+  const activeIds = [];
+  for (const id of ids) {
+    const role = await getMemberRole(id, userId);
+    if (role === null) continue;
+    const comRef = doc(db, COMMUNITIES_COLLECTION, id);
+    const comSnap = await getDoc(comRef);
+    if (comSnap.exists() && comSnap.data()?.status === "active") {
+      list.push({
+        id: comSnap.id,
+        name: comSnap.data().name ?? id,
+        visibility: comSnap.data().visibility,
+      });
+      activeIds.push(id);
+    }
+  }
+  return { communities: list, activeCommunityIds: activeIds };
+}
+
+/**
+ * Create a new community. Caller must add new id to user prefs (userCommunityIds, activeCommunityId).
+ * @param {string} ownerUserId
+ * @param {{ name: string, description?: string, visibility: 'open'|'private' }}
+ * @param {{ displayName?: string, photoURL?: string }} [ownerProfile]
+ * @returns {Promise<{ id: string, name: string }>}
+ */
+export async function createCommunity(ownerUserId, { name, description = null, visibility = "private" }, ownerProfile = {}) {
+  const ref = await addDoc(collection(db, COMMUNITIES_COLLECTION), {
+    name: name.trim(),
+    description: description?.trim() || null,
+    visibility,
+    ownerUserId,
+    status: "active",
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  await setCommunityMember(ref.id, ownerUserId, "owner", ownerProfile);
+  return { id: ref.id, name: name.trim() };
+}
+
+/**
+ * Get community doc.
+ * @returns {Promise<{ id: string, name: string, description?: string, visibility: string, ownerUserId: string, status: string }|null>}
+ */
+export async function getCommunity(communityId) {
+  const snap = await getDoc(doc(db, COMMUNITIES_COLLECTION, communityId));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() };
+}
+
+/**
+ * Get member role in community.
+ * @returns {Promise<'owner'|'admin'|'participant'|null>}
+ */
+export async function getMemberRole(communityId, userId) {
+  const snap = await getDoc(doc(db, COMMUNITIES_COLLECTION, communityId, MEMBERS_SUBCOLLECTION, userId));
+  if (!snap.exists() || snap.data()?.status !== "active") return null;
+  return snap.data().role ?? null;
+}
+
+/**
+ * List active members of a community.
+ * @returns {Promise<Array<{ userId: string, role: string, displayName?: string, photoURL?: string }>>}
+ */
+export async function getCommunityMembers(communityId) {
+  const snap = await getDocs(
+    query(
+      collection(db, COMMUNITIES_COLLECTION, communityId, MEMBERS_SUBCOLLECTION),
+      where("status", "==", "active"),
+    ),
+  );
+  return snap.docs.map((d) => ({
+    userId: d.id,
+    role: d.data().role ?? "participant",
+    displayName: d.data().displayName,
+    photoURL: d.data().photoURL,
+  }));
+}
+
+/**
+ * Remove member (set status left) or ban. Only admin/owner.
+ * @param {string} communityId
+ * @param {string} targetUserId
+ * @param {'left'|'banned'} status
+ */
+export async function setMemberStatus(communityId, targetUserId, status) {
+  const ref = doc(db, COMMUNITIES_COLLECTION, communityId, MEMBERS_SUBCOLLECTION, targetUserId);
+  await setDoc(ref, { status, updatedAt: serverTimestamp() }, { merge: true });
+}
+
+/**
+ * Set member role (e.g. promote to admin). Only owner can set admin; only owner can transfer owner.
+ */
+export async function updateMemberRole(communityId, userId, role) {
+  await setCommunityMember(communityId, userId, role);
+}
+
+// ---------- Invitations ----------
+
+function inviteDocId(communityId, email) {
+  return `${communityId}_${String(email).toLowerCase().trim()}`;
+}
+
+/**
+ * Create or resend invite. One pending per (communityId, email). Expires in INVITE_EXPIRY_DAYS.
+ * @returns {Promise<{ inviteId: string }>}
+ */
+export async function createOrResendInvite(communityId, email, invitedByUserId) {
+  const normalizedEmail = String(email).toLowerCase().trim();
+  const inviteId = inviteDocId(communityId, normalizedEmail);
+  const ref = doc(db, INVITES_COLLECTION, inviteId);
+  const snap = await getDoc(ref);
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + INVITE_EXPIRY_DAYS);
+  const data = {
+    communityId,
+    email: normalizedEmail,
+    invitedByUserId,
+    status: "pending",
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    expiresAt: expiresAt.getTime(),
+  };
+  if (snap.exists() && snap.data()?.status === "pending") {
+    await setDoc(ref, { ...data, updatedAt: serverTimestamp(), expiresAt: data.expiresAt }, { merge: true });
+  } else {
+    await setDoc(ref, data);
+  }
+  return { inviteId };
+}
+
+/**
+ * Get pending invites for an email (e.g. current user).
+ * @returns {Promise<Array<{ id: string, communityId: string, communityName?: string, email: string, invitedByUserId: string, expiresAt: number }>>}
+ */
+export async function getPendingInvitesForEmail(email) {
+  const normalizedEmail = String(email).toLowerCase().trim();
+  const now = Date.now();
+  const snap = await getDocs(
+    query(
+      collection(db, INVITES_COLLECTION),
+      where("email", "==", normalizedEmail),
+      where("status", "==", "pending"),
+    ),
+  );
+  const list = [];
+  for (const d of snap.docs) {
+    const data = d.data();
+    if (data.expiresAt > now) {
+      const community = await getCommunity(data.communityId);
+      list.push({
+        id: d.id,
+        communityId: data.communityId,
+        communityName: community?.name,
+        email: data.email,
+        invitedByUserId: data.invitedByUserId,
+        expiresAt: data.expiresAt,
+      });
+    }
+  }
+  return list;
+}
+
+/**
+ * Accept invite: add user to community, set invite status accepted, add community to user's list (caller updates prefs).
+ * @returns {Promise<{ communityId: string }>}
+ */
+export async function acceptInvite(inviteId, userId, profile = {}) {
+  const ref = doc(db, INVITES_COLLECTION, inviteId);
+  const snap = await getDoc(ref);
+  if (!snap.exists() || snap.data()?.status !== "pending" || snap.data()?.expiresAt < Date.now()) {
+    throw new Error("Invitation no vàlida o caducada");
+  }
+  const { communityId } = snap.data();
+  await setDoc(ref, { status: "accepted", acceptedByUserId: userId, updatedAt: serverTimestamp() }, { merge: true });
+  await setCommunityMember(communityId, userId, "participant", profile);
+  return { communityId };
+}
+
+/**
+ * Reject invite.
+ */
+export async function rejectInvite(inviteId) {
+  const ref = doc(db, INVITES_COLLECTION, inviteId);
+  await setDoc(ref, { status: "rejected", updatedAt: serverTimestamp() }, { merge: true });
 }
