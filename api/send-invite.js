@@ -159,7 +159,7 @@ export default async function handler(req, res) {
 
     await inviteRef.update({
       emailSentAt: Date.now(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: Date.now(),
     });
 
     return res.status(200).json({ ok: true, sent: true });

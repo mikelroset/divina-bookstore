@@ -108,7 +108,8 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
    L’app inclou una API route de Vercel (`/api/send-invite`) que envia el correu. Després de convidar, el client la crida; la API comprova el token, llegeix la invitació i, si l’email no té compte, envia el correu amb Resend. No cal pas a Blaze.
 
    1. **Resend**  
-      - [resend.com](https://resend.com) → compte i API Key (*API Keys* → Create; per proves pots enviar des de `onboarding@resend.dev`).
+      - [resend.com](https://resend.com) → compte i API Key (*API Keys* → Create; per proves pots enviar des de `onboarding@resend.dev`).  
+      - **Limitació en mode de proves:** amb `onboarding@resend.dev` (o sense domini verificat) Resend només deixa enviar a la teva pròpia adreça de compte. Per enviar a qualsevol destinatari cal verificar un domini a [resend.com/domains](https://resend.com/domains) i posar `FROM_EMAIL` amb un correu d’eixe domini (p. ex. `noreply@elteudomini.com`).
 
    2. **Compte de servei de Firebase**  
       - Firebase Console → *Project settings* → *Service accounts* → *Generate new private key*.  
@@ -125,6 +126,8 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
       | `FIREBASE_SERVICE_ACCOUNT_JSON` | El contingut complet del JSON del compte de servei (pega tot l’objecte en una sola línia) |
 
       Torna a desplegar el projecte perquè les variables tinguin efecte.
+
+   **Si /api/send-invite retorna 500:** Obre Vercel → el teu projecte → *Logs* (o *Functions* → clica la funció → logs). Hi haurà d’aparèixer `send-invite error: ...` amb el missatge real. Comprova: (1) `FIREBASE_SERVICE_ACCOUNT_JSON` és el JSON complet en **una sola línia** (sense salts de línia; minifica’l si cal). (2) El compte de servei té accés a Firestore (a Google Cloud Console, IAM, el compte de servei ha de tenir rol tipus "Cloud Datastore User" o "Editor"). (3) `RESEND_API_KEY` és correcta i el domini/remitent està verificat a Resend si no uses `onboarding@resend.dev`.
 
    **Opció B – Firebase Cloud Functions (requereix pla Blaze)**  
    Si prefereixes que el correu s’envïi automàticament en crear la invitació (sense que el client cridi cap API):
