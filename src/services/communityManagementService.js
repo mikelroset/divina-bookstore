@@ -54,7 +54,7 @@ export async function ensureDefaultCommunity() {
  * @param {string} communityId
  * @param {string} userId
  * @param {string} role - owner | admin | participant
- * @param {{ displayName?: string, photoURL?: string }} [profile]
+ * @param {{ displayName?: string, photoURL?: string, email?: string }} [profile]
  */
 export async function setCommunityMember(communityId, userId, role, profile = {}) {
   const ref = doc(db, COMMUNITIES_COLLECTION, communityId, MEMBERS_SUBCOLLECTION, userId);
@@ -68,6 +68,7 @@ export async function setCommunityMember(communityId, userId, role, profile = {}
     updatedAt: now,
     ...(profile.displayName && { displayName: profile.displayName }),
     ...(profile.photoURL !== undefined && { photoURL: profile.photoURL }),
+    ...(profile.email && { email: profile.email }),
   };
   if (!snap.exists()) {
     await setDoc(ref, data);
@@ -179,7 +180,7 @@ export async function getMemberRole(communityId, userId) {
 
 /**
  * List active members of a community.
- * @returns {Promise<Array<{ userId: string, role: string, displayName?: string, photoURL?: string }>>}
+ * @returns {Promise<Array<{ userId: string, role: string, displayName?: string, photoURL?: string, email?: string }>>}
  */
 export async function getCommunityMembers(communityId) {
   const snap = await getDocs(
@@ -193,6 +194,7 @@ export async function getCommunityMembers(communityId) {
     role: d.data().role ?? "participant",
     displayName: d.data().displayName,
     photoURL: d.data().photoURL,
+    email: d.data().email,
   }));
 }
 
@@ -420,7 +422,7 @@ export async function acceptInvite(inviteId, userId, userEmail, profile = {}) {
   }
   const { communityId } = data;
   await setDoc(ref, { status: "accepted", acceptedByUserId: userId, updatedAt: serverTimestamp() }, { merge: true });
-  await setCommunityMember(communityId, userId, "participant", profile);
+  await setCommunityMember(communityId, userId, "participant", { ...profile, email: normalizedUserEmail });
   return { communityId };
 }
 

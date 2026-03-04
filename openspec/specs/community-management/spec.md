@@ -15,8 +15,12 @@ A user SHALL be able to belong to one or more communities. The app SHALL store a
 ### Requirement: Community data model (Firestore)
 
 - **communities/{communityId}:** name, description, visibility (open | private), ownerUserId, status (active | dissolved), timestamps.
-- **communities/{communityId}/members/{userId}:** role (owner | admin | participant), status (active | banned | left), joinedAt, updatedAt.
+- **communities/{communityId}/members/{userId}:** role (owner | admin | participant), status (active | banned | left), joinedAt, updatedAt; MAY include optional email, displayName, photoURL for display.
 - User prefs (or equivalent) SHALL include activeCommunityId so the active community is persisted.
+
+### Requirement: Member list shows email (not uid)
+
+The community members list SHALL display a human-readable identifier for each member, preferring **email** when available. Member documents MAY store an optional `email` field; when adding or updating a member (join, accept invite, create community, ensure default community), the client SHALL pass the user's email when available and the service SHALL persist it. The UI SHALL show for each member: email (if present), otherwise displayName, otherwise userId.
 
 ### Requirement: Community-scoped readers and statistics
 
