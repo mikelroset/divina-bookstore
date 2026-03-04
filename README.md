@@ -62,9 +62,34 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
 2. **Configurar Firebase**  
    Crea un projecte a [Firebase Console](https://console.firebase.google.com/) i configura Autenticació (Google) i Firestore. Afegeix les variables d’entorn en un fitxer `.env` a l’arrel (veure `.env.example` si existeix o la documentació de Vite per `VITE_*`).
 
-   **Firestore – encoratjaments:** La col·lecció `encouragements` emmagatzema qui envia un encoratjament a qui (i per quin llibre). A Firebase Console → Firestore → Rules, afegeix (o actualitza) el bloc per `encouragements`:
+   **Regles de Firestore**  
+   A Firebase Console → Firestore → Rules cal configurar totes les col·leccions següents. Resum:
+
+   | Col·lecció / path | Ús | Accés |
+   |-------------------|----|--------|
+   | `users/{userId}/books/{bookId}` | Llibres de cada usuari | Només el propi usuari (read, write) |
+   | `community/{userId}` | Dades “què llegeix ara” per usuari (currentBook, displayName, photoURL) | Tots poden llegir; només el propi usuari pot escriure el seu doc |
+   | `encouragements/{docId}` | Encoratjaments (qui envia a qui, per quin llibre) | Crear: només amb el teu fromUserId; llegir: receptor o enviador; update/delete: no |
+   | `users/{userId}/prefs/{docId}` | Preferències (objectiu anual, ratxa) | Només el propi usuari |
+   | `communities/{communityId}` | Comunitats (nom, visibilitat, owner, status) | Usuaris autenticats (read, create, update, delete) |
+   | `communities/{communityId}/members/{userId}` | Membres d’una comunitat (rol, status) | Usuaris autenticats |
+   | `communityInvites/{inviteId}` | Invitacions per email a comunitat | Read/create/update: autenticats; delete: no |
+
+   Blocs complets per copiar a les Rules:
 
    ```firestore
+   // Llibres de cada usuari (només el propi usuari pot llegir/escriure)
+   match /users/{userId}/books/{bookId} {
+     allow read, write: if request.auth != null && request.auth.uid == userId;
+   }
+
+   // Dades “què llegeix ara” per usuari: tots poden llegir, només el propi usuari escriu el seu doc
+   match /community/{userId} {
+     allow read: if request.auth != null;
+     allow write: if request.auth.uid == userId;
+   }
+
+   // Encoratjaments: només l'enviador pot crear (amb el seu fromUserId); només receptor o enviador poden llegir
    match /encouragements/{docId} {
      allow create: if request.auth != null
        && request.auth.uid == request.resource.data.fromUserId;
@@ -73,21 +98,22 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
            || request.auth.uid == resource.data.fromUserId);
      allow update, delete: if false;
    }
-   ```
 
-   El receptor pot llegir (inbox); l'enviador pot llegir els seus enviaments (per al cooldown de 3 dies). Crea un índex compost: col·lecció `encouragements`, camps `toUserId` (Ascending) i `createdAt` (Descending). La comprovació de cooldown fa una query només per `fromUserId` i filtra en client; no cal cap índex compost addicional.
-
-   **Firestore – preferències d'usuari (objectiu anual, ratxa):** El document `users/{userId}/prefs/settings` emmagatzema `annualGoal` i `readingActivityDays`. Afegeix regles per la subcol·lecció `prefs`:
-
-   ```firestore
    match /users/{userId}/prefs/{docId} {
      allow read, write: if request.auth != null && request.auth.uid == userId;
    }
-   ```
 
-   **Firestore – gestió de comunitat (Fase 2):** Col·leccions `communities`, `communities/{id}/members` i `communityInvites`. Regles per a `communities` i subcol·lecció `members` (lectura/escriptura per usuaris autenticats). Per a `communityInvites`:
+   match /communities/{communityId} {
+     allow read: if request.auth != null;
+     allow create: if request.auth != null;
+     allow update, delete: if request.auth != null;
+     match /members/{userId} {
+       allow read: if request.auth != null;
+       allow create: if request.auth != null;
+       allow update, delete: if request.auth != null;
+     }
+   }
 
-   ```firestore
    match /communityInvites/{inviteId} {
      allow read: if request.auth != null;
      allow create: if request.auth != null;
@@ -96,9 +122,7 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
    }
    ```
 
-   Índex compost per invitacions pendents: col·lecció `communityInvites`, camps `email` (Ascending) i `status` (Ascending). Si Firebase ho demana, crea'l des de l'enllaç de l'error.
-
-   **Fase 3 – comunitats obertes:** Índex compost a `communities`: camps `visibility` (Ascending) i `status` (Ascending) per llistar comunitats obertes.
+   **Índexs:** (1) Col·lecció `encouragements`, camps `toUserId` (Ascending) i `createdAt` (Descending). (2) Col·lecció `communityInvites`, camps `email` (Ascending) i `status` (Ascending). (3) Fase 3 – comunitats obertes: col·lecció `communities`, camps `visibility` (Ascending) i `status` (Ascending). Si Firebase ho demana, crea’ls des de l’enllaç de l’error.
 
    **Invitacions per correu (enllaç d’acceptació):** Format de l’enllaç: `{baseUrl}/community/invite/{inviteId}?token={inviteToken}`. Les invitacions emmagatzemen `inviteToken` i `lastEmailSentAt` (idempotència 10 min).
 
@@ -125,7 +149,7 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
       | `FROM_EMAIL` | Remitent (ex: `Divina Bookstore <onboarding@resend.dev>`) |
       | `FIREBASE_SERVICE_ACCOUNT_JSON` | El contingut complet del JSON del compte de servei (pega tot l’objecte en una sola línia) |
 
-      Torna a desplegar el projecte perquè les variables tinguin efecte.
+      Torna a desplegar el projecte perquè les variables tinguin efecte. **Amb domini verificat a Resend** (veure més avall), posa `FROM_EMAIL` amb un correu del teu domini (p. ex. `Divina Bookstore <noreply@elteudomini.com>`) i torna a desplegar per poder enviar a qualsevol destinatari.
 
    **Si /api/send-invite retorna 500:** Obre Vercel → el teu projecte → *Logs* (o *Functions* → clica la funció → logs). Hi haurà d’aparèixer `send-invite error: ...` amb el missatge real. Comprova: (1) `FIREBASE_SERVICE_ACCOUNT_JSON` és el JSON complet en **una sola línia** (sense salts de línia; minifica’l si cal). (2) El compte de servei té accés a Firestore (a Google Cloud Console, IAM, el compte de servei ha de tenir rol tipus "Cloud Datastore User" o "Editor"). (3) `RESEND_API_KEY` és correcta i el domini/remitent està verificat a Resend si no uses `onboarding@resend.dev`.
 
