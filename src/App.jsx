@@ -79,7 +79,7 @@ const App = () => {
   const { books, addBook, updateBook, deleteBook } = useBooks();
   const stats = useStats();
   const { count: encouragementCount } = useEncouragementCount(user?.uid);
-  const { annualGoal, setAnnualGoal, streak, recordReadingActivity, activeCommunityId, setActiveCommunityId, userCommunityIds, addCommunityToUser, syncUserCommunityIds } = useUserPrefs(user?.uid);
+  const { annualGoal, setAnnualGoal, streak, recordReadingActivity, activeCommunityId, setActiveCommunityId, userCommunityIds, addCommunityToUser, syncUserCommunityIds } = useUserPrefs(user?.uid, user);
   const navigate = useNavigate();
   const [bookIdToDelete, setBookIdToDelete] = useState(null);
   const {

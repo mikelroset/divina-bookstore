@@ -8,7 +8,11 @@ import {
 import { ensureUserInDefaultCommunity } from "../services/communityManagementService";
 import { DEFAULT_COMMUNITY_ID } from "../utils/constants";
 
-export function useUserPrefs(userId) {
+/**
+ * @param {string | undefined} userId
+ * @param {{ email?: string, displayName?: string, photoURL?: string } | undefined} [profile] - Optional user profile (e.g. currentUser) to store email/displayName when ensuring default community.
+ */
+export function useUserPrefs(userId, profile) {
   const [annualGoal, setAnnualGoalState] = useState(0);
   const [readingActivityDays, setReadingActivityDays] = useState([]);
   const [activeCommunityId, setActiveCommunityIdState] = useState(null);
@@ -32,7 +36,10 @@ export function useUserPrefs(userId) {
       let communityId = prefs.activeCommunityId ?? null;
       let communityIds = prefs.userCommunityIds ?? [];
       if (communityIds.length === 0 || !communityId) {
-        await ensureUserInDefaultCommunity(userId);
+        const memberProfile = profile
+          ? { email: profile.email, displayName: profile.displayName, photoURL: profile.photoURL }
+          : {};
+        await ensureUserInDefaultCommunity(userId, memberProfile);
         communityIds = [DEFAULT_COMMUNITY_ID];
         communityId = communityId || DEFAULT_COMMUNITY_ID;
         await updateUserPrefs(userId, { activeCommunityId: communityId, userCommunityIds: communityIds });
@@ -44,7 +51,7 @@ export function useUserPrefs(userId) {
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, profile]);
 
   useEffect(() => {
     load();

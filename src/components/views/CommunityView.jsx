@@ -204,6 +204,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                             await joinOpenCommunity(c.id, currentUser.uid, {
                               displayName: currentUser.displayName ?? undefined,
                               photoURL: currentUser.photoURL ?? undefined,
+                              email: currentUser.email ?? undefined,
                             });
                             await addCommunityToUser(c.id);
                             onSelectCommunity?.(c.id);
@@ -254,7 +255,11 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                       description: createDescription.trim() || null,
                       visibility: createVisibility,
                     },
-                    { displayName: currentUser.displayName ?? undefined, photoURL: currentUser.photoURL ?? undefined },
+                    {
+                      displayName: currentUser.displayName ?? undefined,
+                      photoURL: currentUser.photoURL ?? undefined,
+                      email: currentUser.email ?? undefined,
+                    },
                   );
                   await addCommunityToUser(id);
                   onSelectCommunity?.(id);
@@ -454,7 +459,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
           <ul className="space-y-2">
             {members.map((m) => (
               <li key={m.userId} className="flex items-center justify-between gap-2 py-2 border-b border-slate-100 last:border-0">
-                <span className="font-medium text-slate-800">{m.displayName || m.userId}</span>
+                <span className="font-medium text-slate-800">{m.email || m.displayName || m.userId}</span>
                 <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
                   {m.role === "owner" ? "Propietari" : m.role === "admin" ? "Admin" : "Participant"}
                 </span>
