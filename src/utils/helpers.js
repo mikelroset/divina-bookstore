@@ -19,6 +19,7 @@ export const calculateProgress = (currentPage, totalPages) => {
  * @returns {number|null} 0–100 o null si invàlid
  */
 export const safeProgress = (currentPage, totalPages) => {
+  if (currentPage == null || totalPages == null) return null;
   const cur = Number(currentPage);
   const total = Number(totalPages);
   if (total <= 0 || cur < 0 || cur > total || Number.isNaN(cur) || Number.isNaN(total)) return null;
