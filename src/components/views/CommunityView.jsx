@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BookMarked, Users, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass } from "lucide-react";
+import { BookMarked, Users, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass, BarChart2 } from "lucide-react";
 import { ReadingBookCard } from "../common/ReadingBookCard";
 import { getDaysReading, safeProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
@@ -400,11 +400,14 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
 
       {/* Gestió de membres (owner/admin) — només si l’usuari té comunitats */}
       {communities.length > 0 && canManageMembers && activeCommunityId && (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-          <h3 className="text-lg font-serif text-slate-800 mb-4 flex items-center gap-2">
+        <div>
+          <div className="flex items-center gap-2 mb-4">
             <Shield className="w-5 h-5 text-primary-600" />
-            Membres
-          </h3>
+            <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
+              Membres
+            </h3>
+          </div>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
           {canDissolve && (
             <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200">
               <p className="text-sm text-red-800 mb-2">Dissoldre la comunitat és permanent. Tots els membres deixaran de tenir accés.</p>
@@ -510,6 +513,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               </li>
             ))}
           </ul>
+          </div>
         </div>
       )}
 
@@ -549,10 +553,12 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
       {/* La resta de lectors — 1 card per llibre */}
       {communities.length > 0 && (
       <div>
-        <h3 className="text-xl font-serif text-slate-800 mb-4 flex items-center gap-2">
-          <Users className="w-6 h-6 text-slate-700" />
-          La resta de lectors ara mateix
-        </h3>
+        <div className="flex items-center gap-2 mb-4">
+          <Users className="w-5 h-5 text-primary-600" />
+          <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
+            La resta de lectors ara mateix
+          </h3>
+        </div>
 
         {loading ? (
           <div className="text-center py-12">
@@ -642,10 +648,14 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
             ...communityReaders.flatMap((r) => (r.currentBooks ?? []).map((b) => b.genre)),
           ].filter(Boolean);
           return (
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-              <h3 className="text-lg font-serif text-slate-800 mb-4">
-                Estadístiques de la Comunitat
-              </h3>
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart2 className="w-5 h-5 text-primary-600" />
+                <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
+                  Estadístiques de la Comunitat
+                </h3>
+              </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
                   <p className="text-3xl font-serif text-slate-800">{activeReadersCount}</p>
@@ -663,6 +673,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   <p className="text-3xl font-serif text-slate-800">{new Set(allGenres).size}</p>
                   <p className="text-sm text-slate-600">Gèneres diversos</p>
                 </div>
+              </div>
               </div>
             </div>
           );

@@ -64,6 +64,15 @@ The community screen SHALL display each book in "Llegint" (reading) status as an
 - **Guardrails:** Invalid progress (negative or > 100%) SHALL display "—"; missing genre SHALL be omitted (not "Sense gènere"); encourage API errors SHALL show non-intrusive error message and allow retry.
 - **Performance:** Page SHALL load without perceptible degradation for up to ~50 users and ~10 books per user (up to 500 cards). Images MAY use lazy-loading.
 
+### Requirement: Community block title UI consistency
+
+On the community screen, all section block titles SHALL share the same visual format for consistency:
+
+- **Typography:** All block titles SHALL use `text-sm font-medium text-primary-800 uppercase tracking-wide`.
+- **Icons:** Each block SHALL display an icon at the start of its title. Icons SHALL use `w-5 h-5 text-primary-600`.
+- **Layout:** When the block content is inside a card, the title SHALL be rendered outside the card (as a separate row above it).
+- **Affected blocks:** Membres, Estàs llegint, La resta de lectors ara mateix, Estadístiques de la Comunitat.
+
 ### Requirement: Superadmin role and community management
 
 The app SHALL support a Superadmin role for users who can create and manage communities beyond normal membership.
