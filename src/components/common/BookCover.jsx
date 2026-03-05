@@ -26,6 +26,7 @@ export function BookCover({ src, alt = "Portada no disponible", className = "w-f
       src={src}
       alt={alt}
       className={className}
+      loading="lazy"
       onError={() => setError(true)}
     />
   );

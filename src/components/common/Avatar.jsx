@@ -33,6 +33,7 @@ export function Avatar({ src, alt = "Avatar no disponible", displayName, classNa
       src={src}
       alt={alt}
       className={className}
+      loading="lazy"
       onError={() => setError(true)}
     />
   );
