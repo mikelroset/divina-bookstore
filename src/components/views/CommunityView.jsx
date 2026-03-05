@@ -574,7 +574,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
       {communities.length > 0 && members.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <Trophy className="w-5 h-5 text-amber-500" />
+            <Trophy className="w-5 h-5 text-primary-600" />
             <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
               Rànquing
             </h3>
