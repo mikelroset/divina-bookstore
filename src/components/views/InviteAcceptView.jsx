@@ -100,8 +100,8 @@ export function InviteAcceptView({ currentUser, addCommunityToUser, onSelectComm
 
   if (error || !invite) {
     return (
-      <div className="max-w-md mx-auto px-4 py-12">
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+      <div className="w-full max-w-md mx-auto px-4 py-12 min-w-0 box-border">
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center min-w-0">
           <AlertCircle className="w-12 h-12 mx-auto text-red-500 mb-4" />
           <h2 className="text-xl font-serif text-slate-800 mb-2">Invitació no vàlida</h2>
           <p className="text-slate-600 mb-6">{error ?? "Aquesta invitació no existeix o ha caducat."}</p>
@@ -119,17 +119,17 @@ export function InviteAcceptView({ currentUser, addCommunityToUser, onSelectComm
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-12">
-      <div className="bg-white/90 backdrop-blur-sm border border-primary-500 rounded-2xl p-6 shadow-lg">
+    <div className="w-full max-w-md mx-auto px-4 py-12 min-w-0 box-border">
+      <div className="bg-white/90 backdrop-blur-sm border border-primary-500 rounded-2xl p-6 shadow-lg min-w-0">
         <Mail className="w-12 h-12 mx-auto text-primary-600 mb-4" />
         <h2 className="text-xl font-serif text-slate-800 mb-2">Invitació a la comunitat</h2>
-        <p className="text-slate-600 mb-4">
+        <p className="text-slate-600 mb-4 break-words">
           T’han convidat a unir-te a <strong>{invite.communityName ?? invite.communityId}</strong>.
         </p>
         <p className="text-sm text-slate-500 mb-6">
           L’enllaç és vàlid per al correu amb què has iniciat sessió.
         </p>
-        <div className="flex gap-3 justify-center">
+        <div className="flex flex-wrap gap-3 justify-center">
           <button
             type="button"
             onClick={handleReject}

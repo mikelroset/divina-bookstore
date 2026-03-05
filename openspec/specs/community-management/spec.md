@@ -41,3 +41,7 @@ When a user invites someone by email to a community, the system SHALL support a 
 - **Data model:** Invite documents SHALL include `inviteToken` and optionally `lastEmailSentAt` in addition to existing fields (communityId, email, invitedByUserId, status, expiresAt, etc.).
 
 Sending the actual email (when the invited person has no account) SHALL be implemented in a backend (e.g. Cloud Function) so that user existence is not revealed to the client; this is documented as a follow-up phase.
+
+### Requirement: Invite flow responsive on mobile
+
+The invite acceptance screen (route `/community/invite/:inviteId`) and the invite form section on the Community screen SHALL be responsive on mobile viewports. There SHALL be no horizontal scroll; all content SHALL fit within the viewport width. The app content wrapper MAY use `overflow-x-hidden` to prevent horizontal overflow from child content.

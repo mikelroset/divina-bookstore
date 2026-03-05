@@ -148,7 +148,7 @@ const App = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-stone-50 to-slate-100 pb-20">
       <Header user={user} />
 
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-4xl mx-auto px-6 py-8 overflow-x-hidden">
         <Routes>
           <Route path={ROUTES.HOME} element={<HomeView user={user} stats={stats} books={books} annualGoal={annualGoal} streak={streak} onUpdateCurrentPage={handleUpdateCurrentPageFromHome} />} />
           <Route
