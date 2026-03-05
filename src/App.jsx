@@ -20,6 +20,7 @@ import { useUserPrefs } from "./hooks/useUserPrefs";
 import { ROUTES } from "./utils/constants";
 import { showCelebration, isCompletionTransition } from "./utils/celebration";
 import { createBookCompletedNotification } from "./services/bookCompletedNotificationService";
+import { addPointsForPages, grantCompletedBookBonus } from "./services/gamificationService";
 
 /** Ruta /add i /add/:id: resol editingBook des del param i llibres, navega després de guardar/cancel·lar */
 function AddBookRoute({ recordReadingActivity, userCommunityIds = [], user }) {
@@ -55,12 +56,17 @@ function AddBookRoute({ recordReadingActivity, userCommunityIds = [], user }) {
       const newCurrentPage = bookData.currentPage != null ? parseInt(bookData.currentPage, 10) : null;
       const totalPages = (editingBook?.pages ?? bookData.pages) != null ? parseInt(editingBook?.pages ?? bookData.pages, 10) : null;
       const didComplete = totalPages != null && totalPages > 0 && newCurrentPage != null && newCurrentPage >= totalPages && prevCurrentPage < newCurrentPage;
+      const deltaPages = prevCurrentPage < newCurrentPage ? newCurrentPage - prevCurrentPage : 0;
       if (didComplete) dataToSave = { ...dataToSave, status: "completed" };
       const bookTitle = (editingBook?.title ?? bookData.title) ?? "Llibre";
       if (editingBook) {
         await updateBook(editingBook.id, dataToSave);
         if (bookData.currentPage != null && recordReadingActivity) recordReadingActivity();
         if (isCompletionTransition(prevCurrentPage, newCurrentPage, totalPages)) showCelebration();
+        if (user?.uid) {
+          if (deltaPages > 0 && totalPages != null && totalPages > 0) addPointsForPages(user.uid, deltaPages, totalPages).catch((e) => console.error("Error punts pàgines:", e));
+          if (didComplete) grantCompletedBookBonus(user.uid, editingBook.id).catch((e) => console.error("Error punts completat:", e));
+        }
         if (didComplete && user?.uid && userCommunityIds?.length > 0) {
           for (const cid of userCommunityIds) {
             createBookCompletedNotification(cid, editingBook.id, bookTitle, user.uid, user.displayName ?? "Algú").catch((e) => console.error("Error creant notificació:", e));
@@ -70,6 +76,10 @@ function AddBookRoute({ recordReadingActivity, userCommunityIds = [], user }) {
         const newBook = await addBook(dataToSave);
         if (bookData.currentPage != null && recordReadingActivity) recordReadingActivity();
         if (newCurrentPage != null && isCompletionTransition(0, newCurrentPage, totalPages)) showCelebration();
+        if (user?.uid) {
+          if (deltaPages > 0 && totalPages != null && totalPages > 0) addPointsForPages(user.uid, deltaPages, totalPages).catch((e) => console.error("Error punts pàgines:", e));
+          if (didComplete && newBook?.id) grantCompletedBookBonus(user.uid, newBook.id).catch((e) => console.error("Error punts completat:", e));
+        }
         if (didComplete && user?.uid && userCommunityIds?.length > 0 && newBook?.id) {
           for (const cid of userCommunityIds) {
             createBookCompletedNotification(cid, newBook.id, bookTitle, user.uid, user.displayName ?? "Algú").catch((e) => console.error("Error creant notificació:", e));
@@ -160,12 +170,17 @@ const App = () => {
       { at: now, page: newCurrentPage },
     ];
     const didComplete = totalPages != null && totalPages > 0 && newCurrentPage >= totalPages && prevCurrentPage < newCurrentPage;
+    const deltaPages = prevCurrentPage < newCurrentPage ? newCurrentPage - prevCurrentPage : 0;
     const updateData = { currentPage: newCurrentPage, pageLog: newLog };
     if (didComplete) updateData.status = "completed";
     await updateBook(bookId, updateData);
     if (recordReadingActivity) recordReadingActivity();
     if (isCompletionTransition(prevCurrentPage, newCurrentPage, totalPages)) {
       showCelebration();
+    }
+    if (user?.uid) {
+      if (deltaPages > 0 && totalPages != null && totalPages > 0) addPointsForPages(user.uid, deltaPages, totalPages).catch((e) => console.error("Error punts pàgines:", e));
+      if (didComplete) grantCompletedBookBonus(user.uid, bookId).catch((e) => console.error("Error punts completat:", e));
     }
     if (didComplete && user?.uid && userCommunityIds?.length > 0) {
       const bookTitle = book.title ?? "Llibre";

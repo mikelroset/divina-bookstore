@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BookMarked, Users, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass, BarChart2 } from "lucide-react";
+import { BookMarked, Users, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass, BarChart2, Trophy } from "lucide-react";
 import { ReadingBookCard } from "../common/ReadingBookCard";
 import { getDaysReading, safeProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
@@ -23,6 +23,7 @@ import {
   getOpenCommunities,
   joinOpenCommunity,
 } from "../../services/communityManagementService";
+import { getLeaderboard } from "../../services/gamificationService";
 import { DEFAULT_COMMUNITY_ID, ROUTES } from "../../utils/constants";
 
 /** Ordena per activitat: lastUpdatedAt desc, startDate desc, títol asc */
@@ -69,6 +70,9 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   const [openCommunities, setOpenCommunities] = useState([]);
   const [loadingOpen, setLoadingOpen] = useState(false);
   const [joiningId, setJoiningId] = useState(null);
+  const [leaderboardPeriod, setLeaderboardPeriod] = useState("week");
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
 
   const currentUserReadingBooks = userBooks.filter((b) => b.status === "reading");
   const canManageMembers = myRole === "owner" || myRole === "admin";
@@ -91,6 +95,22 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
     getMemberRole(activeCommunityId, currentUser.uid).then(setMyRole);
     getCommunityMembers(activeCommunityId).then(setMembers);
   }, [activeCommunityId, currentUser?.uid]);
+
+  useEffect(() => {
+    if (!members.length) {
+      setLeaderboard([]);
+      return;
+    }
+    const memberUserIds = members.map((m) => m.userId);
+    const displayNames = Object.fromEntries(
+      members.map((m) => [m.userId, m.displayName ?? m.email ?? "Lector"]),
+    );
+    setLeaderboardLoading(true);
+    getLeaderboard(memberUserIds, leaderboardPeriod, displayNames)
+      .then(setLeaderboard)
+      .catch(() => setLeaderboard([]))
+      .finally(() => setLeaderboardLoading(false));
+  }, [members, leaderboardPeriod]);
 
   useEffect(() => {
     if (!currentUser?.email) return;
@@ -547,6 +567,60 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Rànquing (leaderboard) */}
+      {communities.length > 0 && members.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Trophy className="w-5 h-5 text-amber-500" />
+            <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
+              Rànquing
+            </h3>
+          </div>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+            <div className="flex gap-2 mb-4">
+              {[
+                { value: "week", label: "Setmanal" },
+                { value: "month", label: "Mensual" },
+                { value: "all", label: "Tot" },
+              ].map((tab) => (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => setLeaderboardPeriod(tab.value)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    leaderboardPeriod === tab.value
+                      ? "bg-primary-600 text-white"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            {leaderboardLoading ? (
+              <p className="text-slate-600 text-sm">Carregant rànquing...</p>
+            ) : leaderboard.length === 0 ? (
+              <p className="text-slate-600 text-sm">Encara no hi ha puntuacions en aquest període.</p>
+            ) : (
+              <ul className="space-y-2">
+                {leaderboard.map((entry) => (
+                  <li
+                    key={entry.userId}
+                    className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-50 border border-slate-100"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="text-slate-500 font-mono text-sm w-6">#{entry.rank}</span>
+                      <span className="font-medium text-slate-800">{entry.displayName}</span>
+                    </span>
+                    <span className="text-amber-600 font-semibold">{entry.points} pt</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       )}
 

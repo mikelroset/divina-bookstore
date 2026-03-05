@@ -53,6 +53,7 @@ function todayKey() {
 /**
  * Add today to reading activity days (for streak). Call when user updates currentPage on any book.
  * Keeps only last STREAK_DAYS_CAP days.
+ * Also grants streak bonus (+5 points) every 5 days.
  */
 export async function addReadingActivityDay(userId) {
   if (!userId) return;
@@ -64,6 +65,11 @@ export async function addReadingActivityDay(userId) {
       days = [today, ...days].slice(0, STREAK_DAYS_CAP);
       const ref = doc(db, "users", userId, PREFS_COLLECTION, PREFS_DOC_ID);
       await setDoc(ref, { ...prefs, readingActivityDays: days }, { merge: true });
+    }
+    const streak = computeStreak(days);
+    if (streak >= 5 && streak % 5 === 0) {
+      const { grantStreakBonus } = await import("./gamificationService");
+      grantStreakBonus(userId, streak).catch((e) => console.error("Error streak bonus:", e));
     }
   } catch (error) {
     console.error("Error al registrar activitat de lectura:", error);
