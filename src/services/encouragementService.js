@@ -6,8 +6,13 @@ import {
   orderBy,
   getDocs,
   serverTimestamp,
+  doc,
+  getDoc,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
+
+const DISMISSED_ENCOURAGEMENTS_DOC = "dismissedEncouragements";
 
 /**
  * Servei d'encoratjaments (usuari → usuari, per llibre).
@@ -50,12 +55,13 @@ export const encouragementService = {
   },
 
   /**
-   * Obté els encoratjaments rebuts per un usuari (inbox). Només retorna els dels últims 3 dies.
+   * Obté els encoratjaments rebuts per un usuari (inbox). Només retorna els dels últims 3 dies i no tancats.
    * @param {string} userId - UID de l'usuari que rep
    * @returns {Promise<Array<{ id: string, fromUserName: string, bookTitle?: string, createdAt: unknown }>>}
    */
   getEncouragementsForUser: async (userId) => {
     try {
+      const dismissed = await getDismissedEncouragementIds(userId);
       const encouragementsRef = collection(db, "encouragements");
       const q = query(
         encouragementsRef,
@@ -69,8 +75,9 @@ export const encouragementService = {
         id: docSnap.id,
         ...docSnap.data(),
       }));
-      return all.filter((doc) => {
-        const createdAt = doc.createdAt;
+      return all.filter((d) => {
+        if (dismissed.has(d.id)) return false;
+        const createdAt = d.createdAt;
         const ms =
           createdAt?.toMillis?.() ??
           (createdAt?.seconds != null ? createdAt.seconds * 1000 : 0);
@@ -79,6 +86,28 @@ export const encouragementService = {
     } catch (error) {
       console.error("Error al obtenir encoratjaments:", error);
       throw error;
+    }
+  },
+
+  /**
+   * Marca un encoratjament com a tancat per l'usuari (ja no es mostrarà).
+   * @param {string} userId - UID de l'usuari que rep
+   * @param {string} encouragementId
+   */
+  dismissEncouragement: async (userId, encouragementId) => {
+    if (!userId || !encouragementId) return;
+    try {
+      const ref = doc(db, "users", userId, "prefs", DISMISSED_ENCOURAGEMENTS_DOC);
+      const snap = await getDoc(ref);
+      const data = snap.exists() ? snap.data() : {};
+      const ids = Array.isArray(data?.encouragementIds) ? [...data.encouragementIds] : [];
+      if (!ids.includes(encouragementId)) {
+        ids.push(encouragementId);
+        await setDoc(ref, { encouragementIds: ids }, { merge: true });
+      }
+    } catch (err) {
+      console.error("Error al tancar encoratjament:", err);
+      throw err;
     }
   },
 
@@ -118,3 +147,15 @@ export const encouragementService = {
     }
   },
 };
+
+async function getDismissedEncouragementIds(userId) {
+  try {
+    const ref = doc(db, "users", userId, "prefs", DISMISSED_ENCOURAGEMENTS_DOC);
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : {};
+    const arr = data?.encouragementIds ?? [];
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch {
+    return new Set();
+  }
+}
