@@ -11,7 +11,7 @@
    - Afegir camp **`currentBooks`** (array d’objectes). Cada ítem: `{ id, title, author?, genre?, coverUrl?, currentPage?, pages?, startDate?, lastUpdatedAt? }`.
    - Mantenir **`currentBook`** (opcional) per compatibilitat enrere: si un client antic escriu només `currentBook`, la lògica de lectura normalitzarà a `currentBooks = currentBook ? [currentBook] : []`.
 
-2. **Sincronització (BooksContext):** En lloc de `books.find(b => b.status === "reading")`, enviar **tots** els llibres amb `status === "reading"`: `books.filter(b => b.status === "reading")`. Cridar `updateCurrentReading(user.uid, user, readingBooksArray)`.
+2. **Sincronització (BooksContext):** En lloc de `books.find(b => b.status === "reading")`, enviar **tots** els llibres amb `status === "reading"`: `books.filter(b => b.status === "reading")`. Cridar `updateCurrentReading(user.uid, user, readingBooksArray)`. **No sincronitzar mentre `loading === true`** per no sobreescriure el document de la comunitat amb `currentBooks: []` abans d’haver carregat els llibres des de Firestore.
 
 3. **communityService:**
    - **updateCurrentReading(userId, userData, currentBooksArray):** Escriure `currentBooks: array` (mapejat als camps necessaris, amb `lastUpdatedAt` per ordenació). Opcionalment escriure també `currentBook: currentBooksArray[0]` per compatibilitat.
