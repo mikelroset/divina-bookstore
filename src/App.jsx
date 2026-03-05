@@ -18,6 +18,7 @@ import { useLibraryFilters } from "./hooks/useLibraryFilters";
 import { useEncouragementCount } from "./hooks/useEncouragementCount";
 import { useUserPrefs } from "./hooks/useUserPrefs";
 import { ROUTES } from "./utils/constants";
+import { showCelebration, isCompletionTransition } from "./utils/celebration";
 
 /** Ruta /add i /add/:id: resol editingBook des del param i llibres, navega després de guardar/cancel·lar */
 function AddBookRoute({ recordReadingActivity }) {
@@ -49,12 +50,17 @@ function AddBookRoute({ recordReadingActivity }) {
         ];
         dataToSave = { ...dataToSave, pageLog: newLog };
       }
+      const prevCurrentPage = editingBook?.currentPage ?? 0;
+      const newCurrentPage = bookData.currentPage != null ? parseInt(bookData.currentPage, 10) : null;
+      const totalPages = (editingBook?.pages ?? bookData.pages) != null ? parseInt(editingBook?.pages ?? bookData.pages, 10) : null;
       if (editingBook) {
         await updateBook(editingBook.id, dataToSave);
         if (bookData.currentPage != null && recordReadingActivity) recordReadingActivity();
+        if (isCompletionTransition(prevCurrentPage, newCurrentPage, totalPages)) showCelebration();
       } else {
         await addBook(dataToSave);
         if (bookData.currentPage != null && recordReadingActivity) recordReadingActivity();
+        if (newCurrentPage != null && isCompletionTransition(0, newCurrentPage, totalPages)) showCelebration();
       }
       navigate(ROUTES.LIBRARY);
     } catch (error) {
@@ -130,6 +136,8 @@ const App = () => {
   const handleUpdateCurrentPageFromHome = async (bookId, newCurrentPage) => {
     const book = books.find((b) => b.id === bookId);
     if (!book) return;
+    const prevCurrentPage = book.currentPage ?? 0;
+    const totalPages = book.pages;
     const prevLog = book.pageLog || [];
     const now = Date.now();
     const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
@@ -139,6 +147,9 @@ const App = () => {
     ];
     await updateBook(bookId, { currentPage: newCurrentPage, pageLog: newLog });
     if (recordReadingActivity) recordReadingActivity();
+    if (isCompletionTransition(prevCurrentPage, newCurrentPage, totalPages)) {
+      showCelebration();
+    }
   };
 
   if (!user) {
