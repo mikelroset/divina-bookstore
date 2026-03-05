@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { TrendingUp, Award, BookOpen, Heart, Flame, Calendar, Tag, Target, BarChart2, BookMarked } from "lucide-react";
+import { BookCover } from "../common/BookCover";
 import { StatCard } from "../common/StatCard";
 import { ProgressBar } from "../common/ProgressBar";
 import { encouragementService } from "../../services/encouragementService";
@@ -201,9 +202,9 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
             Llegint ara
           </h3>
           <div className="flex gap-4">
-            <img
+            <BookCover
               src={readingBook.coverUrl}
-              alt={readingBook.title}
+              alt={readingBook.title ? `Portada de ${readingBook.title}` : "Portada no disponible"}
               className="w-24 h-36 object-cover rounded-lg shadow-md"
             />
             <div className="flex-1">

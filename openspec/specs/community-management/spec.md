@@ -48,3 +48,7 @@ The community screen SHALL show, for each member, **all** books that the member 
 ### Requirement: Invite flow responsive on mobile
 
 The invite acceptance screen (route `/community/invite/:inviteId`) and the invite form section on the Community screen SHALL be responsive on mobile viewports. There SHALL be no horizontal scroll; all content SHALL fit within the viewport width. The app content wrapper MAY use `overflow-x-hidden` to prevent horizontal overflow from child content.
+
+### Requirement: Avatar placeholder
+
+When a user has no avatar (photoURL) or the avatar image fails to load, the UI SHALL display a placeholder that maintains the same size as a real avatar. The placeholder MAY show user initials (from displayName) when available, or a generic user icon otherwise. Images (real or placeholder) SHALL have appropriate alt text: "Avatar de {nom}" or "Avatar no disponible". Avatar load errors SHALL be handled with fallback to placeholder. This applies to the community readers list, header, profile, and any other place where user avatars are shown.

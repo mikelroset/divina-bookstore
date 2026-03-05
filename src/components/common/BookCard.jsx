@@ -1,15 +1,15 @@
 import React from "react";
-import { Star, Edit2, Trash2 } from "lucide-react";
+import { Star } from "lucide-react";
+import { BookCover } from "./BookCover";
 import { STATUS_LABELS, STATUS_COLORS } from "../../utils/constants";
 
 export const BookCard = ({ book, onEdit, onDelete }) => {
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-primary-500 shadow-lg hover:shadow-xl transition-all duration-300 group">
       <div className="relative mb-3">
-        <img
+        <BookCover
           src={book.coverUrl}
-          alt={book.title}
-          className="w-full h-48 object-cover rounded-xl shadow-md"
+          alt={book.title ? `Portada de ${book.title}` : "Portada no disponible"}
         />
         <span
           className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-medium border ${STATUS_COLORS[book.status]}`}
