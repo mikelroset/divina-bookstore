@@ -41,3 +41,7 @@ When a user invites someone by email to a community, the system SHALL support a 
 - **Data model:** Invite documents SHALL include `inviteToken` and optionally `lastEmailSentAt` in addition to existing fields (communityId, email, invitedByUserId, status, expiresAt, etc.).
 
 Sending the actual email (when the invited person has no account) SHALL be implemented in a backend (e.g. Cloud Function) so that user existence is not revealed to the client; this is documented as a follow-up phase.
+
+### Requirement: Multiple books in progress per user on community screen
+
+The community screen SHALL show, for each member, **all** books that the member has in "Llegint" (reading) status, not only one. The document `community/{userId}` SHALL support a `currentBooks` array (list of books in progress). Each item SHALL include at least: id, title, author (optional), coverUrl (optional), currentPage, pages, startDate, and lastUpdatedAt for ordering. The client SHALL sync all books with status "reading" to this array. For each user, the UI SHALL display a list of all books in progress; progress that is inconsistent (negative or > 100%) SHALL be displayed as "—" or 0%. Books SHALL be ordered by most recent activity (lastUpdatedAt or startDate descending), or alphabetically by title if no date is available. If a user has no books in progress, their module SHALL still appear with the message "Ara mateix no està llegint cap llibre."

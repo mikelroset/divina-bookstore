@@ -12,6 +12,19 @@ export const calculateProgress = (currentPage, totalPages) => {
   return Math.round((currentPage / totalPages) * 100);
 };
 
+/**
+ * Percentatge de progrés segur per a la UI; retorna null si és incoherent (negatiu, > 100%, pages 0).
+ * @param {number|undefined|null} currentPage
+ * @param {number|undefined|null} totalPages
+ * @returns {number|null} 0–100 o null si invàlid
+ */
+export const safeProgress = (currentPage, totalPages) => {
+  const cur = Number(currentPage);
+  const total = Number(totalPages);
+  if (total <= 0 || cur < 0 || cur > total || Number.isNaN(cur) || Number.isNaN(total)) return null;
+  return Math.min(100, Math.round((cur / total) * 100));
+};
+
 // Funcions addicionals
 export const formatNumber = (num) => {
   return new Intl.NumberFormat("ca-ES").format(num);

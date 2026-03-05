@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BookMarked, Users, Clock, Heart, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass } from "lucide-react";
-import { getDaysReading, calculateProgress } from "../../utils/helpers";
+import { getDaysReading, calculateProgress, safeProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
 import { encouragementService } from "../../services/encouragementService";
 import { authService } from "../../services/authService";
@@ -23,8 +23,8 @@ import {
 } from "../../services/communityManagementService";
 import { DEFAULT_COMMUNITY_ID } from "../../utils/constants";
 
-function readerBookKey(reader) {
-  const bookId = reader.currentBook?.id ?? "";
+function readerBookKey(reader, book) {
+  const bookId = book?.id ?? reader.currentBook?.id ?? "";
   return `${reader.uid}-${bookId}`;
 }
 
@@ -55,7 +55,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   const [loadingOpen, setLoadingOpen] = useState(false);
   const [joiningId, setJoiningId] = useState(null);
 
-  const currentUserReading = userBooks.find((b) => b.status === "reading");
+  const currentUserReadingBooks = userBooks.filter((b) => b.status === "reading");
   const canManageMembers = myRole === "owner" || myRole === "admin";
 
   useEffect(() => {
@@ -115,15 +115,16 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
     const check = async () => {
       const inCooldown = new Set();
       await Promise.all(
-        communityReaders.map(async (reader) => {
-          if (!reader.currentBook) return;
-          const canSend = await encouragementService.canSendEncouragement(
-            currentUser.uid,
-            reader.uid,
-            reader.currentBook.id,
-          );
-          if (!canSend) inCooldown.add(readerBookKey(reader));
-        }),
+        communityReaders.flatMap((reader) =>
+          (reader.currentBooks ?? []).map(async (book) => {
+            const canSend = await encouragementService.canSendEncouragement(
+              currentUser.uid,
+              reader.uid,
+              book.id,
+            );
+            if (!canSend) inCooldown.add(readerBookKey(reader, book));
+          }),
+        ),
       );
       setCooldownKeys(inCooldown);
     };
@@ -497,8 +498,8 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
         </div>
       )}
 
-      {/* Llibre actual de l'usuari — només si té comunitat activa */}
-      {communities.length > 0 && currentUserReading && (
+      {/* Llibres que l'usuari està llegint — només si té comunitat activa */}
+      {communities.length > 0 && (
         <div className="bg-gradient-to-br from-primary-50 to-primary-100/50 backdrop-blur-sm rounded-2xl p-6 border-2 border-primary-500 shadow-lg">
           <div className="flex items-center gap-2 mb-4">
             <BookMarked className="w-5 h-5 text-primary-600" />
@@ -506,51 +507,59 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               Estàs llegint
             </h3>
           </div>
-          <div className="flex gap-4">
-            <img
-              src={currentUserReading.coverUrl}
-              alt={currentUserReading.title}
-              className="w-28 h-40 object-cover rounded-lg shadow-md"
-            />
-            <div className="flex-1">
-              <h4 className="font-serif text-2xl text-slate-800 mb-1">
-                {currentUserReading.title}
-              </h4>
-              <p className="text-slate-600 mb-1">{currentUserReading.author}</p>
-              <span className="inline-block px-3 py-1 bg-white/80 rounded-full text-xs font-medium text-slate-700 mb-3">
-                {currentUserReading.genre}
-              </span>
-              {currentUserReading.currentPage && currentUserReading.pages && (
-                <div className="mt-3">
-                  <div className="flex justify-between text-sm text-slate-700 mb-2">
-                    <span>{currentUserReading.currentPage} pàgines</span>
-                    <span>
-                      {calculateProgress(
-                        currentUserReading.currentPage,
-                        currentUserReading.pages,
+          {currentUserReadingBooks.length === 0 ? (
+            <p className="text-slate-600">Ara mateix no estàs llegint cap llibre.</p>
+          ) : (
+            <ul className="space-y-4">
+              {currentUserReadingBooks.map((book) => {
+                const prog = safeProgress(book.currentPage, book.pages);
+                return (
+                  <li key={book.id} className="flex gap-4">
+                    {book.coverUrl && (
+                      <img
+                        src={book.coverUrl}
+                        alt={book.title}
+                        className="w-20 h-28 object-cover rounded-lg shadow-md flex-shrink-0"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-serif text-lg text-slate-800 mb-1">{book.title}</h4>
+                      {book.author && <p className="text-slate-600 text-sm mb-1">{book.author}</p>}
+                      {book.genre && (
+                        <span className="inline-block px-2 py-0.5 bg-white/80 rounded-full text-xs text-slate-700 mb-2">
+                          {book.genre}
+                        </span>
                       )}
-                      %
-                    </span>
-                  </div>
-                  <div className="bg-white/60 rounded-full h-3 overflow-hidden">
-                    <div
-                      className="bg-gradient-to-r from-primary-500 to-primary-600 h-full rounded-full transition-all"
-                      style={{
-                        width: `${calculateProgress(currentUserReading.currentPage, currentUserReading.pages)}%`,
-                      }}
-                    />
-                  </div>
-                  {currentUserReading.startDate && (
-                    <p className="text-xs text-slate-600 mt-2 flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      Fa {getDaysReading(currentUserReading.startDate)} dies
-                      llegint
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+                      <div className="mt-2">
+                        {prog != null ? (
+                          <>
+                            <div className="flex justify-between text-sm text-slate-700 mb-1">
+                              <span>{book.currentPage ?? 0} pàgines</span>
+                              <span>{prog}%</span>
+                            </div>
+                            <div className="bg-white/60 rounded-full h-2 overflow-hidden">
+                              <div
+                                className="bg-gradient-to-r from-primary-500 to-primary-600 h-full rounded-full"
+                                style={{ width: `${prog}%` }}
+                              />
+                            </div>
+                            {book.startDate && (
+                              <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                Fa {getDaysReading(book.startDate)} dies llegint
+                              </p>
+                            )}
+                          </>
+                        ) : (
+                          <p className="text-sm text-slate-500">—</p>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       )}
 
@@ -592,106 +601,112 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   />
                   <div>
                     <h4 className="font-medium text-slate-800">
-                      {reader.displayName}
+                      {reader.displayName ?? reader.uid}
                     </h4>
                     <p className="text-xs text-slate-500">està llegint</p>
                   </div>
                 </div>
 
-                {reader.currentBook && (
-                  <div className="flex gap-3">
-                    <img
-                      src={reader.currentBook.coverUrl}
-                      alt={reader.currentBook.title}
-                      className="w-20 h-28 object-cover rounded-lg shadow-md"
-                    />
-                    <div className="flex-1">
-                      <h5 className="font-serif text-lg text-slate-800 mb-1 line-clamp-2">
-                        {reader.currentBook.title}
-                      </h5>
-                      <p className="text-sm text-slate-600 mb-2">
-                        {reader.currentBook.author}
-                      </p>
-                      <span className="inline-block px-2 py-1 bg-slate-100 rounded-full text-xs text-slate-700 mb-2">
-                        {reader.currentBook.genre}
-                      </span>
-                      <div className="mt-2">
-                        <div className="bg-slate-100 rounded-full h-2 overflow-hidden mb-1">
-                          <div
-                            className="bg-slate-600 h-full rounded-full"
-                            style={{
-                              width: `${calculateProgress(reader.currentBook.currentPage, reader.currentBook.pages)}%`,
-                            }}
-                          />
-                        </div>
-                        <div className="flex justify-between text-xs text-slate-500">
-                          <span>
-                            {reader.currentBook.currentPage} /{" "}
-                            {reader.currentBook.pages}
-                          </span>
-                          <span>
-                            {calculateProgress(
-                              reader.currentBook.currentPage,
-                              reader.currentBook.pages,
+                {reader.currentBooks.length === 0 ? (
+                  <p className="text-slate-500 text-sm">Ara mateix no està llegint cap llibre.</p>
+                ) : (
+                  <ul className="space-y-4">
+                    {reader.currentBooks.map((book) => {
+                      const prog = safeProgress(book.currentPage, book.pages);
+                      const key = readerBookKey(reader, book);
+                      return (
+                        <li key={book.id} className="flex gap-3">
+                          {book.coverUrl && (
+                            <img
+                              src={book.coverUrl}
+                              alt={book.title}
+                              className="w-20 h-28 object-cover rounded-lg shadow-md flex-shrink-0"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h5 className="font-serif text-lg text-slate-800 mb-1 line-clamp-2">
+                              {book.title ?? "Sense títol"}
+                            </h5>
+                            {book.author && (
+                              <p className="text-sm text-slate-600 mb-2">{book.author}</p>
                             )}
-                            %
-                          </span>
-                        </div>
-                        {reader.currentBook.startDate && (
-                          <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {getDaysReading(reader.currentBook.startDate)} dies
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                            {book.genre && (
+                              <span className="inline-block px-2 py-1 bg-slate-100 rounded-full text-xs text-slate-700 mb-2">
+                                {book.genre}
+                              </span>
+                            )}
+                            <div className="mt-2">
+                              {prog != null ? (
+                                <>
+                                  <div className="bg-slate-100 rounded-full h-2 overflow-hidden mb-1">
+                                    <div
+                                      className="bg-slate-600 h-full rounded-full"
+                                      style={{ width: `${prog}%` }}
+                                    />
+                                  </div>
+                                  <div className="flex justify-between text-xs text-slate-500">
+                                    <span>
+                                      {book.currentPage ?? 0} / {book.pages ?? "—"}
+                                    </span>
+                                    <span>{prog}%</span>
+                                  </div>
+                                  {book.startDate && (
+                                    <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                      <Clock className="w-3 h-3" />
+                                      {getDaysReading(book.startDate)} dies
+                                    </p>
+                                  )}
+                                </>
+                              ) : (
+                                <p className="text-xs text-slate-500">—</p>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                setSendError(null);
+                                setSendingToUid(reader.uid);
+                                try {
+                                  await encouragementService.sendEncouragement(
+                                    currentUser.uid,
+                                    currentUser.displayName ?? "Algú",
+                                    reader.uid,
+                                    book.id,
+                                    book.title ?? "Llibre",
+                                  );
+                                  setSentKeys((prev) => new Set([...prev, key]));
+                                  setCooldownKeys((prev) => new Set([...prev, key]));
+                                } catch (err) {
+                                  setSendError(reader.uid);
+                                  console.error(err);
+                                } finally {
+                                  setSendingToUid(null);
+                                }
+                              }}
+                              disabled={
+                                sendingToUid !== null ||
+                                sentKeys.has(key) ||
+                                cooldownKeys.has(key)
+                              }
+                              className="mt-2 w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-primary-100 hover:bg-primary-200 text-primary-800 font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <Heart className="w-4 h-4" />
+                              {sentKeys.has(key)
+                                ? "Enviat ✓"
+                                : cooldownKeys.has(key)
+                                  ? "Enviat"
+                                  : sendingToUid === reader.uid
+                                    ? "Enviant..."
+                                    : sendError === reader.uid
+                                      ? "Error. Torna-ho a intentar"
+                                      : "Encoratja"}
+                            </button>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 )}
-                <div className="mt-4 pt-3 border-t border-slate-200">
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      if (!reader.currentBook) return;
-                      setSendError(null);
-                      setSendingToUid(reader.uid);
-                      try {
-                        await encouragementService.sendEncouragement(
-                          currentUser.uid,
-                          currentUser.displayName ?? "Algú",
-                          reader.uid,
-                          reader.currentBook.id,
-                          reader.currentBook.title,
-                        );
-                        const key = readerBookKey(reader);
-                        setSentKeys((prev) => new Set([...prev, key]));
-                        setCooldownKeys((prev) => new Set([...prev, key]));
-                      } catch (err) {
-                        setSendError(reader.uid);
-                        console.error(err);
-                      } finally {
-                        setSendingToUid(null);
-                      }
-                    }}
-                    disabled={
-                      sendingToUid !== null ||
-                      sentKeys.has(readerBookKey(reader)) ||
-                      !reader.currentBook ||
-                      cooldownKeys.has(readerBookKey(reader))
-                    }
-                    className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-primary-100 hover:bg-primary-200 text-primary-800 font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Heart className="w-4 h-4" />
-                    {sentKeys.has(readerBookKey(reader))
-                      ? "Enviat ✓"
-                      : cooldownKeys.has(readerBookKey(reader))
-                        ? "Enviat"
-                        : sendingToUid === reader.uid
-                          ? "Enviant..."
-                          : sendError === reader.uid
-                            ? "Error. Torna-ho a intentar"
-                            : "Encoratja"}
-                  </button>
-                </div>
               </div>
             ))}
           </div>
@@ -701,65 +716,53 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
 
       {/* Estadístiques - inclou usuari actual + la resta de lectors */}
       {communities.length > 0 && !loading &&
-        (communityReaders.length > 0 || currentUserReading) && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-            <h3 className="text-lg font-serif text-slate-800 mb-4">
-              Estadístiques de la Comunitat
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <p className="text-3xl font-serif text-slate-800">
-                  {communityReaders.length +
-                    (currentUserReading ? 1 : 0)}
-                </p>
-                <p className="text-sm text-slate-600">Lectors actius</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-serif text-slate-800">
-                  {communityReaders.length +
-                    (currentUserReading ? 1 : 0)}
-                </p>
-                <p className="text-sm text-slate-600">Llibres en curs</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-serif text-slate-800">
-                  {Math.round(
-                    (communityReaders.reduce(
-                      (sum, r) =>
-                        sum +
-                        calculateProgress(
-                          r.currentBook?.currentPage,
-                          r.currentBook?.pages,
-                        ),
-                      0,
-                    ) +
-                      calculateProgress(
-                        currentUserReading?.currentPage,
-                        currentUserReading?.pages,
-                      )) /
-                      (communityReaders.length +
-                        (currentUserReading ? 1 : 0)),
-                  )}
-                  %
-                </p>
-                <p className="text-sm text-slate-600">Progrés mitjà</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-serif text-slate-800">
-                  {
-                    new Set(
-                      [
-                        ...communityReaders.map((r) => r.currentBook?.genre),
-                        currentUserReading?.genre,
-                      ].filter(Boolean),
-                    ).size
-                  }
-                </p>
-                <p className="text-sm text-slate-600">Gèneres diversos</p>
+        (communityReaders.length > 0 || currentUserReadingBooks.length > 0) && (() => {
+          const totalBooksInProgress =
+            currentUserReadingBooks.length +
+            communityReaders.reduce((sum, r) => sum + (r.currentBooks?.length ?? 0), 0);
+          const activeReadersCount =
+            (currentUserReadingBooks.length > 0 ? 1 : 0) +
+            communityReaders.filter((r) => (r.currentBooks?.length ?? 0) > 0).length;
+          const allBooksForProgress = [
+            ...currentUserReadingBooks.map((b) => ({ currentPage: b.currentPage, pages: b.pages })),
+            ...communityReaders.flatMap((r) => (r.currentBooks ?? []).map((b) => ({ currentPage: b.currentPage, pages: b.pages }))),
+          ];
+          const progressValues = allBooksForProgress
+            .map((b) => safeProgress(b.currentPage, b.pages))
+            .filter((p) => p != null);
+          const avgProgress = progressValues.length > 0
+            ? Math.round(progressValues.reduce((a, b) => a + b, 0) / progressValues.length)
+            : 0;
+          const allGenres = [
+            ...currentUserReadingBooks.map((b) => b.genre),
+            ...communityReaders.flatMap((r) => (r.currentBooks ?? []).map((b) => b.genre)),
+          ].filter(Boolean);
+          return (
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+              <h3 className="text-lg font-serif text-slate-800 mb-4">
+                Estadístiques de la Comunitat
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center">
+                  <p className="text-3xl font-serif text-slate-800">{activeReadersCount}</p>
+                  <p className="text-sm text-slate-600">Lectors actius</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-3xl font-serif text-slate-800">{totalBooksInProgress}</p>
+                  <p className="text-sm text-slate-600">Llibres en curs</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-3xl font-serif text-slate-800">{avgProgress}%</p>
+                  <p className="text-sm text-slate-600">Progrés mitjà</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-3xl font-serif text-slate-800">{new Set(allGenres).size}</p>
+                  <p className="text-sm text-slate-600">Gèneres diversos</p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
     </div>
   );
 };
