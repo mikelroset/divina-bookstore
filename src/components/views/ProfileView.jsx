@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Avatar } from "../common/Avatar";
+import { useSuperadmin } from "../../hooks/useSuperadmin";
+import { ROUTES } from "../../utils/constants";
 
 export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal }) => {
+  const navigate = useNavigate();
+  const { isSuperadmin, loading } = useSuperadmin(user?.uid);
   const completed = stats?.completedBooks ?? 0;
   const goal = Math.max(0, parseInt(annualGoal, 10) || 0);
   const progressPct = goal > 0 ? Math.min(100, Math.round((completed / goal) * 100)) : 0;
@@ -90,6 +95,18 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                 style={{ width: `${progressPct}%` }}
               />
             </div>
+          </div>
+        )}
+
+        {!loading && isSuperadmin && (
+          <div className="mb-6">
+            <button
+              type="button"
+              onClick={() => navigate(ROUTES.ADMIN_COMMUNITIES)}
+              className="w-full bg-primary-100 hover:bg-primary-200 text-primary-800 py-3 rounded-xl font-medium border border-primary-500 transition-all"
+            >
+              Gestió de comunitats
+            </button>
           </div>
         )}
 

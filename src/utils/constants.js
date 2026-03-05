@@ -15,6 +15,7 @@ export const ROUTES = {
   COMMUNITY_INVITE: "/community/invite",
   ADD: "/add",
   PROFILE: "/profile",
+  ADMIN_COMMUNITIES: "/profile/admin-communities",
 };
 
 export const BOOK_GENRES = [
