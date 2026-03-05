@@ -64,10 +64,10 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
 
         {!gamificationLoading && (
           <div className="mb-6 space-y-4">
-            <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+            <div className="bg-primary-50 rounded-xl p-4 border border-primary-200">
               <div className="flex justify-between items-center mb-2">
                 <p className="text-sm text-slate-600">Punts totals</p>
-                <p className="text-2xl font-serif text-amber-800">{totalPoints}</p>
+                <p className="text-2xl font-serif text-primary-800">{totalPoints}</p>
               </div>
               <p className="text-sm text-slate-600 mb-2">Nivell {level}</p>
               {toNextLevel > 0 && (
@@ -77,7 +77,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                   </p>
                   <div className="bg-slate-200 rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-amber-500 h-full rounded-full transition-all"
+                      className="bg-primary-500 h-full rounded-full transition-all"
                       style={{ width: `${Math.min(100, Math.max(0, 100 - toNextLevel))}%` }}
                     />
                   </div>

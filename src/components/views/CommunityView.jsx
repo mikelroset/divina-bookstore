@@ -615,7 +615,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                       <span className="text-slate-500 font-mono text-sm w-6">#{entry.rank}</span>
                       <span className="font-medium text-slate-800">{entry.displayName}</span>
                     </span>
-                    <span className="text-amber-600 font-semibold">{entry.points} pt</span>
+                    <span className="text-primary-600 font-semibold">{entry.points} pt</span>
                   </li>
                 ))}
               </ul>
