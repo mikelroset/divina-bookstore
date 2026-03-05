@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   getDaysReading,
   calculateProgress,
+  safeProgress,
   formatNumber,
   truncateText,
   generateId,
@@ -14,6 +15,38 @@ describe("helpers", () => {
     it("retorna 0 si startDate és null o undefined", () => {
       expect(getDaysReading(null)).toBe(0);
       expect(getDaysReading(undefined)).toBe(0);
+    });
+  });
+
+  describe("safeProgress", () => {
+    it("retorna percentatge vàlid per a dades coherents", () => {
+      expect(safeProgress(50, 100)).toBe(50);
+      expect(safeProgress(0, 100)).toBe(0);
+      expect(safeProgress(100, 100)).toBe(100);
+      expect(safeProgress(1, 3)).toBe(33);
+    });
+    it("retorna null si totalPages és 0 o negatiu", () => {
+      expect(safeProgress(50, 0)).toBe(null);
+      expect(safeProgress(0, -1)).toBe(null);
+    });
+    it("retorna null si currentPage és negatiu", () => {
+      expect(safeProgress(-1, 100)).toBe(null);
+    });
+    it("retorna null si currentPage > totalPages", () => {
+      expect(safeProgress(101, 100)).toBe(null);
+      expect(safeProgress(150, 100)).toBe(null);
+    });
+    it("retorna null per NaN", () => {
+      expect(safeProgress(NaN, 100)).toBe(null);
+      expect(safeProgress(50, NaN)).toBe(null);
+    });
+    it("retorna null per null/undefined (tractats com NaN)", () => {
+      expect(safeProgress(null, 100)).toBe(null);
+      expect(safeProgress(50, null)).toBe(null);
+    });
+    it("limita a 100% si el càlcul supera 100", () => {
+      expect(safeProgress(99, 100)).toBe(99);
+      expect(safeProgress(100, 100)).toBe(100);
     });
   });
 
