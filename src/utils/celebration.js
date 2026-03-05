@@ -74,14 +74,15 @@ export function showCelebration() {
 
 /**
  * Comprova si l'actualització de progrés correspon a una transició a "llibre acabat".
- * @param {number} prevCurrentPage - Valor anterior de currentPage
- * @param {number} newCurrentPage - Nou valor
- * @param {number} totalPages - Total de pàgines (ha de ser > 0)
+ * @param {number|string} prevCurrentPage - Valor anterior de currentPage
+ * @param {number|string} newCurrentPage - Nou valor
+ * @param {number|string} totalPages - Total de pàgines (ha de ser > 0)
  * @returns {boolean}
  */
 export function isCompletionTransition(prevCurrentPage, newCurrentPage, totalPages) {
-  if (totalPages == null || typeof totalPages !== "number" || Number.isNaN(totalPages) || totalPages <= 0) return false;
-  const prev = prevCurrentPage ?? 0;
-  const next = newCurrentPage ?? 0;
-  return prev < totalPages && next === totalPages;
+  const total = Number(totalPages);
+  if (totalPages == null || Number.isNaN(total) || total <= 0) return false;
+  const prev = Number(prevCurrentPage) || 0;
+  const next = Number(newCurrentPage) || 0;
+  return prev < total && next === total;
 }
