@@ -30,8 +30,8 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
 
       {encouragements.length > 0 && (
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-          <h3 className="text-lg font-serif text-slate-800 mb-4 flex items-center gap-2">
-            <Heart className="w-5 h-5 text-primary-600" />
+          <h3 className="text-sm font-medium text-slate-600 mb-4 flex items-center gap-3">
+            <Heart className="w-6 h-6 text-primary-600" />
             Encoratjaments
           </h3>
           <ul className="space-y-2">
