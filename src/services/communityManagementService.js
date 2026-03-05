@@ -9,6 +9,8 @@ import {
   query,
   where,
   limit,
+  orderBy,
+  startAfter,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
@@ -214,6 +216,73 @@ export async function setMemberStatus(communityId, targetUserId, status) {
  */
 export async function updateMemberRole(communityId, userId, role) {
   await setCommunityMember(communityId, userId, role);
+}
+
+/**
+ * List all communities (for Superadmin). Paginated.
+ * @param {{ pageSize?: number, startAfterDoc?: import('firebase/firestore').DocumentSnapshot }} [opts]
+ * @returns {Promise<{ communities: Array<{ id: string, name: string, description?: string, visibility: string, status: string, ownerUserId: string, memberCount: number }>, lastDoc: import('firebase/firestore').DocumentSnapshot|null }>}
+ */
+export async function listCommunitiesForAdmin(opts = {}) {
+  const pageSize = opts.pageSize ?? 10;
+  const colRef = collection(db, COMMUNITIES_COLLECTION);
+  let q = query(colRef, orderBy("name"), limit(pageSize));
+  if (opts.startAfterDoc) {
+    q = query(colRef, orderBy("name"), startAfter(opts.startAfterDoc), limit(pageSize));
+  }
+  const snap = await getDocs(q);
+  const communities = await Promise.all(
+    snap.docs.map(async (d) => {
+      const data = d.data();
+      const members = await getCommunityMembers(d.id);
+      return {
+        id: d.id,
+        name: data.name ?? d.id,
+        description: data.description ?? null,
+        visibility: data.visibility ?? "private",
+        status: data.status ?? "active",
+        ownerUserId: data.ownerUserId ?? null,
+        memberCount: members.length,
+      };
+    }),
+  );
+  const lastDoc = snap.docs.length > 0 ? snap.docs[snap.docs.length - 1] : null;
+  return { communities, lastDoc };
+}
+
+/**
+ * Update community fields. Superadmin or owner.
+ * @param {string} communityId
+ * @param {{ name?: string, description?: string, visibility?: string, status?: string }} data
+ */
+export async function updateCommunity(communityId, data) {
+  const ref = doc(db, COMMUNITIES_COLLECTION, communityId);
+  const updates = {};
+  if (data.name !== undefined) updates.name = String(data.name).trim();
+  if (data.description !== undefined) updates.description = data.description?.trim() || null;
+  if (data.visibility !== undefined) updates.visibility = data.visibility;
+  if (data.status !== undefined) updates.status = data.status;
+  if (Object.keys(updates).length === 0) return;
+  updates.updatedAt = serverTimestamp();
+  await setDoc(ref, updates, { merge: true });
+}
+
+/**
+ * Get all members of a community (active + banned). For admin view.
+ * @returns {Promise<Array<{ userId: string, role: string, status: string, displayName?: string, photoURL?: string, email?: string }>>}
+ */
+export async function getCommunityMembersAllStatuses(communityId) {
+  const snap = await getDocs(
+    collection(db, COMMUNITIES_COLLECTION, communityId, MEMBERS_SUBCOLLECTION),
+  );
+  return snap.docs.map((d) => ({
+    userId: d.id,
+    role: d.data().role ?? "participant",
+    status: d.data().status ?? "active",
+    displayName: d.data().displayName,
+    photoURL: d.data().photoURL,
+    email: d.data().email,
+  }));
 }
 
 /**

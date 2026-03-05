@@ -10,6 +10,7 @@ import { CommunityView } from "./components/views/CommunityView";
 import { InviteAcceptView } from "./components/views/InviteAcceptView";
 import { AddBookView } from "./components/views/AddBookView";
 import { ProfileView } from "./components/views/ProfileView";
+import { AdminCommunitiesView } from "./components/views/AdminCommunitiesView";
 import { useAuth } from "./hooks/useAuth";
 import { useBooks } from "./hooks/useBooks";
 import { useStats } from "./hooks/useStats";
@@ -178,6 +179,10 @@ const App = () => {
           <Route
             path={ROUTES.PROFILE}
             element={<ProfileView user={user} onLogout={handleLogout} stats={stats} annualGoal={annualGoal} setAnnualGoal={setAnnualGoal} />}
+          />
+          <Route
+            path={ROUTES.ADMIN_COMMUNITIES}
+            element={<AdminCommunitiesView currentUser={user} onBack={() => navigate(ROUTES.PROFILE)} />}
           />
           <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>
