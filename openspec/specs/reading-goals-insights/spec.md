@@ -47,6 +47,13 @@ On the home page, within the "Llegint ara" block, the system SHALL allow the use
 - On desktop, the layout of the block SHALL not show visible blank gaps (e.g. when a row does not fill all columns).
 - When the user updates book data (e.g. total pages) from the edit form for a book in "Llegint" status, the system SHALL preserve the book's status and existing fields (e.g. by merging the update with the existing book) so that the "Llegint ara" block remains visible after save.
 
+### Requirement: Llegint ara shows all books in reading status
+
+The "Llegint ara" block on the home page SHALL display **all** books that are in "Llegint" (reading) status, not only one.
+
+- When the user has multiple books in reading status, each book SHALL be shown with its own card/section including: cover, title, author, progress bar, pages count, ETA (if calculable), input to update current page, and weekly mini-chart (when data exists).
+- When the user has no books in reading status, the block SHALL NOT be displayed.
+
 ### Requirement: Edge cases and data protection
 
 - If average pages per day over the last 7 days is ≤ 0, the system SHALL NOT show an estimated completion date and SHALL show the motivational empty state.
