@@ -65,49 +65,53 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
       </div>
 
       {bookCompletedNotifs.length > 0 && (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+        <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
           <h3 className="text-sm font-medium text-slate-600 mb-4 flex items-center gap-3">
             <BookCheck className="w-6 h-6 text-primary-600" />
             Llibres llegits a la comunitat
           </h3>
-          <ul className="space-y-2">
+          <ul className="space-y-2 list-none pl-0">
             {bookCompletedNotifs.map((n) => (
               <li
                 key={n.id}
-                className="flex items-start justify-between gap-2 py-2 border-b border-slate-100 last:border-0"
+                className="py-2 pr-10 border-b border-slate-100 last:border-0"
               >
-                <span className="text-slate-700 flex-1 min-w-0">
+                <span className="text-slate-700">
                   <span className="font-medium text-primary-700">{n.completedByUserName ?? "Algú"}</span>
                   {" "}ha acabat{" "}
                   <span className="font-medium">{n.bookTitle ?? "un llibre"}</span>
                 </span>
-                <button
-                  type="button"
-                  onClick={() => handleDismissNotif(n.id)}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-700 transition-colors shrink-0 mt-0.5"
-                  aria-label="Tancar"
-                >
-                  <X className="w-4 h-4" />
-                </button>
               </li>
             ))}
           </ul>
+          {bookCompletedNotifs.map((n, index) => (
+            <button
+              key={n.id}
+              type="button"
+              onClick={() => handleDismissNotif(n.id)}
+              className="absolute right-4 p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-700 transition-colors"
+              style={{ top: `calc(1.25rem + ${index} * 2rem)` }}
+              aria-label="Tancar"
+            >
+              <X className="w-4 h-4 block" />
+            </button>
+          ))}
         </div>
       )}
 
       {encouragements.length > 0 && (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+        <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
           <h3 className="text-sm font-medium text-slate-600 mb-4 flex items-center gap-3">
             <Heart className="w-6 h-6 text-primary-600" />
             Encoratjaments
           </h3>
-          <ul className="space-y-2">
+          <ul className="space-y-2 list-none pl-0">
             {encouragements.map((enc) => (
               <li
                 key={enc.id}
-                className="flex items-start justify-between gap-2 py-2 border-b border-slate-100 last:border-0"
+                className="py-2 pr-10 border-b border-slate-100 last:border-0"
               >
-                <span className="text-slate-700 flex-1 min-w-0">
+                <span className="text-slate-700">
                   <span className="font-medium text-primary-700">
                     {enc.fromUserName ?? "Algú"}
                   </span>{" "}
@@ -116,17 +120,21 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
                     <> {enc.bookTitle}</>
                   ) : null}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => handleDismissEncouragement(enc.id)}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-700 transition-colors shrink-0 mt-0.5"
-                  aria-label="Tancar"
-                >
-                  <X className="w-4 h-4" />
-                </button>
               </li>
             ))}
           </ul>
+          {encouragements.map((enc, index) => (
+            <button
+              key={enc.id}
+              type="button"
+              onClick={() => handleDismissEncouragement(enc.id)}
+              className="absolute right-4 p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-700 transition-colors"
+              style={{ top: `calc(1.25rem + ${index} * 2rem)` }}
+              aria-label="Tancar"
+            >
+              <X className="w-4 h-4 block" />
+            </button>
+          ))}
         </div>
       )}
 
