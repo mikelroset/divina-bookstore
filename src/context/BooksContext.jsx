@@ -32,17 +32,15 @@ export const BooksProvider = ({ children }) => {
     }
   }, [user, loadBooks]);
 
+  // Sincronitzar llibres en lectura a community/{userId} per a la vista de comunitat.
+  // No sincronitzem mentre loading: true per no sobreescriure amb [] abans d’haver carregat els llibres.
   useEffect(() => {
-    if (user && books.length > 0) {
-      // Trobar el llibre que està llegint
-      const currentReading = books.find((b) => b.status === "reading");
-
-      // Actualitzar la comunitat (userId ha de ser string per al path del document)
-      communityService
-        .updateCurrentReading(user.uid, user, currentReading)
-        .catch((err) => console.error("Error actualitzant comunitat:", err));
-    }
-  }, [user, books]);
+    if (!user || loading) return;
+    const readingBooks = books.filter((b) => b.status === "reading");
+    communityService
+      .updateCurrentReading(user.uid, user, readingBooks)
+      .catch((err) => console.error("Error actualitzant comunitat:", err));
+  }, [user, books, loading]);
 
   const addBook = async (bookData) => {
     if (!user) return;
