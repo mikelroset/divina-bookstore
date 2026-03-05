@@ -1,14 +1,16 @@
 import React from "react";
-import { Clock } from "lucide-react";
 import { getDaysReading, calculateProgress } from "../../utils/helpers";
+import { Avatar } from "./Avatar";
+import { BookCover } from "./BookCover";
 
 export const ReaderCard = ({ reader }) => {
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-primary-500 shadow-lg hover:shadow-xl transition-all">
       <div className="flex items-center gap-3 mb-4">
-        <img
+        <Avatar
           src={reader.photoURL}
-          alt={reader.displayName}
+          alt={reader.displayName ? `Avatar de ${reader.displayName}` : "Avatar no disponible"}
+          displayName={reader.displayName}
           className="w-12 h-12 rounded-full border-2 border-primary-500"
         />
         <div>
@@ -18,9 +20,9 @@ export const ReaderCard = ({ reader }) => {
       </div>
 
       <div className="flex gap-3">
-        <img
-          src={reader.currentBook.coverUrl}
-          alt={reader.currentBook.title}
+        <BookCover
+          src={reader.currentBook?.coverUrl}
+          alt={reader.currentBook?.title ? `Portada de ${reader.currentBook.title}` : "Portada no disponible"}
           className="w-20 h-28 object-cover rounded-lg shadow-md"
         />
         <div className="flex-1">

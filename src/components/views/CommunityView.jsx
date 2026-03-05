@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BookMarked, Users, Clock, Heart, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass } from "lucide-react";
+import { BookCover } from "../common/BookCover";
+import { Avatar } from "../common/Avatar";
 import { getDaysReading, calculateProgress, safeProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
 import { encouragementService } from "../../services/encouragementService";
@@ -515,13 +517,11 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                 const prog = safeProgress(book.currentPage, book.pages);
                 return (
                   <li key={book.id} className="flex gap-4">
-                    {book.coverUrl && (
-                      <img
-                        src={book.coverUrl}
-                        alt={book.title}
-                        className="w-20 h-28 object-cover rounded-lg shadow-md flex-shrink-0"
-                      />
-                    )}
+                    <BookCover
+                      src={book.coverUrl}
+                      alt={book.title ? `Portada de ${book.title}` : "Portada no disponible"}
+                      className="w-20 h-28 object-cover rounded-lg shadow-md flex-shrink-0"
+                    />
                     <div className="flex-1 min-w-0">
                       <h4 className="font-serif text-lg text-slate-800 mb-1">{book.title}</h4>
                       {book.author && <p className="text-slate-600 text-sm mb-1">{book.author}</p>}
@@ -594,9 +594,10 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                 className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-primary-500 shadow-lg hover:shadow-xl transition-all"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <img
+                  <Avatar
                     src={reader.photoURL}
-                    alt={reader.displayName}
+                    alt={reader.displayName ? `Avatar de ${reader.displayName}` : "Avatar no disponible"}
+                    displayName={reader.displayName}
                     className="w-12 h-12 rounded-full border-2 border-primary-500"
                   />
                   <div>
@@ -616,13 +617,11 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                       const key = readerBookKey(reader, book);
                       return (
                         <li key={book.id} className="flex gap-3">
-                          {book.coverUrl && (
-                            <img
-                              src={book.coverUrl}
-                              alt={book.title}
-                              className="w-20 h-28 object-cover rounded-lg shadow-md flex-shrink-0"
-                            />
-                          )}
+                          <BookCover
+                            src={book.coverUrl}
+                            alt={book.title ? `Portada de ${book.title}` : "Portada no disponible"}
+                            className="w-20 h-28 object-cover rounded-lg shadow-md flex-shrink-0"
+                          />
                           <div className="flex-1 min-w-0">
                             <h5 className="font-serif text-lg text-slate-800 mb-1 line-clamp-2">
                               {book.title ?? "Sense títol"}

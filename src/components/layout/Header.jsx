@@ -1,7 +1,5 @@
-// ============================================
-// FILE: src/components/layout/Header.jsx
-// ============================================
 import React from "react";
+import { Avatar } from "../common/Avatar";
 
 export const Header = ({ user }) => {
   return (
@@ -15,9 +13,10 @@ export const Header = ({ user }) => {
         </div>
         {user && (
           <div className="flex items-center gap-3">
-            <img
+            <Avatar
               src={user.photoURL}
-              alt={user.displayName}
+              alt={user.displayName ? `Avatar de ${user.displayName}` : "Avatar no disponible"}
+              displayName={user.displayName}
               className="w-10 h-10 rounded-full border-2 border-primary-500"
             />
           </div>

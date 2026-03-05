@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { STATUS_LABELS } from "../../utils/constants";
+import { BookCover } from "../common/BookCover";
 
 const defaultBook = {
   title: "",
@@ -59,11 +60,6 @@ export const BookForm = ({
   const [errors, setErrors] = useState({});
   const [searchingCover, setSearchingCover] = useState(false);
   const [searchingDescription, setSearchingDescription] = useState(false);
-  const [coverImageError, setCoverImageError] = useState(false);
-
-  useEffect(() => {
-    setCoverImageError(false);
-  }, [formData.coverUrl]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -381,18 +377,11 @@ export const BookForm = ({
         />
         {formData.coverUrl && formData.coverUrl.startsWith("http") && (
           <div className="mt-2">
-            {coverImageError ? (
-              <p className="text-xs text-red-600">Error carregant la imatge</p>
-            ) : (
-              <img
-                src={formData.coverUrl}
-                alt="Preview portada"
-                className="w-24 h-32 object-cover rounded-lg shadow-md"
-                referrerPolicy="no-referrer"
-                onError={() => setCoverImageError(true)}
-                onLoad={() => setCoverImageError(false)}
-              />
-            )}
+            <BookCover
+              src={formData.coverUrl}
+              alt="Preview portada"
+              className="w-24 h-32 object-cover rounded-lg shadow-md"
+            />
           </div>
         )}
       </div>

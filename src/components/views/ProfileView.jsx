@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Avatar } from "../common/Avatar";
 
 export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal }) => {
   const completed = stats?.completedBooks ?? 0;
@@ -25,9 +26,10 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
 
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
         <div className="flex items-center gap-4 mb-6">
-          <img
+          <Avatar
             src={user.photoURL}
-            alt={user.displayName}
+            alt={user.displayName ? `Avatar de ${user.displayName}` : "Avatar no disponible"}
+            displayName={user.displayName}
             className="w-20 h-20 rounded-full border-4 border-primary-500 shadow-lg"
           />
           <div>
