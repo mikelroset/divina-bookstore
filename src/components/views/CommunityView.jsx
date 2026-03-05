@@ -423,7 +423,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               value={inviteEmail}
               onChange={(e) => { setInviteEmail(e.target.value); setInviteError(null); setInviteSuccessMessage(null); }}
               placeholder="Email a convidar"
-              className="flex-1 min-w-[180px] px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
+              className="flex-1 min-w-0 px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
             />
             <button
               type="button"
