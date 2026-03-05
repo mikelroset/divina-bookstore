@@ -19,9 +19,10 @@ import { useEncouragementCount } from "./hooks/useEncouragementCount";
 import { useUserPrefs } from "./hooks/useUserPrefs";
 import { ROUTES } from "./utils/constants";
 import { showCelebration, isCompletionTransition } from "./utils/celebration";
+import { createBookCompletedNotification } from "./services/bookCompletedNotificationService";
 
 /** Ruta /add i /add/:id: resol editingBook des del param i llibres, navega després de guardar/cancel·lar */
-function AddBookRoute({ recordReadingActivity }) {
+function AddBookRoute({ recordReadingActivity, userCommunityIds = [], user }) {
   const { id } = useParams();
   const { books, addBook, updateBook } = useBooks();
   const navigate = useNavigate();
@@ -53,14 +54,27 @@ function AddBookRoute({ recordReadingActivity }) {
       const prevCurrentPage = editingBook?.currentPage ?? 0;
       const newCurrentPage = bookData.currentPage != null ? parseInt(bookData.currentPage, 10) : null;
       const totalPages = (editingBook?.pages ?? bookData.pages) != null ? parseInt(editingBook?.pages ?? bookData.pages, 10) : null;
+      const didComplete = totalPages != null && totalPages > 0 && newCurrentPage != null && newCurrentPage >= totalPages && prevCurrentPage < newCurrentPage;
+      if (didComplete) dataToSave = { ...dataToSave, status: "completed" };
+      const bookTitle = (editingBook?.title ?? bookData.title) ?? "Llibre";
       if (editingBook) {
         await updateBook(editingBook.id, dataToSave);
         if (bookData.currentPage != null && recordReadingActivity) recordReadingActivity();
         if (isCompletionTransition(prevCurrentPage, newCurrentPage, totalPages)) showCelebration();
+        if (didComplete && user?.uid && userCommunityIds?.length > 0) {
+          for (const cid of userCommunityIds) {
+            createBookCompletedNotification(cid, editingBook.id, bookTitle, user.uid, user.displayName ?? "Algú").catch((e) => console.error("Error creant notificació:", e));
+          }
+        }
       } else {
-        await addBook(dataToSave);
+        const newBook = await addBook(dataToSave);
         if (bookData.currentPage != null && recordReadingActivity) recordReadingActivity();
         if (newCurrentPage != null && isCompletionTransition(0, newCurrentPage, totalPages)) showCelebration();
+        if (didComplete && user?.uid && userCommunityIds?.length > 0 && newBook?.id) {
+          for (const cid of userCommunityIds) {
+            createBookCompletedNotification(cid, newBook.id, bookTitle, user.uid, user.displayName ?? "Algú").catch((e) => console.error("Error creant notificació:", e));
+          }
+        }
       }
       navigate(ROUTES.LIBRARY);
     } catch (error) {
@@ -145,10 +159,19 @@ const App = () => {
       ...prevLog.filter((e) => e.at >= sevenDaysAgo),
       { at: now, page: newCurrentPage },
     ];
-    await updateBook(bookId, { currentPage: newCurrentPage, pageLog: newLog });
+    const didComplete = totalPages != null && totalPages > 0 && newCurrentPage >= totalPages && prevCurrentPage < newCurrentPage;
+    const updateData = { currentPage: newCurrentPage, pageLog: newLog };
+    if (didComplete) updateData.status = "completed";
+    await updateBook(bookId, updateData);
     if (recordReadingActivity) recordReadingActivity();
     if (isCompletionTransition(prevCurrentPage, newCurrentPage, totalPages)) {
       showCelebration();
+    }
+    if (didComplete && user?.uid && userCommunityIds?.length > 0) {
+      const bookTitle = book.title ?? "Llibre";
+      for (const cid of userCommunityIds) {
+        createBookCompletedNotification(cid, bookId, bookTitle, user.uid, user.displayName ?? "Algú").catch((e) => console.error("Error creant notificació:", e));
+      }
     }
   };
 
@@ -162,7 +185,7 @@ const App = () => {
 
       <div className="max-w-4xl mx-auto px-6 py-8 overflow-x-hidden">
         <Routes>
-          <Route path={ROUTES.HOME} element={<HomeView user={user} stats={stats} books={books} annualGoal={annualGoal} streak={streak} onUpdateCurrentPage={handleUpdateCurrentPageFromHome} />} />
+          <Route path={ROUTES.HOME} element={<HomeView user={user} stats={stats} books={books} annualGoal={annualGoal} streak={streak} onUpdateCurrentPage={handleUpdateCurrentPageFromHome} userCommunityIds={userCommunityIds} />} />
           <Route
             path={ROUTES.LIBRARY}
             element={
@@ -185,8 +208,8 @@ const App = () => {
             path={`${ROUTES.COMMUNITY_INVITE}/:inviteId`}
             element={<InviteAcceptView currentUser={user} addCommunityToUser={addCommunityToUser} onSelectCommunity={setActiveCommunityId} />}
           />
-          <Route path={ROUTES.ADD} element={<AddBookRoute recordReadingActivity={recordReadingActivity} />} />
-          <Route path={`${ROUTES.ADD}/:id`} element={<AddBookRoute recordReadingActivity={recordReadingActivity} />} />
+          <Route path={ROUTES.ADD} element={<AddBookRoute recordReadingActivity={recordReadingActivity} userCommunityIds={userCommunityIds} user={user} />} />
+          <Route path={`${ROUTES.ADD}/:id`} element={<AddBookRoute recordReadingActivity={recordReadingActivity} userCommunityIds={userCommunityIds} user={user} />} />
           <Route
             path={ROUTES.PROFILE}
             element={<ProfileView user={user} onLogout={handleLogout} stats={stats} annualGoal={annualGoal} setAnnualGoal={setAnnualGoal} />}
