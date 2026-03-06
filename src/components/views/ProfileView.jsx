@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "../common/Avatar";
 import { useSuperadmin } from "../../hooks/useSuperadmin";
+import { useGamification } from "../../hooks/useGamification";
 import { ROUTES } from "../../utils/constants";
 
 export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal }) => {
   const navigate = useNavigate();
   const { isSuperadmin, loading } = useSuperadmin(user?.uid);
+  const { totalPoints, level, toNextLevel, showInLeaderboard, setShowInLeaderboard, loading: gamificationLoading } = useGamification(user?.uid);
   const completed = stats?.completedBooks ?? 0;
   const goal = Math.max(0, parseInt(annualGoal, 10) || 0);
   const progressPct = goal > 0 ? Math.min(100, Math.round((completed / goal) * 100)) : 0;
@@ -59,6 +61,40 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
             </p>
           </div>
         </div>
+
+        {!gamificationLoading && (
+          <div className="mb-6 space-y-4">
+            <div className="bg-primary-50 rounded-xl p-4 border border-primary-200">
+              <div className="flex justify-between items-center mb-2">
+                <p className="text-sm text-slate-600">Punts totals</p>
+                <p className="text-2xl font-serif text-primary-800">{totalPoints}</p>
+              </div>
+              <p className="text-sm text-slate-600 mb-2">Nivell {level}</p>
+              {toNextLevel > 0 && (
+                <div className="space-y-1">
+                  <p className="text-xs text-slate-600">
+                    Progrés cap al nivell {level + 1}: {100 - toNextLevel} / 100 punts
+                  </p>
+                  <div className="bg-slate-200 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="bg-primary-500 h-full rounded-full transition-all"
+                      style={{ width: `${Math.min(100, Math.max(0, 100 - toNextLevel))}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showInLeaderboard}
+                onChange={(e) => setShowInLeaderboard(e.target.checked)}
+                className="rounded border-primary-500 text-primary-600 focus:ring-primary-200"
+              />
+              <span className="text-sm text-slate-700">Aparèixer al rànquing</span>
+            </label>
+          </div>
+        )}
 
         {setAnnualGoal && (
           <div className="mb-6">
