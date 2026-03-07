@@ -54,7 +54,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
               {stats.totalBooks}
             </p>
           </div>
-          <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-200">
+          <div className="bg-primary-50 rounded-xl p-4 border border-primary-500">
             <p className="text-sm text-slate-600 mb-1">Llibres Completats</p>
             <p className="text-3xl font-serif text-slate-800">
               {stats.completedBooks}
@@ -64,7 +64,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
 
         {!gamificationLoading && (
           <div className="mb-6 space-y-4">
-            <div className="bg-primary-50 rounded-xl p-4 border border-primary-200">
+            <div className="bg-primary-50 rounded-xl p-4 border border-primary-500">
               <div className="flex justify-between items-center mb-2">
                 <p className="text-sm text-slate-600">Punts totals</p>
                 <p className="text-2xl font-serif text-primary-800">{totalPoints}</p>
