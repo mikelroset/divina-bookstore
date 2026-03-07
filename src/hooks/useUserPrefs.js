@@ -19,18 +19,21 @@ export function useUserPrefs(userId, profile) {
   const [userCommunityIds, setUserCommunityIdsState] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (cancelledRef) => {
     if (!userId) {
-      setAnnualGoalState(0);
-      setReadingActivityDays([]);
-      setActiveCommunityIdState(null);
-      setUserCommunityIdsState([]);
-      setLoading(false);
+      if (!cancelledRef?.current) {
+        setAnnualGoalState(0);
+        setReadingActivityDays([]);
+        setActiveCommunityIdState(null);
+        setUserCommunityIdsState([]);
+        setLoading(false);
+      }
       return;
     }
     try {
       setLoading(true);
       const prefs = await getUserPrefs(userId);
+      if (cancelledRef?.current) return;
       setAnnualGoalState(prefs.annualGoal ?? 0);
       setReadingActivityDays(prefs.readingActivityDays ?? []);
       let communityId = prefs.activeCommunityId ?? null;
@@ -40,21 +43,27 @@ export function useUserPrefs(userId, profile) {
           ? { email: profile.email, displayName: profile.displayName, photoURL: profile.photoURL }
           : {};
         await ensureUserInDefaultCommunity(userId, memberProfile);
+        if (cancelledRef?.current) return;
         communityIds = [DEFAULT_COMMUNITY_ID];
         communityId = communityId || DEFAULT_COMMUNITY_ID;
         await updateUserPrefs(userId, { activeCommunityId: communityId, userCommunityIds: communityIds });
+        if (cancelledRef?.current) return;
       }
       setActiveCommunityIdState(communityId);
       setUserCommunityIdsState(communityIds);
     } catch (err) {
-      console.error("Error loading user prefs:", err);
+      if (!cancelledRef?.current) console.error("Error loading user prefs:", err);
     } finally {
-      setLoading(false);
+      if (!cancelledRef?.current) setLoading(false);
     }
   }, [userId, profile]);
 
   useEffect(() => {
-    load();
+    const cancelledRef = { current: false };
+    load(cancelledRef);
+    return () => {
+      cancelledRef.current = true;
+    };
   }, [load]);
 
   const setAnnualGoal = useCallback(

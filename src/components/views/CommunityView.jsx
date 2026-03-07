@@ -80,21 +80,44 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
 
   useEffect(() => {
     if (!currentUser?.uid) return;
-    getUserCommunities(currentUser.uid, userCommunityIds).then(({ communities: list, activeCommunityIds }) => {
-      setCommunities(list);
-      const idsChanged =
-        activeCommunityIds.length !== userCommunityIds.length ||
-        activeCommunityIds.some((id, i) => userCommunityIds[i] !== id);
-      if (idsChanged && syncUserCommunityIds) {
-        syncUserCommunityIds(activeCommunityIds);
-      }
-    });
+    let cancelled = false;
+    getUserCommunities(currentUser.uid, userCommunityIds)
+      .then(({ communities: list, activeCommunityIds }) => {
+        if (cancelled) return;
+        setCommunities(list);
+        const idsChanged =
+          activeCommunityIds.length !== userCommunityIds.length ||
+          activeCommunityIds.some((id, i) => userCommunityIds[i] !== id);
+        if (idsChanged && syncUserCommunityIds) {
+          syncUserCommunityIds(activeCommunityIds);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) console.error("Error carregant comunitats:", err);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [currentUser?.uid, userCommunityIds, syncUserCommunityIds]);
 
   useEffect(() => {
     if (!activeCommunityId || !currentUser?.uid) return;
-    getMemberRole(activeCommunityId, currentUser.uid).then(setMyRole);
-    getCommunityMembers(activeCommunityId).then(setMembers);
+    let cancelled = false;
+    Promise.all([
+      getMemberRole(activeCommunityId, currentUser.uid),
+      getCommunityMembers(activeCommunityId),
+    ])
+      .then(([role, membersList]) => {
+        if (cancelled) return;
+        setMyRole(role);
+        setMembers(membersList);
+      })
+      .catch((err) => {
+        if (!cancelled) console.error("Error carregant rol o membres:", err);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [activeCommunityId, currentUser?.uid]);
 
   useEffect(() => {
@@ -115,7 +138,17 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
 
   useEffect(() => {
     if (!currentUser?.email) return;
-    getPendingInvitesForEmail(currentUser.email).then(setPendingInvites);
+    let cancelled = false;
+    getPendingInvitesForEmail(currentUser.email)
+      .then((invites) => {
+        if (!cancelled) setPendingInvites(invites);
+      })
+      .catch((err) => {
+        if (!cancelled) console.error("Error carregant invitacions:", err);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [currentUser?.email]);
 
   useEffect(() => {
@@ -129,25 +162,32 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
 
   // Carregar lectors de la comunitat (només membres de la comunitat activa; excloent l'usuari actual a "Estàs llegint")
   useEffect(() => {
+    if (!activeCommunityId) return;
+    let cancelled = false;
     const loadCommunity = async () => {
       try {
         setLoading(true);
         const readers = await communityService.getCommunityReaders(activeCommunityId);
+        if (cancelled) return;
         const otherReaders = readers.filter((r) => r.uid !== currentUser?.uid);
         setCommunityReaders(otherReaders);
       } catch (error) {
-        console.error("Error carregant comunitat:", error);
+        if (!cancelled) console.error("Error carregant comunitat:", error);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     loadCommunity();
+    return () => {
+      cancelled = true;
+    };
   }, [currentUser?.uid, activeCommunityId]);
 
   // Comprovar cooldown (3 dies) per a cada lector+llibre
   useEffect(() => {
     if (!currentUser?.uid || communityReaders.length === 0) return;
+    let cancelled = false;
     const check = async () => {
       const inCooldown = new Set();
       await Promise.all(
@@ -162,20 +202,25 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
           }),
         ),
       );
-      setCooldownKeys(inCooldown);
+      if (!cancelled) setCooldownKeys(inCooldown);
     };
     check();
+    return () => {
+      cancelled = true;
+    };
   }, [currentUser?.uid, communityReaders]);
 
   const activeCommunity = communities.find((c) => c.id === activeCommunityId) ?? communities[0];
   const canDissolve = myRole === "owner" && activeCommunityId && activeCommunityId !== DEFAULT_COMMUNITY_ID;
 
   const refetchCommunitiesAfterDissolve = () => {
-    getUserCommunities(currentUser.uid, userCommunityIds).then(({ communities: list, activeCommunityIds }) => {
-      setCommunities(list);
-      syncUserCommunityIds?.(activeCommunityIds);
-      onSelectCommunity?.(activeCommunityIds[0] ?? null);
-    });
+    getUserCommunities(currentUser.uid, userCommunityIds)
+      .then(({ communities: list, activeCommunityIds }) => {
+        setCommunities(list);
+        syncUserCommunityIds?.(activeCommunityIds);
+        onSelectCommunity?.(activeCommunityIds[0] ?? null);
+      })
+      .catch((err) => console.error("Error refetching comunitats:", err));
   };
 
   return (
@@ -304,7 +349,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   setCreateName("");
                   setCreateDescription("");
                   setCreateVisibility("private");
-                  getUserCommunities(currentUser.uid, [...(userCommunityIds || []), id]).then(({ communities: list }) => setCommunities(list));
+                  getUserCommunities(currentUser.uid, [...(userCommunityIds || []), id]).then(({ communities: list }) => setCommunities(list)).catch((err) => console.error("Error carregant comunitats:", err));
                 } catch (err) {
                   setCreateError(err.message || "Error en crear la comunitat.");
                 } finally {
@@ -392,7 +437,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                         await addCommunityToUser(communityId);
                         onSelectCommunity?.(communityId);
                         setPendingInvites((prev) => prev.filter((i) => i.id !== inv.id));
-                        getUserCommunities(currentUser.uid, [...(userCommunityIds || []), communityId]).then(({ communities: list }) => setCommunities(list));
+                        getUserCommunities(currentUser.uid, [...(userCommunityIds || []), communityId]).then(({ communities: list }) => setCommunities(list)).catch((err) => console.error("Error carregant comunitats:", err));
                       } catch (e) {
                         console.error(e);
                         setInviteError(e.message ?? "No s’ha pogut acceptar la invitació.");
@@ -510,7 +555,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                         type="button"
                         onClick={async () => {
                           await updateMemberRole(activeCommunityId, m.userId, "admin");
-                          getCommunityMembers(activeCommunityId).then(setMembers);
+                          getCommunityMembers(activeCommunityId).then(setMembers).catch((err) => console.error("Error carregant membres:", err));
                         }}
                         className="px-2 py-1 text-xs bg-primary-100 text-primary-700 rounded hover:bg-primary-200"
                       >
@@ -522,7 +567,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                       onClick={async () => {
                         if (window.confirm("Expulsar aquest membre de la comunitat?")) {
                           await setMemberStatus(activeCommunityId, m.userId, "left");
-                          getCommunityMembers(activeCommunityId).then(setMembers);
+                          getCommunityMembers(activeCommunityId).then(setMembers).catch((err) => console.error("Error carregant membres:", err));
                         }
                       }}
                       className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 flex items-center gap-1"

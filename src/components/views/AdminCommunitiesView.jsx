@@ -36,10 +36,24 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
 
   useEffect(() => {
     if (!currentUser?.uid) return;
-    isSuperadmin(currentUser.uid).then((v) => {
-      setAuthorized(v);
-      if (!v) navigate(ROUTES.PROFILE, { replace: true });
-    });
+    let cancelled = false;
+    isSuperadmin(currentUser.uid)
+      .then((v) => {
+        if (!cancelled) {
+          setAuthorized(v);
+          if (!v) navigate(ROUTES.PROFILE, { replace: true });
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error("Error comprovant superadmin:", err);
+          setAuthorized(false);
+          navigate(ROUTES.PROFILE, { replace: true });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [currentUser?.uid, navigate]);
 
   const loadCommunities = async (startAfterDoc = null) => {
@@ -175,11 +189,18 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
   };
 
   const handleInvite = async (communityId) => {
-    if (!inviteEmail.trim()) return;
+    const email = inviteEmail.trim();
+    if (!email) return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Introdueix un correu electrònic vàlid.");
+      return;
+    }
     setInviteLoading(true);
     setInviteSuccess(null);
+    setError(null);
     try {
-      const { inviteId } = await createOrResendInvite(communityId, inviteEmail.trim(), currentUser.uid);
+      const { inviteId } = await createOrResendInvite(communityId, email, currentUser.uid);
       requestSendInviteEmail(inviteId, () => currentUser.getIdToken());
       setInviteSuccess("Hem enviat la invitació si aquest correu és vàlid.");
       setInviteEmail("");

@@ -52,11 +52,11 @@ export const sortBooks = (books, sortBy = "title") => {
   const sorted = [...books];
   switch (sortBy) {
     case "title":
-      return sorted.sort((a, b) => a.title.localeCompare(b.title));
+      return sorted.sort((a, b) => (a.title ?? "").localeCompare(b.title ?? ""));
     case "author":
-      return sorted.sort((a, b) => a.author.localeCompare(b.author));
+      return sorted.sort((a, b) => (a.author ?? "").localeCompare(b.author ?? ""));
     case "rating":
-      return sorted.sort((a, b) => b.rating - a.rating);
+      return sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
     case "year":
       return sorted.sort((a, b) => (b.year || 0) - (a.year || 0));
     case "recent":
