@@ -12,8 +12,24 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 
+/**
+ * @typedef {Object} Book
+ * @property {string} id
+ * @property {string} [title]
+ * @property {string} [author]
+ * @property {number} [pages]
+ * @property {number} [currentPage]
+ * @property {string} [status]
+ * @property {string} [genre]
+ * @property {Array<{at: number, page: number}>} [pageLog]
+ */
+
 export const bookService = {
-  // Obtenir tots els llibres d'un usuari
+  /**
+   * Obtenir tots els llibres d'un usuari.
+   * @param {string} userId - UID de l'usuari
+   * @returns {Promise<Book[]>} Llistat de llibres ordenats per createdAt desc
+   */
   getUserBooks: async (userId) => {
     try {
       const booksRef = collection(db, "users", userId, "books");
@@ -30,7 +46,12 @@ export const bookService = {
     }
   },
 
-  // Afegir un nou llibre
+  /**
+   * Afegir un nou llibre.
+   * @param {string} userId - UID de l'usuari
+   * @param {Partial<Book>} bookData - Dades del llibre
+   * @returns {Promise<Book>} Llibre creat amb id
+   */
   addBook: async (userId, bookData) => {
     try {
       const booksRef = collection(db, "users", userId, "books");
@@ -46,7 +67,13 @@ export const bookService = {
     }
   },
 
-  // Actualitzar un llibre
+  /**
+   * Actualitzar un llibre existent.
+   * @param {string} userId - UID de l'usuari
+   * @param {string} bookId - ID del llibre
+   * @param {Partial<Book>} bookData - Dades a actualitzar
+   * @returns {Promise<Book>} Llibre actualitzat
+   */
   updateBook: async (userId, bookId, bookData) => {
     try {
       const bookRef = doc(db, "users", userId, "books", bookId);
@@ -62,7 +89,12 @@ export const bookService = {
     }
   },
 
-  // Eliminar un llibre
+  /**
+   * Eliminar un llibre.
+   * @param {string} userId - UID de l'usuari
+   * @param {string} bookId - ID del llibre
+   * @returns {Promise<void>}
+   */
   deleteBook: async (userId, bookId) => {
     try {
       const bookRef = doc(db, "users", userId, "books", bookId);

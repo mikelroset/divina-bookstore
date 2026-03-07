@@ -13,20 +13,27 @@ import { ProfileView } from "./components/views/ProfileView";
 import { AdminCommunitiesView } from "./components/views/AdminCommunitiesView";
 import { useAuth } from "./hooks/useAuth";
 import { useBooks } from "./hooks/useBooks";
+import { useToast } from "./context/ToastContext";
 import { useStats } from "./hooks/useStats";
 import { useLibraryFilters } from "./hooks/useLibraryFilters";
 import { useEncouragementCount } from "./hooks/useEncouragementCount";
 import { useUserPrefs } from "./hooks/useUserPrefs";
 import { ROUTES } from "./utils/constants";
-import { showCelebration, isCompletionTransition } from "./utils/celebration";
-import { createBookCompletedNotification } from "./services/bookCompletedNotificationService";
-import { addPointsForPages, grantCompletedBookBonus } from "./services/gamificationService";
+import { useBookSave } from "./hooks/useBookSave";
 
 /** Ruta /add i /add/:id: resol editingBook des del param i llibres, navega després de guardar/cancel·lar */
 function AddBookRoute({ recordReadingActivity, userCommunityIds = [], user }) {
   const { id } = useParams();
   const { books, addBook, updateBook } = useBooks();
   const navigate = useNavigate();
+  const { showError } = useToast();
+  const { saveBook } = useBookSave({
+    user,
+    userCommunityIds,
+    recordReadingActivity,
+    addBook,
+    updateBook,
+  });
   const editingBook =
     id != null ? books.find((b) => b.id === id) ?? null : null;
 
@@ -38,57 +45,10 @@ function AddBookRoute({ recordReadingActivity, userCommunityIds = [], user }) {
 
   const handleSave = async (bookData) => {
     try {
-      let dataToSave =
-        editingBook != null
-          ? { ...editingBook, ...bookData }
-          : { ...bookData };
-      if (bookData.currentPage != null) {
-        const prevLog = editingBook?.pageLog || [];
-        const now = Date.now();
-        const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
-        const newLog = [
-          ...prevLog.filter((e) => e.at >= sevenDaysAgo),
-          { at: now, page: parseInt(bookData.currentPage, 10) || 0 },
-        ];
-        dataToSave = { ...dataToSave, pageLog: newLog };
-      }
-      const prevCurrentPage = editingBook?.currentPage ?? 0;
-      const newCurrentPage = bookData.currentPage != null ? parseInt(bookData.currentPage, 10) : null;
-      const totalPages = (editingBook?.pages ?? bookData.pages) != null ? parseInt(editingBook?.pages ?? bookData.pages, 10) : null;
-      const didComplete = totalPages != null && totalPages > 0 && newCurrentPage != null && newCurrentPage >= totalPages && prevCurrentPage < newCurrentPage;
-      const deltaPages = prevCurrentPage < newCurrentPage ? newCurrentPage - prevCurrentPage : 0;
-      if (didComplete) dataToSave = { ...dataToSave, status: "completed" };
-      const bookTitle = (editingBook?.title ?? bookData.title) ?? "Llibre";
-      if (editingBook) {
-        await updateBook(editingBook.id, dataToSave);
-        if (bookData.currentPage != null && recordReadingActivity) recordReadingActivity();
-        if (isCompletionTransition(prevCurrentPage, newCurrentPage, totalPages)) showCelebration();
-        if (user?.uid) {
-          if (deltaPages > 0 && totalPages != null && totalPages > 0) addPointsForPages(user.uid, deltaPages, totalPages).catch((e) => console.error("Error punts pàgines:", e));
-          if (didComplete) grantCompletedBookBonus(user.uid, editingBook.id).catch((e) => console.error("Error punts completat:", e));
-        }
-        if (didComplete && user?.uid && userCommunityIds?.length > 0) {
-          for (const cid of userCommunityIds) {
-            createBookCompletedNotification(cid, editingBook.id, bookTitle, user.uid, user.displayName ?? "Algú").catch((e) => console.error("Error creant notificació:", e));
-          }
-        }
-      } else {
-        const newBook = await addBook(dataToSave);
-        if (bookData.currentPage != null && recordReadingActivity) recordReadingActivity();
-        if (newCurrentPage != null && isCompletionTransition(0, newCurrentPage, totalPages)) showCelebration();
-        if (user?.uid) {
-          if (deltaPages > 0 && totalPages != null && totalPages > 0) addPointsForPages(user.uid, deltaPages, totalPages).catch((e) => console.error("Error punts pàgines:", e));
-          if (didComplete && newBook?.id) grantCompletedBookBonus(user.uid, newBook.id).catch((e) => console.error("Error punts completat:", e));
-        }
-        if (didComplete && user?.uid && userCommunityIds?.length > 0 && newBook?.id) {
-          for (const cid of userCommunityIds) {
-            createBookCompletedNotification(cid, newBook.id, bookTitle, user.uid, user.displayName ?? "Algú").catch((e) => console.error("Error creant notificació:", e));
-          }
-        }
-      }
+      await saveBook(bookData, editingBook);
       navigate(ROUTES.LIBRARY);
     } catch (error) {
-      alert("Error al guardar el llibre. Torna-ho a intentar.");
+      showError(error?.message || "Error al guardar el llibre. Torna-ho a intentar.");
     }
   };
 
@@ -108,9 +68,17 @@ function AddBookRoute({ recordReadingActivity, userCommunityIds = [], user }) {
 const App = () => {
   const { user, login, logout } = useAuth();
   const { books, addBook, updateBook, deleteBook } = useBooks();
+  const { showError } = useToast();
   const stats = useStats();
   const { count: encouragementCount } = useEncouragementCount(user?.uid);
   const { annualGoal, setAnnualGoal, streak, recordReadingActivity, activeCommunityId, setActiveCommunityId, userCommunityIds, addCommunityToUser, syncUserCommunityIds } = useUserPrefs(user?.uid, user);
+  const { updateCurrentPage } = useBookSave({
+    user,
+    userCommunityIds,
+    recordReadingActivity,
+    addBook,
+    updateBook,
+  });
   const navigate = useNavigate();
   const [bookIdToDelete, setBookIdToDelete] = useState(null);
   const {
@@ -129,7 +97,7 @@ const App = () => {
       await deleteBook(bookIdToDelete);
     } catch (error) {
       console.error("Error al eliminar llibre:", error);
-      alert("Error al eliminar el llibre. Torna-ho a intentar.");
+      showError("Error al eliminar el llibre. Torna-ho a intentar.");
     }
     setBookIdToDelete(null);
   };
@@ -139,7 +107,7 @@ const App = () => {
       await login();
       navigate(ROUTES.HOME);
     } catch (error) {
-      alert("Error al iniciar sessió: " + error.message);
+      showError("Error al iniciar sessió: " + (error?.message ?? "Error desconegut"));
     }
   };
 
@@ -149,7 +117,7 @@ const App = () => {
       navigate(ROUTES.HOME);
     } catch (error) {
       console.error("Error al fer logout:", error);
-      alert("No s'ha pogut tancar la sessió. Torna-ho a intentar.");
+      showError("No s'ha pogut tancar la sessió. Torna-ho a intentar.");
     }
   };
 
@@ -160,33 +128,10 @@ const App = () => {
   const handleUpdateCurrentPageFromHome = async (bookId, newCurrentPage) => {
     const book = books.find((b) => b.id === bookId);
     if (!book) return;
-    const prevCurrentPage = book.currentPage ?? 0;
-    const totalPages = book.pages;
-    const prevLog = book.pageLog || [];
-    const now = Date.now();
-    const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
-    const newLog = [
-      ...prevLog.filter((e) => e.at >= sevenDaysAgo),
-      { at: now, page: newCurrentPage },
-    ];
-    const didComplete = totalPages != null && totalPages > 0 && newCurrentPage >= totalPages && prevCurrentPage < newCurrentPage;
-    const deltaPages = prevCurrentPage < newCurrentPage ? newCurrentPage - prevCurrentPage : 0;
-    const updateData = { currentPage: newCurrentPage, pageLog: newLog };
-    if (didComplete) updateData.status = "completed";
-    await updateBook(bookId, updateData);
-    if (recordReadingActivity) recordReadingActivity();
-    if (isCompletionTransition(prevCurrentPage, newCurrentPage, totalPages)) {
-      showCelebration();
-    }
-    if (user?.uid) {
-      if (deltaPages > 0 && totalPages != null && totalPages > 0) addPointsForPages(user.uid, deltaPages, totalPages).catch((e) => console.error("Error punts pàgines:", e));
-      if (didComplete) grantCompletedBookBonus(user.uid, bookId).catch((e) => console.error("Error punts completat:", e));
-    }
-    if (didComplete && user?.uid && userCommunityIds?.length > 0) {
-      const bookTitle = book.title ?? "Llibre";
-      for (const cid of userCommunityIds) {
-        createBookCompletedNotification(cid, bookId, bookTitle, user.uid, user.displayName ?? "Algú").catch((e) => console.error("Error creant notificació:", e));
-      }
+    try {
+      await updateCurrentPage(book, bookId, newCurrentPage);
+    } catch (error) {
+      showError(error?.message ?? "Error al actualitzar el progrés. Torna-ho a intentar.");
     }
   };
 

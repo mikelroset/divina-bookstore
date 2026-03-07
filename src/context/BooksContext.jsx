@@ -10,27 +10,27 @@ export const BooksProvider = ({ children }) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const loadBooks = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      setLoading(true);
-      const userBooks = await bookService.getUserBooks(user.uid);
-      setBooks(userBooks);
-    } catch (error) {
-      console.error("Error al carregar llibres:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
   useEffect(() => {
-    if (user) {
-      loadBooks();
-    } else {
+    if (!user) {
       setBooks([]);
+      return;
     }
-  }, [user, loadBooks]);
+    let cancelled = false;
+    (async () => {
+      try {
+        setLoading(true);
+        const userBooks = await bookService.getUserBooks(user.uid);
+        if (!cancelled) setBooks(userBooks);
+      } catch (error) {
+        if (!cancelled) console.error("Error al carregar llibres:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   // Sincronitzar llibres en lectura a community/{userId} per a la vista de comunitat.
   // No sincronitzem mentre loading: true per no sobreescriure amb [] abans d’haver carregat els llibres.
@@ -94,6 +94,19 @@ export const BooksProvider = ({ children }) => {
     return books.filter((book) => book.status === status);
   };
 
+  const refreshBooks = useCallback(async () => {
+    if (!user) return;
+    try {
+      setLoading(true);
+      const userBooks = await bookService.getUserBooks(user.uid);
+      setBooks(userBooks);
+    } catch (error) {
+      console.error("Error al carregar llibres:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
   const value = {
     books,
     loading,
@@ -101,7 +114,7 @@ export const BooksProvider = ({ children }) => {
     updateBook,
     deleteBook,
     getBooksByStatus,
-    refreshBooks: loadBooks,
+    refreshBooks,
   };
 
   return (

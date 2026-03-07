@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { BookMarked } from "lucide-react";
 import { BookCover } from "./BookCover";
 import { computeETA, getWeeklyPagesRead } from "../../utils/readingInsights";
+import { safeProgress } from "../../utils/helpers";
 
 function WeeklyMiniChart({ data }) {
   const maxPages = Math.max(1, ...data.map((d) => d.pagesRead ?? 0));
@@ -92,15 +92,15 @@ export function ReadingBookBlock({ book, onUpdateCurrentPage }) {
         className="w-24 h-36 object-cover rounded-lg shadow-md"
       />
       <div className="flex-1 min-w-0">
-        <h4 className="font-serif text-xl text-slate-800 mb-1">{book.title}</h4>
-        <p className="text-slate-600 text-sm mb-3">{book.author}</p>
+        <h4 className="font-serif text-xl text-slate-800 mb-1">{book?.title ?? ""}</h4>
+        <p className="text-slate-600 text-sm mb-3">{book?.author ?? ""}</p>
         {book.currentPage != null && book.pages > 0 && (
           <div>
             <div className="bg-slate-100 rounded-full h-2 overflow-hidden mb-2">
               <div
                 className="bg-slate-700 h-full rounded-full"
                 style={{
-                  width: `${(book.currentPage / book.pages) * 100}%`,
+                  width: `${safeProgress(book.currentPage, book.pages) ?? 0}%`,
                 }}
               />
             </div>

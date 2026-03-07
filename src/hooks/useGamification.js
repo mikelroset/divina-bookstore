@@ -10,26 +10,35 @@ export function useGamification(userId) {
   const [gamification, setGamification] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (cancelledRef) => {
     if (!userId) {
-      setGamification(null);
-      setLoading(false);
+      if (!cancelledRef?.current) {
+        setGamification(null);
+        setLoading(false);
+      }
       return;
     }
     try {
       setLoading(true);
       const g = await getGamification(userId);
+      if (cancelledRef?.current) return;
       setGamification(g);
     } catch (err) {
-      console.error("Error loading gamification:", err);
-      setGamification(null);
+      if (!cancelledRef?.current) {
+        console.error("Error loading gamification:", err);
+        setGamification(null);
+      }
     } finally {
-      setLoading(false);
+      if (!cancelledRef?.current) setLoading(false);
     }
   }, [userId]);
 
   useEffect(() => {
-    load();
+    const cancelledRef = { current: false };
+    load(cancelledRef);
+    return () => {
+      cancelledRef.current = true;
+    };
   }, [load]);
 
   const setShowInLeaderboardOpt = useCallback(

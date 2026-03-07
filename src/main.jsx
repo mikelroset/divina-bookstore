@@ -5,15 +5,21 @@ import App from "./App";
 import "./index.css";
 import { AuthProvider } from "./context/AuthContext";
 import { BooksProvider } from "./context/BooksContext";
+import { ToastProvider } from "./context/ToastContext";
+import { ErrorBoundary } from "./components/common/ErrorBoundary";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <BooksProvider>
-          <App />
-        </BooksProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <BooksProvider>
+            <ToastProvider>
+              <App />
+            </ToastProvider>
+          </BooksProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   </React.StrictMode>,
 );
