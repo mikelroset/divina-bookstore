@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BookMarked, Users, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass, BarChart2, Trophy } from "lucide-react";
+import { BookMarked, Users, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass, BarChart2, Trophy, Info } from "lucide-react";
 import { ReadingBookCard } from "../common/ReadingBookCard";
 import { getDaysReading, safeProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
@@ -73,6 +73,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   const [leaderboardPeriod, setLeaderboardPeriod] = useState("week");
   const [leaderboard, setLeaderboard] = useState([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
+  const [showRankingTooltip, setShowRankingTooltip] = useState(false);
 
   const currentUserReadingBooks = userBooks.filter((b) => b.status === "reading");
   const canManageMembers = myRole === "owner" || myRole === "admin";
@@ -578,6 +579,33 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
             <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
               Rànquing
             </h3>
+            <div className="relative group">
+              <button
+                type="button"
+                onClick={() => setShowRankingTooltip((v) => !v)}
+                onBlur={() => setShowRankingTooltip(false)}
+                className="p-0.5 rounded-full text-slate-400 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:text-primary-600"
+                aria-label="Explicació del càlcul del rànquing"
+              >
+                <Info className="w-4 h-4" />
+              </button>
+              <div
+                className={`absolute left-0 top-full mt-1 z-50 w-72 p-3 rounded-lg bg-slate-800 text-slate-100 text-sm shadow-lg border border-slate-600 ${
+                  showRankingTooltip ? "block" : "hidden sm:group-hover:block"
+                }`}
+                role="tooltip"
+              >
+                <p className="font-medium mb-2">Com es calcula el rànquing</p>
+                <ul className="space-y-1 text-slate-200">
+                  <li>• +1 pt per cada 10 pàgines llegides</li>
+                  <li>• +10 pt per llibre completat</li>
+                  <li>• +5 pt de bonus cada 5 dies de ratxa</li>
+                </ul>
+                <p className="mt-2 text-slate-300 text-xs">
+                  Setmanal: punts d’aquesta setmana. Mensual: d’aquest mes. Tot: acumulat.
+                </p>
+              </div>
+            </div>
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
             <div className="flex gap-2 mb-4">
