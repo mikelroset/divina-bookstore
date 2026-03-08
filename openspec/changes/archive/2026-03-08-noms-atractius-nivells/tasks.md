@@ -18,7 +18,13 @@
 - [x] 3.3 Afegir color del rang mineral quan es mostri el nivell (text amb colorClass).
 - [x] 3.4 Actualitzar useGamification per exposar levelDisplayName i levelColorClass.
 
-## 4. Verificació i edge cases
+## 4. Nivell i rang a membres i altres llocs
 
-- [x] 4.1 Fallback: getLevelInfo clampa a 1–71 i registra anomalia.
-- [x] 4.2 Progressió cap al següent nivell amb progressPct correcte.
+- [x] 4.1 CommunityView (Membres): mostrar nivell i rang de cada membre (des de leaderboard totalPoints).
+- [x] 4.2 WelcomeScreen (login): llistat desplegable "Sistema de nivells" amb tots els nivells i punts necessaris.
+- [x] 4.3 ProfileView: desplegable "Veure tots els nivells" amb catàleg i punts.
+
+## 5. Verificació i edge cases
+
+- [x] 5.1 Fallback: getLevelInfo clampa a 1–71 i registra anomalia.
+- [x] 5.2 Progressió cap al següent nivell amb progressPct correcte.

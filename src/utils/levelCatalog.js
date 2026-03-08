@@ -95,4 +95,13 @@ export function getMineralColor(mineralRank) {
   return MINERAL_COLORS[mineralRank] ?? "text-slate-600";
 }
 
+const POINTS_PER_LEVEL = 171;
+
+/** Punts mínims per assolir cada nivell (nivell 1 = 0, nivell 2 = 171, ...) */
+export function getPointsForLevel(level) {
+  if (level <= 1) return 0;
+  if (level >= LEVEL_MAX) return (LEVEL_MAX - 1) * POINTS_PER_LEVEL;
+  return (level - 1) * POINTS_PER_LEVEL;
+}
+
 export { CATALOG, MINERAL_RANKS, ROLES };

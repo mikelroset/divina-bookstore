@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "../common/Avatar";
+import { ChevronDown, ChevronRight, Award } from "lucide-react";
 import { useSuperadmin } from "../../hooks/useSuperadmin";
 import { useGamification } from "../../hooks/useGamification";
+import { CATALOG, getLevelInfo, getPointsForLevel } from "../../utils/levelCatalog";
 import { ROUTES } from "../../utils/constants";
 
 export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal }) => {
@@ -15,6 +17,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
 
   const [inputStr, setInputStr] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [levelsInfoOpen, setLevelsInfoOpen] = useState(false);
 
   useEffect(() => {
     if (!isFocused) {
@@ -73,7 +76,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                 {levelDisplayName}
               </p>
               {toNextLevel > 0 && nextLevelDisplayName && (
-                <div className="space-y-1">
+                <div className="space-y-1 mb-3">
                   <p className="text-xs text-slate-600">
                     Progrés cap a {nextLevelDisplayName}: {toNextLevelProgressPct}%
                   </p>
@@ -83,6 +86,31 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                       style={{ width: `${Math.min(100, Math.max(0, toNextLevelProgressPct))}%` }}
                     />
                   </div>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => setLevelsInfoOpen(!levelsInfoOpen)}
+                className="flex items-center gap-2 text-xs text-slate-600 hover:text-primary-600 transition-colors"
+              >
+                <Award className="w-4 h-4" />
+                {levelsInfoOpen ? "Amagar" : "Veure tots els nivells"}
+                {levelsInfoOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </button>
+              {levelsInfoOpen && (
+                <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-primary-200 bg-white/50 p-2">
+                  <ul className="space-y-1 text-xs">
+                    {CATALOG.map((entry) => (
+                      <li key={entry.level} className="flex justify-between gap-2 py-0.5">
+                        <span className={getLevelInfo(entry.level).colorClass}>
+                          {entry.displayName}
+                        </span>
+                        <span className="text-slate-500 shrink-0">
+                          {getPointsForLevel(entry.level)} pt
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </div>

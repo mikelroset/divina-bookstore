@@ -24,6 +24,10 @@ The system SHALL compute a level from total points. The level SHALL be visible o
 
 The UI SHALL display the level with an attractive **name** (e.g. "Cavaller de les Històries — Or"), not a raw number. The system SHALL maintain a catalog of 71 levels with format: *Role name — Mineral rank* (Ferro, Bronze, Plata, Or, Platí, Esmeralda, Diamant). Level 71 SHALL display as "Llegenda Divina". Each mineral rank SHALL have an associated color for quick visual identification. The internal progression SHALL remain based on numeric level ID; names are a presentation layer. If the computed level is outside 1–71 (e.g. data error), the system SHALL clamp to 1 or 71 and display the corresponding name.
 
+- **Community members:** The members list SHALL display each member's level and rank (display name with mineral color) when available (from leaderboard sync).
+- **Login page:** The login screen SHALL include an expandable "Sistema de nivells" section with the full level catalog and points required per level.
+- **Profile:** The profile SHALL include expandable "Veure tots els nivells" that shows the level catalog with points, maintaining visual consistency with other blocks.
+
 ### Requirement: Community leaderboard
 
 The community page SHALL display a leaderboard block with: member name, points, position. The block SHALL support tabs for period: Weekly, Monthly, All time. The block SHALL follow the same visual style as other blocks.

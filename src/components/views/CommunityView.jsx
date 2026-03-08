@@ -23,7 +23,8 @@ import {
   getOpenCommunities,
   joinOpenCommunity,
 } from "../../services/communityManagementService";
-import { getLeaderboard, syncMyLeaderboardEntry } from "../../services/gamificationService";
+import { getLeaderboard, syncMyLeaderboardEntry, pointsToLevel } from "../../services/gamificationService";
+import { getLevelInfo } from "../../utils/levelCatalog";
 import { DEFAULT_COMMUNITY_ID, ROUTES } from "../../utils/constants";
 
 /** Ordena per activitat: lastUpdatedAt desc, startDate desc, títol asc */
@@ -74,6 +75,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   const [leaderboard, setLeaderboard] = useState([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
   const [showRankingTooltip, setShowRankingTooltip] = useState(false);
+  const [memberPointsByUserId, setMemberPointsByUserId] = useState({});
 
   const currentUserReadingBooks = userBooks.filter((b) => b.status === "reading");
   const canManageMembers = myRole === "owner" || myRole === "admin";
@@ -137,6 +139,20 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
       .catch(() => setLeaderboard([]))
       .finally(() => setLeaderboardLoading(false));
   }, [activeCommunityId, currentUser?.uid, currentUser?.displayName, leaderboardPeriod, members]);
+
+  useEffect(() => {
+    if (!activeCommunityId || members.length === 0) {
+      setMemberPointsByUserId({});
+      return;
+    }
+    getLeaderboard(activeCommunityId, "all")
+      .then((entries) => {
+        const map = {};
+        entries.forEach((e) => { map[e.userId] = e.points; });
+        setMemberPointsByUserId(map);
+      })
+      .catch(() => setMemberPointsByUserId({}));
+  }, [activeCommunityId, members]);
 
   useEffect(() => {
     if (!currentUser?.email) return;
@@ -544,12 +560,24 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
           {inviteError && <p className="text-sm text-red-600 mb-2" role="alert">{inviteError}</p>}
           {inviteSuccessMessage && <p className="text-sm text-primary-700 mb-2" role="status">{inviteSuccessMessage}</p>}
           <ul className="space-y-2">
-            {members.map((m) => (
+            {members.map((m) => {
+              const points = memberPointsByUserId[m.userId];
+              const level = points != null ? pointsToLevel(points) : null;
+              const levelInfo = level != null ? getLevelInfo(level) : null;
+              return (
               <li key={m.userId} className="flex items-center justify-between gap-2 py-2 border-b border-slate-100 last:border-0">
-                <span className="font-medium text-slate-800">{m.email || m.displayName || m.userId}</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                  {m.role === "owner" ? "Propietari" : m.role === "admin" ? "Admin" : "Participant"}
-                </span>
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="font-medium text-slate-800">{m.email || m.displayName || m.userId}</span>
+                  {levelInfo && (
+                    <span className={`text-xs font-medium ${levelInfo.colorClass}`}>
+                      {levelInfo.displayName}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                    {m.role === "owner" ? "Propietari" : m.role === "admin" ? "Admin" : "Participant"}
+                  </span>
                 {m.userId !== currentUser.uid && m.role !== "owner" && (
                   <div className="flex gap-1">
                     {myRole === "owner" && m.role === "participant" && (
@@ -578,8 +606,10 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                     </button>
                   </div>
                 )}
+                </div>
               </li>
-            ))}
+            );
+            })}
           </ul>
           </div>
         </div>
