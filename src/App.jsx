@@ -81,6 +81,7 @@ const App = () => {
   });
   const navigate = useNavigate();
   const [bookIdToDelete, setBookIdToDelete] = useState(null);
+  const [loginError, setLoginError] = useState(null);
   const {
     searchTerm,
     setSearchTerm,
@@ -103,11 +104,14 @@ const App = () => {
   };
 
   const handleGoogleLogin = async () => {
+    setLoginError(null);
     try {
       await login();
       navigate(ROUTES.HOME);
     } catch (error) {
-      showError("Error al iniciar sessió: " + (error?.message ?? "Error desconegut"));
+      const msg = "No s'ha pogut iniciar sessió. Torna-ho a provar.";
+      setLoginError(msg);
+      showError(msg);
     }
   };
 
@@ -136,7 +140,7 @@ const App = () => {
   };
 
   if (!user) {
-    return <WelcomeScreen onLogin={handleGoogleLogin} />;
+    return <WelcomeScreen onLogin={handleGoogleLogin} loginError={loginError} />;
   }
 
   return (
