@@ -1,5 +1,5 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, callableGetLeaderboard } from "./firebase";
 
 const GAMIFICATION_DOC = "gamification";
 const POINTS_PER_10_PAGES = 1;
@@ -201,28 +201,14 @@ export async function setShowInLeaderboard(userId, show) {
 }
 
 /**
- * Obté el leaderboard per a una comunitat.
- * @param {string[]} memberUserIds - userIds dels membres
+ * Obté el leaderboard per a una comunitat via Cloud Function.
+ * El client no pot llegir users/{uid}/prefs/gamification d'altres usuaris (Firestore rules).
+ * @param {string} communityId - ID de la comunitat
  * @param {'week'|'month'|'all'} period
  * @returns {Promise<Array<{ userId: string, displayName?: string, points: number, rank: number }>>}
  */
-export async function getLeaderboard(memberUserIds, period, displayNames = {}) {
-  if (!memberUserIds?.length) return [];
-  const results = await Promise.all(
-    memberUserIds.map(async (uid) => {
-      const g = await getGamification(uid);
-      if (g.showInLeaderboard === false) return null;
-      let points = g.totalPoints ?? 0;
-      if (period === "week") points = g.pointsThisWeek ?? 0;
-      else if (period === "month") points = g.pointsThisMonth ?? 0;
-      return {
-        userId: uid,
-        displayName: displayNames[uid] ?? "Lector",
-        points,
-      };
-    }),
-  );
-  const filtered = results.filter(Boolean);
-  filtered.sort((a, b) => b.points - a.points);
-  return filtered.map((r, i) => ({ ...r, rank: i + 1 }));
+export async function getLeaderboard(communityId, period) {
+  if (!communityId) return [];
+  const { data } = await callableGetLeaderboard({ communityId, period: period || "week" });
+  return data || [];
 }

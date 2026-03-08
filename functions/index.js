@@ -9,8 +9,11 @@
  */
 
 const { onDocumentWritten } = require("firebase-functions/v2/firestore");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { defineString } = require("firebase-functions/params");
 const admin = require("firebase-admin");
+
+const GAMIFICATION_DOC = "gamification";
 const { Resend } = require("resend");
 
 admin.initializeApp();
@@ -106,6 +109,66 @@ function escapeHtml(s) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 }
+
+/**
+ * Obté el rànquing de la comunitat (Cloud Function per bypassar restriccions Firestore).
+ * El client no pot llegir users/{uid}/prefs/gamification d'altres usuaris.
+ * @param {Object} data - { communityId: string, period: 'week'|'month'|'all' }
+ * @returns {Array<{ userId: string, displayName?: string, points: number, rank: number }>}
+ */
+exports.getLeaderboard = onCall({ region: "europe-west1" }, async (request) => {
+  if (!request.auth?.uid) {
+    throw new HttpsError("unauthenticated", "Cal iniciar sessió.");
+  }
+  const { communityId, period } = request.data || {};
+  if (!communityId || typeof communityId !== "string") {
+    throw new HttpsError("invalid-argument", "communityId requerit.");
+  }
+  const validPeriods = ["week", "month", "all"];
+  const p = validPeriods.includes(period) ? period : "week";
+
+  const db = admin.firestore();
+
+  const memberRef = db.collection("communities").doc(communityId).collection("members").doc(request.auth.uid);
+  const memberSnap = await memberRef.get();
+  if (!memberSnap.exists || memberSnap.data()?.status !== "active") {
+    throw new HttpsError("permission-denied", "No ets membre d'aquesta comunitat.");
+  }
+
+  const membersSnap = await db
+    .collection("communities")
+    .doc(communityId)
+    .collection("members")
+    .where("status", "==", "active")
+    .get();
+
+  const displayNames = {};
+  const memberIds = [];
+  membersSnap.docs.forEach((d) => {
+    const data = d.data();
+    memberIds.push(d.id);
+    displayNames[d.id] = data.displayName || data.email || "Lector";
+  });
+
+  const results = [];
+  for (const uid of memberIds) {
+    const gRef = db.collection("users").doc(uid).collection("prefs").doc(GAMIFICATION_DOC);
+    const gSnap = await gRef.get();
+    const data = gSnap.exists ? gSnap.data() : {};
+    if (data.showInLeaderboard === false) continue;
+    let points = data.totalPoints ?? 0;
+    if (p === "week") points = data.pointsThisWeek ?? 0;
+    else if (p === "month") points = data.pointsThisMonth ?? 0;
+    results.push({
+      userId: uid,
+      displayName: displayNames[uid] ?? "Lector",
+      points,
+    });
+  }
+
+  results.sort((a, b) => b.points - a.points);
+  return results.map((r, i) => ({ ...r, rank: i + 1 }));
+});
 
 /**
  * Quan es crea o actualitza un document a communityInvites:

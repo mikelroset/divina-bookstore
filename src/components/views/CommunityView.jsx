@@ -121,20 +121,16 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   }, [activeCommunityId, currentUser?.uid]);
 
   useEffect(() => {
-    if (!members.length) {
+    if (!activeCommunityId || !currentUser?.uid) {
       setLeaderboard([]);
       return;
     }
-    const memberUserIds = members.map((m) => m.userId);
-    const displayNames = Object.fromEntries(
-      members.map((m) => [m.userId, m.displayName ?? m.email ?? "Lector"]),
-    );
     setLeaderboardLoading(true);
-    getLeaderboard(memberUserIds, leaderboardPeriod, displayNames)
+    getLeaderboard(activeCommunityId, leaderboardPeriod)
       .then(setLeaderboard)
       .catch(() => setLeaderboard([]))
       .finally(() => setLeaderboardLoading(false));
-  }, [members, leaderboardPeriod]);
+  }, [activeCommunityId, currentUser?.uid, leaderboardPeriod]);
 
   useEffect(() => {
     if (!currentUser?.email) return;
