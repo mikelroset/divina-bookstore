@@ -23,7 +23,7 @@ import {
   getOpenCommunities,
   joinOpenCommunity,
 } from "../../services/communityManagementService";
-import { getLeaderboard } from "../../services/gamificationService";
+import { getLeaderboard, syncMyLeaderboardEntry } from "../../services/gamificationService";
 import { DEFAULT_COMMUNITY_ID, ROUTES } from "../../utils/constants";
 
 /** Ordena per activitat: lastUpdatedAt desc, startDate desc, títol asc */
@@ -121,20 +121,22 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   }, [activeCommunityId, currentUser?.uid]);
 
   useEffect(() => {
-    if (!members.length) {
+    if (!activeCommunityId || !currentUser?.uid) {
       setLeaderboard([]);
       return;
     }
-    const memberUserIds = members.map((m) => m.userId);
-    const displayNames = Object.fromEntries(
-      members.map((m) => [m.userId, m.displayName ?? m.email ?? "Lector"]),
-    );
+    const displayName =
+      members.find((m) => m.userId === currentUser.uid)?.displayName ??
+      members.find((m) => m.userId === currentUser.uid)?.email ??
+      currentUser.displayName ??
+      "Lector";
     setLeaderboardLoading(true);
-    getLeaderboard(memberUserIds, leaderboardPeriod, displayNames)
+    syncMyLeaderboardEntry(currentUser.uid, activeCommunityId, displayName)
+      .then(() => getLeaderboard(activeCommunityId, leaderboardPeriod))
       .then(setLeaderboard)
       .catch(() => setLeaderboard([]))
       .finally(() => setLeaderboardLoading(false));
-  }, [members, leaderboardPeriod]);
+  }, [activeCommunityId, currentUser?.uid, currentUser?.displayName, leaderboardPeriod, members]);
 
   useEffect(() => {
     if (!currentUser?.email) return;

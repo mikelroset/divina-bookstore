@@ -73,6 +73,7 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
    | `users/{userId}/prefs/{docId}` | Preferències (objectiu anual, ratxa) | Només el propi usuari |
    | `communities/{communityId}` | Comunitats (nom, visibilitat, owner, status) | Usuaris autenticats (read, create, update, delete) |
    | `communities/{communityId}/members/{userId}` | Membres d’una comunitat (rol, status) | Usuaris autenticats |
+   | `communities/{communityId}/leaderboard/{userId}` | Rànquing (punts per membre) | Llegir: membres actius; escriure: només el propi doc |
    | `communityInvites/{inviteId}` | Invitacions per email a comunitat | Read/create/update: autenticats; delete: no |
 
    Blocs complets per copiar a les Rules:
@@ -111,6 +112,12 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
        allow read: if request.auth != null;
        allow create: if request.auth != null;
        allow update, delete: if request.auth != null;
+     }
+     match /leaderboard/{userId} {
+       allow read: if request.auth != null
+         && exists(/databases/$(database)/documents/communities/$(communityId)/members/$(request.auth.uid))
+         && get(/databases/$(database)/documents/communities/$(communityId)/members/$(request.auth.uid)).data.status == 'active';
+       allow create, update, delete: if request.auth != null && request.auth.uid == userId;
      }
    }
 

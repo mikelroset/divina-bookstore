@@ -1,5 +1,7 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "./firebase";
+
+const LEADERBOARD_SUBCOLLECTION = "leaderboard";
 
 const GAMIFICATION_DOC = "gamification";
 const POINTS_PER_10_PAGES = 1;
@@ -188,6 +190,7 @@ export async function addPointsForPages(userId, deltaPages, totalPages) {
 
 /**
  * Activa o desactiva l'aparició de l'usuari al rànquing.
+ * Les entrades al leaderboard s'actualitzaran en la propera visita a cada comunitat (syncMyLeaderboardEntry).
  * @param {string} userId - UID de l'usuari
  * @param {boolean} show - true per aparèixer, false per ocultar
  */
@@ -201,28 +204,53 @@ export async function setShowInLeaderboard(userId, show) {
 }
 
 /**
- * Obté el leaderboard per a una comunitat.
- * @param {string[]} memberUserIds - userIds dels membres
+ * Sincronitza les dades de gamificació de l'usuari al leaderboard de la comunitat.
+ * Cada usuari escriu el seu propi document; si showInLeaderboard és false, s'elimina el doc.
+ * Cal cridar-la quan l'usuari entra a la comunitat o quan canvia showInLeaderboard.
+ * @param {string} userId - UID de l'usuari
+ * @param {string} communityId - ID de la comunitat
+ * @param {string} [displayName] - Nom a mostrar (des de members o perfil)
+ */
+export async function syncMyLeaderboardEntry(userId, communityId, displayName = "Lector") {
+  if (!userId || !communityId) return;
+  const g = await getGamification(userId);
+  const ref = doc(db, "communities", communityId, LEADERBOARD_SUBCOLLECTION, userId);
+  if (g.showInLeaderboard === false) {
+    await deleteDoc(ref).catch((err) => console.error("Error eliminant entrada leaderboard:", err));
+    return;
+  }
+  await setDoc(ref, {
+    totalPoints: g.totalPoints ?? 0,
+    pointsThisWeek: g.pointsThisWeek ?? 0,
+    pointsThisMonth: g.pointsThisMonth ?? 0,
+    displayName: displayName || "Lector",
+    updatedAt: Date.now(),
+  }, { merge: true });
+}
+
+/**
+ * Obté el leaderboard des de la col·lecció leaderboard de la comunitat.
+ * Els membres sincronitzen les seves dades amb syncMyLeaderboardEntry en obrir la comunitat.
+ * @param {string} communityId - ID de la comunitat
  * @param {'week'|'month'|'all'} period
  * @returns {Promise<Array<{ userId: string, displayName?: string, points: number, rank: number }>>}
  */
-export async function getLeaderboard(memberUserIds, period, displayNames = {}) {
-  if (!memberUserIds?.length) return [];
-  const results = await Promise.all(
-    memberUserIds.map(async (uid) => {
-      const g = await getGamification(uid);
-      if (g.showInLeaderboard === false) return null;
-      let points = g.totalPoints ?? 0;
-      if (period === "week") points = g.pointsThisWeek ?? 0;
-      else if (period === "month") points = g.pointsThisMonth ?? 0;
-      return {
-        userId: uid,
-        displayName: displayNames[uid] ?? "Lector",
-        points,
-      };
-    }),
-  );
-  const filtered = results.filter(Boolean);
-  filtered.sort((a, b) => b.points - a.points);
-  return filtered.map((r, i) => ({ ...r, rank: i + 1 }));
+export async function getLeaderboard(communityId, period) {
+  if (!communityId) return [];
+  const colRef = collection(db, "communities", communityId, LEADERBOARD_SUBCOLLECTION);
+  const snap = await getDocs(colRef);
+  const p = period || "week";
+  const results = snap.docs.map((d) => {
+    const data = d.data();
+    let points = data.totalPoints ?? 0;
+    if (p === "week") points = data.pointsThisWeek ?? 0;
+    else if (p === "month") points = data.pointsThisMonth ?? 0;
+    return {
+      userId: d.id,
+      displayName: data.displayName ?? "Lector",
+      points,
+    };
+  });
+  results.sort((a, b) => b.points - a.points);
+  return results.map((r, i) => ({ ...r, rank: i + 1 }));
 }

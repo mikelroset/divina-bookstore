@@ -26,6 +26,8 @@ The system SHALL compute a level from total points (e.g. Level 1, 2, 3…). The 
 
 The community page SHALL display a leaderboard block with: member name, points, position. The block SHALL support tabs for period: Weekly, Monthly, All time. The block SHALL follow the same visual style as other blocks.
 
+The leaderboard SHALL display points for **all active members** of the selected community, not only the logged-in user. Because Firestore rules restrict read access to `users/{uid}/prefs/gamification` to the owning user only, the app uses a denormalized collection `communities/{communityId}/leaderboard/{userId}` where each user writes their own entry. When entering a community, the client syncs its gamification data to its leaderboard doc; the leaderboard block reads from this collection. Members who have not opened the community recently may not appear until they next sync.
+
 ### Requirement: Leaderboard opt-in
 
 Users SHALL be able to opt out of appearing on the leaderboard. When "Show in ranking" is disabled, the user SHALL NOT appear on the leaderboard but SHALL continue to accumulate points and levels on their profile.
