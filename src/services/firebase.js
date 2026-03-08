@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getFunctions, httpsCallable } from "firebase/functions";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -17,9 +16,6 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
-
-const functions = getFunctions(app, "europe-west1");
-export const callableGetLeaderboard = httpsCallable(functions, "getLeaderboard");
 
 googleProvider.setCustomParameters({
   prompt: "select_account",

@@ -23,7 +23,7 @@ import {
   getOpenCommunities,
   joinOpenCommunity,
 } from "../../services/communityManagementService";
-import { getLeaderboard } from "../../services/gamificationService";
+import { getLeaderboard, syncMyLeaderboardEntry } from "../../services/gamificationService";
 import { DEFAULT_COMMUNITY_ID, ROUTES } from "../../utils/constants";
 
 /** Ordena per activitat: lastUpdatedAt desc, startDate desc, títol asc */
@@ -125,12 +125,18 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
       setLeaderboard([]);
       return;
     }
+    const displayName =
+      members.find((m) => m.userId === currentUser.uid)?.displayName ??
+      members.find((m) => m.userId === currentUser.uid)?.email ??
+      currentUser.displayName ??
+      "Lector";
     setLeaderboardLoading(true);
-    getLeaderboard(activeCommunityId, leaderboardPeriod)
+    syncMyLeaderboardEntry(currentUser.uid, activeCommunityId, displayName)
+      .then(() => getLeaderboard(activeCommunityId, leaderboardPeriod))
       .then(setLeaderboard)
       .catch(() => setLeaderboard([]))
       .finally(() => setLeaderboardLoading(false));
-  }, [activeCommunityId, currentUser?.uid, leaderboardPeriod]);
+  }, [activeCommunityId, currentUser?.uid, currentUser?.displayName, leaderboardPeriod, members]);
 
   useEffect(() => {
     if (!currentUser?.email) return;
