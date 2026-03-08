@@ -1,10 +1,6 @@
-# auth-session Specification
+# auth-session (delta)
 
-## Purpose
-
-Gestió de sessió (login, logout) i experiència de la pantalla d'entrada.
-
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Informative login screen
 
@@ -17,14 +13,3 @@ The login (welcome) screen SHALL communicate the value of the app before the use
 - The screen SHALL explicitly indicate that login is done with a Google account.
 - The screen SHALL be responsive (mobile: CTA at top, blocks in scroll; desktop: two columns with CTA and blocks).
 - When Social Login fails or is cancelled, the screen SHALL display a clear error message ("No s'ha pogut iniciar sessió. Torna-ho a provar.") while keeping the informative content visible.
-
-### Requirement: Logout error feedback
-
-The app SHALL inform the user when the logout action fails (e.g. network or server error), so that the user knows the session may still be active.
-
-#### Scenario: Logout fails
-
-- **WHEN** the user taps "Tancar Sessió" and the logout request fails (e.g. throws)
-- **THEN** the user SHALL see an error message (e.g. alert or toast) indicating that logout failed
-- **AND** the error SHALL be logged to the console for debugging
-
