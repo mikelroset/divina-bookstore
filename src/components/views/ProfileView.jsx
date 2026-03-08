@@ -8,7 +8,7 @@ import { ROUTES } from "../../utils/constants";
 export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal }) => {
   const navigate = useNavigate();
   const { isSuperadmin, loading } = useSuperadmin(user?.uid);
-  const { totalPoints, level, toNextLevel, showInLeaderboard, setShowInLeaderboard, loading: gamificationLoading } = useGamification(user?.uid);
+  const { totalPoints, level, levelDisplayName, levelColorClass, toNextLevel, toNextLevelProgressPct, nextLevelDisplayName, showInLeaderboard, setShowInLeaderboard, loading: gamificationLoading } = useGamification(user?.uid);
   const completed = stats?.completedBooks ?? 0;
   const goal = Math.max(0, parseInt(annualGoal, 10) || 0);
   const progressPct = goal > 0 ? Math.min(100, Math.round((completed / goal) * 100)) : 0;
@@ -69,16 +69,18 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                 <p className="text-sm text-slate-600">Punts totals</p>
                 <p className="text-2xl font-serif text-primary-800">{totalPoints}</p>
               </div>
-              <p className="text-sm text-slate-600 mb-2">Nivell {level}</p>
-              {toNextLevel > 0 && (
+              <p className={`text-sm mb-2 font-medium ${levelColorClass}`}>
+                {levelDisplayName}
+              </p>
+              {toNextLevel > 0 && nextLevelDisplayName && (
                 <div className="space-y-1">
                   <p className="text-xs text-slate-600">
-                    Progrés cap al nivell {level + 1}: {100 - toNextLevel} / 100 punts
+                    Progrés cap a {nextLevelDisplayName}: {toNextLevelProgressPct}%
                   </p>
                   <div className="bg-slate-200 rounded-full h-2 overflow-hidden">
                     <div
                       className="bg-primary-500 h-full rounded-full transition-all"
-                      style={{ width: `${Math.min(100, Math.max(0, 100 - toNextLevel))}%` }}
+                      style={{ width: `${Math.min(100, Math.max(0, toNextLevelProgressPct))}%` }}
                     />
                   </div>
                 </div>

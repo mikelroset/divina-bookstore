@@ -5,6 +5,7 @@ import {
   pointsToLevel,
   pointsToNextLevel,
 } from "../services/gamificationService";
+import { getLevelInfo } from "../utils/levelCatalog";
 
 export function useGamification(userId) {
   const [gamification, setGamification] = useState(null);
@@ -56,7 +57,9 @@ export function useGamification(userId) {
 
   const totalPoints = gamification?.totalPoints ?? 0;
   const level = pointsToLevel(totalPoints);
-  const toNextLevel = pointsToNextLevel(totalPoints);
+  const toNextLevelData = pointsToNextLevel(totalPoints);
+  const levelInfo = getLevelInfo(level);
+  const nextLevelInfo = level < 71 ? getLevelInfo(level + 1) : null;
   const showInLeaderboard = gamification?.showInLeaderboard !== false;
 
   return {
@@ -64,7 +67,11 @@ export function useGamification(userId) {
     pointsThisWeek: gamification?.pointsThisWeek ?? 0,
     pointsThisMonth: gamification?.pointsThisMonth ?? 0,
     level,
-    toNextLevel,
+    levelDisplayName: levelInfo.displayName,
+    levelColorClass: levelInfo.colorClass,
+    toNextLevel: toNextLevelData.points,
+    toNextLevelProgressPct: toNextLevelData.progressPct,
+    nextLevelDisplayName: nextLevelInfo?.displayName ?? null,
     showInLeaderboard,
     setShowInLeaderboard: setShowInLeaderboardOpt,
     loading,
