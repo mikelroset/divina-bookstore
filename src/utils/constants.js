@@ -43,6 +43,7 @@ export const BOOK_GENRES = [
   "Viatges",
   "Art",
   "Ciència",
+  "Clàssic",
   "Tecnologia",
   "Negocis",
   "Espiritualitat",
