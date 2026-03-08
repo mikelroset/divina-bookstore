@@ -9,7 +9,9 @@ import {
   Shield,
   Lock,
   Trash2,
+  Award,
 } from "lucide-react";
+import { CATALOG, getLevelInfo, getPointsForLevel } from "../../utils/levelCatalog";
 
 const FAQ_ITEMS = [
   {
@@ -55,6 +57,7 @@ const FEATURE_CARDS = [
 
 export const WelcomeScreen = ({ onLogin, loginError }) => {
   const [faqOpen, setFaqOpen] = React.useState(null);
+  const [levelsOpen, setLevelsOpen] = React.useState(false);
 
   const handleClick = () => {
     if (onLogin) {
@@ -170,6 +173,44 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
                 </div>
               ))}
             </div>
+          </section>
+
+          {/* Bloc — Sistema de nivells (desplegable) */}
+          <section className="bg-white/70 backdrop-blur-sm rounded-xl border border-primary-200 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setLevelsOpen(!levelsOpen)}
+              className="w-full flex items-center justify-between gap-2 p-4 text-left text-slate-800 font-semibold hover:bg-primary-50/50 transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <Award className="w-5 h-5 text-primary-600" />
+                Sistema de nivells
+              </span>
+              {levelsOpen ? (
+                <ChevronDown className="w-4 h-4 shrink-0" />
+              ) : (
+                <ChevronRight className="w-4 h-4 shrink-0" />
+              )}
+            </button>
+            {levelsOpen && (
+              <div className="px-4 pb-4 pt-0 max-h-64 overflow-y-auto">
+                <p className="text-xs text-slate-600 mb-2">
+                  Guanya punts llegint; cada ~171 punts pugen de rang. El nivell 71 és <span className="font-medium text-amber-500">Llegenda Divina</span>.
+                </p>
+                <ul className="space-y-1 text-sm">
+                  {CATALOG.map((entry) => (
+                    <li key={entry.level} className="flex justify-between gap-2 py-1 border-b border-slate-100 last:border-0">
+                      <span className={getLevelInfo(entry.level).colorClass}>
+                        {entry.displayName}
+                      </span>
+                      <span className="text-slate-500 shrink-0">
+                        {getPointsForLevel(entry.level)} punts
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </section>
 
           {/* Bloc 4 — Confiança */}

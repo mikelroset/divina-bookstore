@@ -8,7 +8,9 @@ const POINTS_PER_10_PAGES = 1;
 const POINTS_PER_BOOK_COMPLETED = 10;
 const POINTS_STREAK_BONUS = 5;
 const STREAK_BONUS_EVERY_DAYS = 5;
-const POINTS_PER_LEVEL = 100;
+const POINTS_PER_LEVEL = 171; // ~12000 punts per nivell 71; ~171 per rang mineral
+const LEVEL_MIN = 1;
+const LEVEL_MAX = 71;
 const MAX_PAGES_DELTA_PER_UPDATE = 300;
 
 function weekKey() {
@@ -23,23 +25,30 @@ function monthKey() {
 }
 
 /**
- * Calcula el nivell a partir dels punts totals (nivell 1, 2, 3...).
+ * Calcula el nivell a partir dels punts totals (1-71).
  * @param {number} points - Punts totals
- * @returns {number} Nivell actual
+ * @returns {number} Nivell actual (clamp 1-71)
  */
 export function pointsToLevel(points) {
-  return 1 + Math.floor((points ?? 0) / POINTS_PER_LEVEL);
+  const raw = 1 + Math.floor((points ?? 0) / POINTS_PER_LEVEL);
+  return Math.max(LEVEL_MIN, Math.min(LEVEL_MAX, raw));
 }
 
 /**
  * Punts necessaris per arribar al següent nivell.
  * @param {number} points - Punts totals actuals
- * @returns {number} Punts que falten per al següent nivell
+ * @returns {{ points: number, progressPct: number }}
  */
 export function pointsToNextLevel(points) {
   const current = points ?? 0;
-  const nextLevelAt = pointsToLevel(current) * POINTS_PER_LEVEL;
-  return Math.max(0, nextLevelAt - current);
+  const level = pointsToLevel(current);
+  if (level >= LEVEL_MAX) return { points: 0, progressPct: 100 };
+  const currentLevelStart = (level - 1) * POINTS_PER_LEVEL;
+  const nextLevelAt = level * POINTS_PER_LEVEL;
+  const pointsInLevel = current - currentLevelStart;
+  const pointsNeeded = nextLevelAt - current;
+  const progressPct = Math.round((pointsInLevel / POINTS_PER_LEVEL) * 100);
+  return { points: Math.max(0, pointsNeeded), progressPct };
 }
 
 /**
