@@ -5,6 +5,7 @@ import { BookCover } from "../common/BookCover";
 const defaultBook = {
   title: "",
   author: "",
+  originalTitle: "",
   genre: "",
   status: "pending",
   rating: 0,
@@ -105,7 +106,7 @@ export const BookForm = ({
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg space-y-5">
-      {/* Títol i Autor */}
+      {/* Títol, Títol original i Autor */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -143,6 +144,19 @@ export const BookForm = ({
           {errors.author && (
             <p className="text-red-500 text-xs mt-1">{errors.author}</p>
           )}
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Títol original
+          </label>
+          <input
+            type="text"
+            value={formData.originalTitle ?? ""}
+            onChange={(e) => handleChange("originalTitle", e.target.value)}
+            placeholder="p. ex. The Great Gatsby (si el títol és traduït)"
+            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:border-primary-400 focus:ring-primary-200"
+          />
         </div>
       </div>
 
