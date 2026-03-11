@@ -1,12 +1,13 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Home, Library, Users, PlusCircle, User } from "lucide-react";
+import { Home, Library, Users, Star, PlusCircle, User } from "lucide-react";
 import { ROUTES } from "../../utils/constants";
 
 const navItems = [
   { to: ROUTES.HOME, Icon: Home, label: "Inici" },
   { to: ROUTES.LIBRARY, Icon: Library, label: "Biblioteca" },
   { to: ROUTES.COMMUNITY, Icon: Users, label: "Comunitat" },
+  { to: ROUTES.REVIEWS, Icon: Star, label: "Ressenyes" },
   { to: ROUTES.ADD, Icon: PlusCircle, label: "Afegir" },
   { to: ROUTES.PROFILE, Icon: User, label: "Perfil" },
 ];

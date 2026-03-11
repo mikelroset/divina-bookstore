@@ -7,6 +7,7 @@ import { ConfirmModal } from "./components/common/ConfirmModal";
 import { HomeView } from "./components/views/HomeView";
 import { LibraryView } from "./components/views/LibraryView";
 import { CommunityView } from "./components/views/CommunityView";
+import { ReviewsView } from "./components/views/ReviewsView";
 import { InviteAcceptView } from "./components/views/InviteAcceptView";
 import { AddBookView } from "./components/views/AddBookView";
 import { ProfileView } from "./components/views/ProfileView";
@@ -167,6 +168,10 @@ const App = () => {
           <Route
             path={ROUTES.COMMUNITY}
             element={<CommunityView currentUser={user} userBooks={books} activeCommunityId={activeCommunityId} onSelectCommunity={setActiveCommunityId} userCommunityIds={userCommunityIds} addCommunityToUser={addCommunityToUser} syncUserCommunityIds={syncUserCommunityIds} />}
+          />
+          <Route
+            path={ROUTES.REVIEWS}
+            element={<ReviewsView currentUser={user} books={books} />}
           />
           <Route
             path={`${ROUTES.COMMUNITY_INVITE}/:inviteId`}

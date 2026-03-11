@@ -33,6 +33,12 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
 - **Cerca de descripció**: omplir la descripció automàticament.
 - Es pot afegir un llibre nou o editar-ne un existent (ruta `/add` i `/add/:id`).
 
+### Ressenyes
+- Llista de **ressenyes** de llibres publicades per la comunitat (títol, autor, membre, data, likes).
+- **Paginació** (10 per pàgina), **cerca** i **filtres** (títol, autor, membre, data).
+- **Likes**: un like màxim per membre per ressenya; es pot desfer.
+- **Publicar ressenya**: només per llibres completats (títol, autor, text).
+
 ### Comunitat
 - Llista de **lectors de la comunitat** que tenen un llibre en lectura.
 - Es mostra el llibre que estàs llegint tu i el que llegeix cada altre lector (portada, títol, autor, gènere, progrés, dies llegint).
@@ -75,6 +81,8 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
    | `communities/{communityId}/members/{userId}` | Membres d’una comunitat (rol, status) | Usuaris autenticats |
    | `communities/{communityId}/leaderboard/{userId}` | Rànquing (punts per membre) | Llegir: membres actius; escriure: només el propi doc |
    | `communityInvites/{inviteId}` | Invitacions per email a comunitat | Read/create/update: autenticats; delete: no |
+   | `reviews/{reviewId}` | Ressenyes de llibres (títol, autor, text, likes) | Read: autenticats; create: amb authorUserId = auth.uid; update: només likeCount |
+   | `reviews/{reviewId}/likes/{userId}` | Likes per ressenya (1 per usuari) | Read: autenticats; create/delete: només el propi userId |
 
    Blocs complets per copiar a les Rules:
 
@@ -127,9 +135,26 @@ Aplicació de biblioteca personal en català per gestionar la teva col·lecció 
      allow update: if request.auth != null;
      allow delete: if false;
    }
+
+   // Ressenyes: tots poden llegir; només el propi usuari pot crear amb el seu authorUserId; update només per likeCount
+   match /reviews/{reviewId} {
+     allow read: if request.auth != null;
+     allow create: if request.auth != null
+       && request.resource.data.authorUserId == request.auth.uid;
+     allow update: if request.auth != null
+       && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
+       && request.resource.data.likeCount is int
+       && request.resource.data.likeCount >= 0;
+     allow delete: if false;
+     match /likes/{userId} {
+       allow read: if request.auth != null;
+       allow create, delete: if request.auth != null && request.auth.uid == userId;
+       allow update: if false;
+     }
+   }
    ```
 
-   **Índexs:** (1) Col·lecció `encouragements`, camps `toUserId` (Ascending) i `createdAt` (Descending). (2) Col·lecció `communityInvites`, camps `email` (Ascending) i `status` (Ascending). (3) Fase 3 – comunitats obertes: col·lecció `communities`, camps `visibility` (Ascending) i `status` (Ascending). Si Firebase ho demana, crea’ls des de l’enllaç de l’error.
+   **Índexs:** (1) Col·lecció `encouragements`, camps `toUserId` (Ascending) i `createdAt` (Descending). (2) Col·lecció `communityInvites`, camps `email` (Ascending) i `status` (Ascending). (3) Fase 3 – comunitats obertes: col·lecció `communities`, camps `visibility` (Ascending) i `status` (Ascending). (4) Col·lecció `reviews`, camp `createdAt` (Descending) per la paginació. Si Firebase ho demana, crea’ls des de l’enllaç de l’error.
 
    **Invitacions per correu (enllaç d’acceptació):** Format de l’enllaç: `{baseUrl}/community/invite/{inviteId}?token={inviteToken}`. Les invitacions emmagatzemen `inviteToken` i `lastEmailSentAt` (idempotència 10 min).
 
