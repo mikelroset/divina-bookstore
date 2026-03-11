@@ -3,6 +3,7 @@ export const VIEW_IDS = {
   HOME: "home",
   LIBRARY: "library",
   COMMUNITY: "community",
+  REVIEWS: "reviews",
   ADD: "add",
   PROFILE: "profile",
 };
@@ -13,6 +14,7 @@ export const ROUTES = {
   LIBRARY: "/library",
   COMMUNITY: "/community",
   COMMUNITY_INVITE: "/community/invite",
+  REVIEWS: "/reviews",
   ADD: "/add",
   PROFILE: "/profile",
   ADMIN_COMMUNITIES: "/profile/admin-communities",
