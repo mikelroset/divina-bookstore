@@ -4,7 +4,7 @@ description: Create OpenSpec change and PR from a Notion page (fetch → branch 
 license: MIT
 metadata:
   author: divina-bookstore
-  version: "1.1"
+  version: "1.2"
 ---
 
 Create a new OpenSpec change from a Notion page: fetch content, create a git branch, scaffold the change, fill proposal/design/tasks from the page, **apply** the change (implement tasks), **archive** it (sync specs, move to archive), then commit, push, and open a PR.
@@ -52,9 +52,11 @@ If the page uses different headings, infer the mapping from context (e.g. "Probl
      - Write `openspec/changes/<name>/tasks.md`: acceptance criteria / tasks as checklist items.
    - If the schema includes other artifacts (e.g. specs), create them from "Requirements" or equivalent sections when present.
    - Run `openspec status --change "<name>"` and create any remaining required artifacts so the change is ready for implementation.
+   - **Multi-perspective review**: Read [PERSONAS.md](PERSONAS.md) and apply the checklists for PO, Designer, Frontend, and Backend. Refine proposal, design, and tasks if gaps are found (add missing acceptance criteria, edge cases, UX considerations, or data model details as relevant).
 
 6. **Apply OpenSpec change**
    - Follow the apply flow for change `<name>`: read context files from `openspec instructions apply --change "<name>" --json`, implement each pending task, mark tasks complete in `tasks.md`.
+   - **Multi-perspective review during implementation**: Apply the implementation criteria from [PERSONAS.md](PERSONAS.md) as you implement—PO (covers acceptance criteria), Designer (UI consistency, accessibility), Frontend (components, state, performance), Backend (validation, errors, security). Adjust code if gaps are found.
    - If a task is blocked or unclear, stop and report; do not commit half-done.
    - Verification-only tasks (e.g. "Revisar visualment") may be left unchecked; the user can confirm later.
 
