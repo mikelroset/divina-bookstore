@@ -156,6 +156,7 @@ const App = () => {
             element={
               <LibraryView
                 books={filteredBooks}
+                totalBooksCount={books.length}
                 onEdit={handleEditBook}
                 onDelete={handleDeleteRequest}
                 searchTerm={searchTerm}
@@ -179,6 +180,7 @@ const App = () => {
           />
           <Route path={ROUTES.ADD} element={<AddBookRoute recordReadingActivity={recordReadingActivity} userCommunityIds={userCommunityIds} user={user} />} />
           <Route path={`${ROUTES.ADD}/:id`} element={<AddBookRoute recordReadingActivity={recordReadingActivity} userCommunityIds={userCommunityIds} user={user} />} />
+          <Route path="/add-book" element={<Navigate to={ROUTES.ADD} replace />} />
           <Route
             path={ROUTES.PROFILE}
             element={<ProfileView user={user} onLogout={handleLogout} stats={stats} annualGoal={annualGoal} setAnnualGoal={setAnnualGoal} books={books} readingActivityDays={readingActivityDays} />}
