@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Star, Heart, ChevronDown, ChevronUp, Search, Plus } from "lucide-react";
+import { PrimaryButton } from "../common/Button";
 import { Avatar } from "../common/Avatar";
 import { dateUtils } from "../../utils/dateUtils";
 import {
@@ -239,13 +240,13 @@ export const ReviewsView = ({ currentUser, books }) => {
           </p>
         </div>
         {completedBooks.length > 0 && (
-          <button
+          <PrimaryButton
+            type="button"
             onClick={() => setShowPublishModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl font-medium transition-colors"
+            icon={Plus}
           >
-            <Plus className="w-5 h-5" />
             Publicar ressenya
-          </button>
+          </PrimaryButton>
         )}
       </div>
 
@@ -533,7 +534,7 @@ export const ReviewsView = ({ currentUser, books }) => {
               <button
                 onClick={handlePublish}
                 disabled={!publishBook || !publishText?.trim() || publishing}
-                className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white rounded-xl font-medium"
+                className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium"
               >
                 {publishing ? "Publicant…" : "Publicar"}
               </button>
