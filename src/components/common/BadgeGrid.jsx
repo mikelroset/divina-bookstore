@@ -37,7 +37,7 @@ function BadgeTooltip({ badge, unlocked, onClose }) {
           <img
             src={badge.image}
             alt=""
-            className={`w-24 h-24 rounded-xl object-cover flex-shrink-0 ${!unlocked ? "grayscale opacity-70" : ""}`}
+            className={`w-24 h-24 rounded-xl object-contain flex-shrink-0 ${!unlocked ? "grayscale opacity-70" : ""}`}
             loading="lazy"
           />
         </div>
@@ -100,7 +100,7 @@ export function BadgeCard({ badge, unlocked }) {
         <img
           src={badge.image}
           alt={badge.name}
-          className={`w-12 h-12 rounded-lg object-cover transition-all ${!unlocked ? "grayscale opacity-60" : ""}`}
+          className={`w-12 h-12 rounded-lg object-contain transition-all ${!unlocked ? "grayscale opacity-60" : ""}`}
           loading="lazy"
         />
       </button>

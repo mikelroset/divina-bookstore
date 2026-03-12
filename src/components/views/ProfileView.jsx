@@ -82,7 +82,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
         </div>
 
         <div className="bg-primary-50 rounded-xl p-4 border border-primary-500 mb-6">
-          <p className="text-sm text-slate-600 mb-3">Badges</p>
+          <p className="text-sm text-slate-600 mb-3">Insígnies</p>
           {badgesLoading ? (
             <p className="text-sm text-slate-500">Carregant badges...</p>
           ) : (
