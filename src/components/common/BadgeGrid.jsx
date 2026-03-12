@@ -1,0 +1,146 @@
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { BADGE_CATALOG, CATEGORY_ORDER } from "../../utils/badgeCatalog";
+
+/**
+ * Popup amb informació del badge. Es renderitza en portal (body) amb position fixed
+ * per no quedar tallat pels extrems de la pantalla.
+ * Desktop: hover. Mobile: tap.
+ */
+function BadgeTooltip({ badge, unlocked, onClose }) {
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [onClose]);
+
+  const popup = (
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={badge.name}
+    >
+      <div
+        className="absolute inset-0 bg-black/30"
+        onClick={onClose}
+        onMouseDown={onClose}
+        aria-hidden
+      />
+      <div
+        className="relative z-10 w-full max-w-xs rounded-xl border border-primary-500 bg-white p-5 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-center mb-3">
+          <img
+            src={badge.image}
+            alt=""
+            className={`w-24 h-24 rounded-xl object-contain flex-shrink-0 ${!unlocked ? "grayscale opacity-70" : ""}`}
+            loading="lazy"
+          />
+        </div>
+        <p className="font-semibold text-slate-800 text-sm text-center">{badge.name}</p>
+        <p className="text-xs text-slate-600 mt-1 text-center">{badge.description}</p>
+        <p className="text-xs text-primary-600 mt-2 text-center">
+          {unlocked ? "Desbloquejat" : `Condició: ${getConditionLabel(badge)}`}
+        </p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-4 w-full py-2 text-sm text-primary-600 hover:underline font-medium rounded-lg hover:bg-primary-50 transition-colors"
+        >
+          Tancar
+        </button>
+      </div>
+    </div>
+  );
+
+  return createPortal(popup, document.body);
+}
+
+function getConditionLabel(badge) {
+  const v = badge.conditionValue;
+  switch (badge.condition) {
+    case "books_completed":
+      return `${v} llibres completats`;
+    case "total_pages":
+      return `${v?.toLocaleString?.() ?? v} pàgines llegides`;
+    case "streak_days":
+      return `${v} dies seguits`;
+    case "genres_count":
+      return `${v} gèneres diferents`;
+    case "classics_completed":
+      return `${v} clàssic(s) completat(s)`;
+    case "book_pages_min":
+      return `Llibre de ${v}+ pàgines`;
+    case "pages_in_day":
+      return `${v} pàgines en un dia`;
+    case "reviews_count":
+      return `${v} ressenyes publicades`;
+    case "encouragements_sent":
+      return `${v} encoratjaments enviats`;
+    default:
+      return badge.description;
+  }
+}
+
+export function BadgeCard({ badge, unlocked }) {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  return (
+    <div className="relative flex flex-col items-center w-full min-h-[5.5rem]">
+      <button
+        type="button"
+        onClick={() => setShowTooltip((s) => !s)}
+        className="flex flex-col items-center justify-center w-14 h-14 flex-shrink-0 rounded-xl hover:bg-primary-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300"
+        aria-label={badge.name}
+      >
+        <img
+          src={badge.image}
+          alt={badge.name}
+          className={`w-12 h-12 rounded-lg object-contain transition-all ${!unlocked ? "grayscale opacity-60" : ""}`}
+          loading="lazy"
+        />
+      </button>
+      <span className="text-xs font-medium text-slate-700 mt-1.5 text-center line-clamp-2 w-full px-0.5">
+        {badge.name}
+      </span>
+      {showTooltip && (
+        <BadgeTooltip
+          badge={badge}
+          unlocked={unlocked}
+          onClose={() => setShowTooltip(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+/**
+ * Ordena badges: desbloquejats primer, després bloquejats; dins de cada grup per categoria i dificultat.
+ */
+function sortBadges(catalog, unlockedIds) {
+  return [...catalog].sort((a, b) => {
+    const aUnlocked = unlockedIds.has(a.id);
+    const bUnlocked = unlockedIds.has(b.id);
+    if (aUnlocked !== bUnlocked) return aUnlocked ? -1 : 1;
+    const catA = CATEGORY_ORDER.indexOf(a.category);
+    const catB = CATEGORY_ORDER.indexOf(b.category);
+    if (catA !== catB) return catA - catB;
+    return (a.difficulty ?? 0) - (b.difficulty ?? 0);
+  });
+}
+
+export function BadgeGrid({ unlockedIds = new Set() }) {
+  const sorted = sortBadges(BADGE_CATALOG, unlockedIds);
+
+  return (
+    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-4 place-items-center">
+      {sorted.map((badge) => (
+        <BadgeCard key={badge.id} badge={badge} unlocked={unlockedIds.has(badge.id)} />
+      ))}
+    </div>
+  );
+}

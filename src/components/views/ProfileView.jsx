@@ -4,10 +4,13 @@ import { Avatar } from "../common/Avatar";
 import { ChevronDown, ChevronRight, Award } from "lucide-react";
 import { useSuperadmin } from "../../hooks/useSuperadmin";
 import { useGamification } from "../../hooks/useGamification";
+import { useBadges } from "../../hooks/useBadges";
+import { BadgeGrid } from "../common/BadgeGrid";
+import { useToast } from "../../context/ToastContext";
 import { CATALOG, getLevelInfo, getPointsForLevel } from "../../utils/levelCatalog";
 import { ROUTES } from "../../utils/constants";
 
-export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal }) => {
+export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal, books = [], readingActivityDays = [] }) => {
   const navigate = useNavigate();
   const { isSuperadmin, loading } = useSuperadmin(user?.uid);
   const { totalPoints, level, levelDisplayName, levelColorClass, toNextLevel, toNextLevelProgressPct, nextLevelDisplayName, showInLeaderboard, setShowInLeaderboard, loading: gamificationLoading } = useGamification(user?.uid);
@@ -18,6 +21,19 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
   const [inputStr, setInputStr] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [levelsInfoOpen, setLevelsInfoOpen] = useState(false);
+
+  const { showSuccess } = useToast();
+  const handleNewUnlocks = React.useCallback(
+    (newlyUnlocked) => {
+      newlyUnlocked.forEach((b) => showSuccess(`Has desbloquejat un nou badge: ${b.name}!`));
+    },
+    [showSuccess],
+  );
+  const { unlockedIds, loading: badgesLoading } = useBadges(
+    user?.uid,
+    { books, readingActivityDays },
+    handleNewUnlocks,
+  );
 
   useEffect(() => {
     if (!isFocused) {
@@ -63,6 +79,15 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
               {stats.completedBooks}
             </p>
           </div>
+        </div>
+
+        <div className="bg-primary-50 rounded-xl p-4 border border-primary-500 mb-6">
+          <p className="text-sm text-slate-600 mb-3">Insígnies</p>
+          {badgesLoading ? (
+            <p className="text-sm text-slate-500">Carregant badges...</p>
+          ) : (
+            <BadgeGrid unlockedIds={unlockedIds} />
+          )}
         </div>
 
         {!gamificationLoading && (
