@@ -370,7 +370,7 @@ export const BookForm = ({
                 }
               }}
               disabled={searchingCover || !formData.title?.trim()}
-              className="text-sm px-3 py-1 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+              className="text-sm px-3 py-1 bg-primary-500 hover:bg-primary-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
             >
               {searchingCover ? (
                 <span className="flex items-center gap-2">
@@ -429,7 +429,7 @@ export const BookForm = ({
                 }
               }}
               disabled={searchingDescription || !formData.title?.trim()}
-              className="text-sm px-3 py-1 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+              className="text-sm px-3 py-1 bg-primary-500 hover:bg-primary-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
             >
               {searchingDescription ? (
                 <span className="flex items-center gap-2">

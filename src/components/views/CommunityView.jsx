@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookMarked, Users, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass, BarChart2, Trophy, Info } from "lucide-react";
 import { ReadingBookCard } from "../common/ReadingBookCard";
-import { PrimaryButton } from "../common/Button";
+import { PrimaryButton, SecondaryButton } from "../common/Button";
 import { getDaysReading, safeProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
 import { encouragementService } from "../../services/encouragementService";
@@ -245,40 +245,45 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   return (
     <div className="space-y-6">
       <div>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-3xl font-serif text-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-3xl font-serif text-slate-800 mb-2">
               Comunitat de Lectors
             </h2>
-            {communities.length > 0 && (
-              <select
-                value={activeCommunityId ?? activeCommunity?.id ?? ""}
-                onChange={(e) => onSelectCommunity?.(e.target.value || null)}
-                className="px-3 py-1.5 text-sm bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-200 text-slate-700"
-                aria-label="Selecciona la comunitat"
-              >
-                {communities.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+            {communities.length === 0 ? (
+              <p className="text-slate-600">
+                No formes part de cap comunitat. Descobreix comunitats obertes o crea'n una de nova.
+              </p>
+            ) : (
+              <>
+                <p className="text-slate-600 mb-3">
+                  Descobreix què està llegint la comunitat ara mateix
+                </p>
+                <select
+                  value={activeCommunityId ?? activeCommunity?.id ?? ""}
+                  onChange={(e) => onSelectCommunity?.(e.target.value || null)}
+                  className="w-full sm:w-auto px-3 py-2 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-200 text-slate-700"
+                  aria-label="Selecciona la comunitat"
+                >
+                  {communities.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </>
             )}
           </div>
           <PrimaryButton
             type="button"
             onClick={() => setShowCreateModal(true)}
             icon={Plus}
-            size="sm"
           >
             Crear comunitat
           </PrimaryButton>
         </div>
         {communities.length === 0 ? (
-          <div className="mt-4 space-y-4">
-            <p className="text-slate-600">
-              No formes part de cap comunitat. Descobreix comunitats obertes o crea’n una de nova.
-            </p>
+          <div className="mt-6">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
               <h3 className="text-lg font-serif text-slate-800 mb-3 flex items-center gap-2">
                 <Compass className="w-5 h-5 text-primary-600" />
@@ -298,8 +303,9 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                           <span className="ml-2 text-xs text-slate-500">{c.memberCount} membres</span>
                         )}
                       </div>
-                      <button
+                      <PrimaryButton
                         type="button"
+                        size="sm"
                         disabled={joiningId === c.id}
                         onClick={async () => {
                           setJoiningId(c.id);
@@ -317,21 +323,16 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                             setJoiningId(null);
                           }
                         }}
-                        className="px-3 py-1.5 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
                       >
                         {joiningId === c.id ? "Unint..." : "Unir-me"}
-                      </button>
+                      </PrimaryButton>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
           </div>
-        ) : (
-          <p className="text-slate-600">
-            Descobreix què està llegint la comunitat ara mateix
-          </p>
-        )}
+        ) : null}
       </div>
 
       {/* Modal Crear comunitat */}
@@ -414,21 +415,21 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               {createError && (
                 <p className="text-sm text-red-600" role="alert">{createError}</p>
               )}
-              <div className="flex gap-2 justify-end pt-2">
-                <button
+              <div className="flex gap-3 justify-end pt-2">
+                <SecondaryButton
                   type="button"
+                  size="sm"
                   onClick={() => { setShowCreateModal(false); setCreateError(null); }}
-                  className="px-4 py-2 text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg"
                 >
                   Cancel·lar
-                </button>
-                <button
+                </SecondaryButton>
+                <PrimaryButton
                   type="submit"
+                  size="sm"
                   disabled={creating || !createName.trim()}
-                  className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white rounded-lg"
                 >
                   {creating ? "Creant…" : "Crear"}
-                </button>
+                </PrimaryButton>
               </div>
             </form>
           </div>
@@ -464,7 +465,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                         setInviteError(e.message ?? "No s’ha pogut acceptar la invitació.");
                       }
                     }}
-                    className="flex items-center gap-1 px-2 py-1 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                    className="flex items-center gap-1 px-2 py-1 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600"
                   >
                     <UserCheck className="w-4 h-4" /> Acceptar
                   </button>
@@ -487,7 +488,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
 
       {/* Gestió de membres (owner/admin) — només si l’usuari té comunitats */}
       {communities.length > 0 && canManageMembers && activeCommunityId && (
-        <div>
+        <div className="mt-10">
           <div className="flex items-center gap-2 mb-4">
             <Shield className="w-5 h-5 text-primary-600" />
             <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
@@ -530,8 +531,10 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               placeholder="Email a convidar"
               className="flex-1 min-w-0 px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
             />
-            <button
+            <PrimaryButton
               type="button"
+              size="sm"
+              icon={Mail}
               disabled={inviting || !inviteEmail.trim()}
               onClick={async () => {
                 setInviteError(null);
@@ -555,10 +558,9 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   setInviting(false);
                 }
               }}
-              className="flex items-center gap-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
             >
-              <Mail className="w-4 h-4" /> Convidar
-            </button>
+              Convidar
+            </PrimaryButton>
           </div>
           {inviteError && <p className="text-sm text-red-600 mb-2" role="alert">{inviteError}</p>}
           {inviteSuccessMessage && <p className="text-sm text-primary-700 mb-2" role="status">{inviteSuccessMessage}</p>}

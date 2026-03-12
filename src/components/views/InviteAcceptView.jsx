@@ -109,7 +109,7 @@ export function InviteAcceptView({ currentUser, addCommunityToUser, onSelectComm
           <button
             type="button"
             onClick={() => navigate(ROUTES.COMMUNITY)}
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+            className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600"
           >
             Anar a Comunitat
           </button>
@@ -142,7 +142,7 @@ export function InviteAcceptView({ currentUser, addCommunityToUser, onSelectComm
             type="button"
             onClick={handleAccept}
             disabled={accepting || rejecting}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 disabled:opacity-50"
           >
             <UserCheck className="w-4 h-4" />
             {accepting ? "Acceptant…" : "Acceptar"}

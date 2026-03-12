@@ -534,7 +534,7 @@ export const ReviewsView = ({ currentUser, books }) => {
               <button
                 onClick={handlePublish}
                 disabled={!publishBook || !publishText?.trim() || publishing}
-                className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white rounded-xl font-medium"
+                className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium"
               >
                 {publishing ? "Publicant…" : "Publicar"}
               </button>

@@ -254,7 +254,7 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
         <button
           type="button"
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600"
         >
           <Plus className="w-4 h-4" /> Crear comunitat
         </button>
@@ -272,7 +272,7 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
           <button
             type="button"
             onClick={() => setShowCreate(true)}
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+            className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600"
           >
             Crear comunitat
           </button>
@@ -351,7 +351,7 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
                             type="button"
                             onClick={() => handleInvite(c.id)}
                             disabled={inviteLoading || !inviteEmail.trim()}
-                            className="px-4 py-2 bg-primary-600 text-white rounded-lg disabled:opacity-50"
+                            className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 disabled:opacity-50"
                           >
                             Invitar
                           </button>
@@ -525,7 +525,7 @@ function CreateCommunityModal({ onSave, onCancel }) {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg disabled:opacity-50"
+              className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 disabled:opacity-50"
             >
               {saving ? "Creant..." : "Crear"}
             </button>
@@ -603,7 +603,7 @@ function EditCommunityModal({ communityId, community, onSave, onCancel }) {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg disabled:opacity-50"
+              className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 disabled:opacity-50"
             >
               {saving ? "Desant..." : "Desar"}
             </button>
