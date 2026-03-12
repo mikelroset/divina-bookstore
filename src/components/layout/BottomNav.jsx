@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Home, Library, Users, Star, PlusCircle, User } from "lucide-react";
+import { Home, Library, Users, Star, User } from "lucide-react";
 import { ROUTES } from "../../utils/constants";
 
 const navItems = [
@@ -8,7 +8,6 @@ const navItems = [
   { to: ROUTES.LIBRARY, Icon: Library, label: "Biblioteca" },
   { to: ROUTES.COMMUNITY, Icon: Users, label: "Comunitat" },
   { to: ROUTES.REVIEWS, Icon: Star, label: "Ressenyes" },
-  { to: ROUTES.ADD, Icon: PlusCircle, label: "Afegir" },
   { to: ROUTES.PROFILE, Icon: User, label: "Perfil" },
 ];
 
@@ -17,12 +16,6 @@ export const BottomNav = ({ encouragementCount = 0 }) => {
     <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-primary-500 shadow-lg">
       <div className="max-w-4xl mx-auto px-3 py-3 flex justify-around">
         {navItems.map(({ to, Icon, label }) => {
-          const addIsActive =
-            to === ROUTES.ADD
-              ? (_, location) =>
-                  location.pathname === ROUTES.ADD ||
-                  location.pathname.startsWith(`${ROUTES.ADD}/`)
-              : undefined;
           const showEncouragementBadge =
             to === ROUTES.HOME && encouragementCount > 0;
           return (
@@ -30,7 +23,6 @@ export const BottomNav = ({ encouragementCount = 0 }) => {
               key={to}
               to={to}
               end={to === ROUTES.HOME}
-              isActive={addIsActive}
               className={({ isActive }) =>
                 `flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all relative ${
                   isActive
