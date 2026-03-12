@@ -1,38 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { BADGE_CATALOG, CATEGORY_ORDER } from "../../utils/badgeCatalog";
 
 /**
- * Tooltip o modal amb informació del badge.
- * Desktop: es mostra en hover. Mobile: en tap.
+ * Popup amb informació del badge. Es renderitza en portal (body) amb position fixed
+ * per no quedar tallat pels extrems de la pantalla.
+ * Desktop: hover. Mobile: tap.
  */
 function BadgeTooltip({ badge, unlocked, onClose }) {
-  return (
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [onClose]);
+
+  const popup = (
     <div
-      className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 w-56 rounded-xl border border-primary-500 bg-white p-3 shadow-xl"
-      role="tooltip"
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={badge.name}
     >
-      <img
-        src={badge.image}
-        alt=""
-        className={`w-12 h-12 mx-auto mb-2 rounded-lg object-cover ${!unlocked ? "grayscale opacity-70" : ""}`}
-        loading="lazy"
+      <div
+        className="absolute inset-0 bg-black/30"
+        onClick={onClose}
+        onMouseDown={onClose}
+        aria-hidden
       />
-      <p className="font-semibold text-slate-800 text-sm">{badge.name}</p>
-      <p className="text-xs text-slate-600 mt-1">{badge.description}</p>
-      <p className="text-xs text-primary-600 mt-2">
-        {unlocked ? "Desbloquejat" : `Condició: ${getConditionLabel(badge)}`}
-      </p>
-      {onClose && (
+      <div
+        className="relative z-10 w-full max-w-xs rounded-xl border border-primary-500 bg-white p-5 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-center mb-3">
+          <img
+            src={badge.image}
+            alt=""
+            className={`w-24 h-24 rounded-xl object-cover flex-shrink-0 ${!unlocked ? "grayscale opacity-70" : ""}`}
+            loading="lazy"
+          />
+        </div>
+        <p className="font-semibold text-slate-800 text-sm text-center">{badge.name}</p>
+        <p className="text-xs text-slate-600 mt-1 text-center">{badge.description}</p>
+        <p className="text-xs text-primary-600 mt-2 text-center">
+          {unlocked ? "Desbloquejat" : `Condició: ${getConditionLabel(badge)}`}
+        </p>
         <button
           type="button"
           onClick={onClose}
-          className="mt-2 w-full py-1 text-xs text-primary-600 hover:underline"
+          className="mt-4 w-full py-2 text-sm text-primary-600 hover:underline font-medium rounded-lg hover:bg-primary-50 transition-colors"
         >
           Tancar
         </button>
-      )}
+      </div>
     </div>
   );
+
+  return createPortal(popup, document.body);
 }
 
 function getConditionLabel(badge) {
@@ -65,25 +90,23 @@ export function BadgeCard({ badge, unlocked }) {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div className="relative group">
+    <div className="relative flex flex-col items-center w-full min-h-[5.5rem]">
       <button
         type="button"
         onClick={() => setShowTooltip((s) => !s)}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
-        className="flex flex-col items-center p-2 rounded-xl hover:bg-primary-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300"
+        className="flex flex-col items-center justify-center w-14 h-14 flex-shrink-0 rounded-xl hover:bg-primary-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300"
         aria-label={badge.name}
       >
         <img
           src={badge.image}
           alt={badge.name}
-          className={`w-14 h-14 rounded-lg object-cover transition-all ${!unlocked ? "grayscale opacity-60" : ""}`}
+          className={`w-12 h-12 rounded-lg object-cover transition-all ${!unlocked ? "grayscale opacity-60" : ""}`}
           loading="lazy"
         />
-        <span className="text-xs font-medium text-slate-700 mt-1 truncate max-w-full">
-          {badge.name}
-        </span>
       </button>
+      <span className="text-xs font-medium text-slate-700 mt-1.5 text-center line-clamp-2 w-full px-0.5">
+        {badge.name}
+      </span>
       {showTooltip && (
         <BadgeTooltip
           badge={badge}
@@ -114,7 +137,7 @@ export function BadgeGrid({ unlockedIds = new Set() }) {
   const sorted = sortBadges(BADGE_CATALOG, unlockedIds);
 
   return (
-    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
+    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-4 place-items-center">
       {sorted.map((badge) => (
         <BadgeCard key={badge.id} badge={badge} unlocked={unlockedIds.has(badge.id)} />
       ))}
