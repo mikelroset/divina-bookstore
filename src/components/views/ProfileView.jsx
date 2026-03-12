@@ -4,10 +4,12 @@ import { Avatar } from "../common/Avatar";
 import { ChevronDown, ChevronRight, Award } from "lucide-react";
 import { useSuperadmin } from "../../hooks/useSuperadmin";
 import { useGamification } from "../../hooks/useGamification";
+import { useBadges } from "../../hooks/useBadges";
+import { BadgeGrid } from "../common/BadgeGrid";
 import { CATALOG, getLevelInfo, getPointsForLevel } from "../../utils/levelCatalog";
 import { ROUTES } from "../../utils/constants";
 
-export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal }) => {
+export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal, books = [], readingActivityDays = [] }) => {
   const navigate = useNavigate();
   const { isSuperadmin, loading } = useSuperadmin(user?.uid);
   const { totalPoints, level, levelDisplayName, levelColorClass, toNextLevel, toNextLevelProgressPct, nextLevelDisplayName, showInLeaderboard, setShowInLeaderboard, loading: gamificationLoading } = useGamification(user?.uid);
@@ -18,6 +20,8 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
   const [inputStr, setInputStr] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [levelsInfoOpen, setLevelsInfoOpen] = useState(false);
+
+  const { unlockedIds, loading: badgesLoading } = useBadges(user?.uid, books, readingActivityDays);
 
   useEffect(() => {
     if (!isFocused) {

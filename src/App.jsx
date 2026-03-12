@@ -72,7 +72,7 @@ const App = () => {
   const { showError } = useToast();
   const stats = useStats();
   const { count: encouragementCount } = useEncouragementCount(user?.uid);
-  const { annualGoal, setAnnualGoal, streak, recordReadingActivity, activeCommunityId, setActiveCommunityId, userCommunityIds, addCommunityToUser, syncUserCommunityIds } = useUserPrefs(user?.uid, user);
+  const { annualGoal, setAnnualGoal, streak, recordReadingActivity, activeCommunityId, setActiveCommunityId, userCommunityIds, addCommunityToUser, syncUserCommunityIds, readingActivityDays = [] } = useUserPrefs(user?.uid, user);
   const { updateCurrentPage } = useBookSave({
     user,
     userCommunityIds,
@@ -181,7 +181,7 @@ const App = () => {
           <Route path={`${ROUTES.ADD}/:id`} element={<AddBookRoute recordReadingActivity={recordReadingActivity} userCommunityIds={userCommunityIds} user={user} />} />
           <Route
             path={ROUTES.PROFILE}
-            element={<ProfileView user={user} onLogout={handleLogout} stats={stats} annualGoal={annualGoal} setAnnualGoal={setAnnualGoal} />}
+            element={<ProfileView user={user} onLogout={handleLogout} stats={stats} annualGoal={annualGoal} setAnnualGoal={setAnnualGoal} books={books} readingActivityDays={readingActivityDays} />}
           />
           <Route
             path={ROUTES.ADMIN_COMMUNITIES}
