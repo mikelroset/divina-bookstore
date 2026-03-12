@@ -1,7 +1,7 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { BookCard } from "../common/BookCard";
+import { PrimaryButton } from "../common/Button";
 import { LIBRARY_FILTER_OPTIONS, ROUTES } from "../../utils/constants";
 
 export const LibraryView = ({
@@ -27,13 +27,9 @@ export const LibraryView = ({
           <p className="text-slate-600">Gestiona la teva col·lecció de llibres</p>
         </div>
         {!isEmpty && (
-          <Link
-            to={ROUTES.ADD}
-            className="inline-flex items-center gap-2 px-4 py-3 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-xl transition-colors shadow-sm"
-          >
-            <Plus className="w-5 h-5" />
+          <PrimaryButton to={ROUTES.ADD} icon={Plus}>
             Afegir llibre
-          </Link>
+          </PrimaryButton>
         )}
       </div>
 
@@ -65,13 +61,9 @@ export const LibraryView = ({
           <p className="text-slate-600 text-lg mb-6">
             Encara no tens llibres a la teva biblioteca
           </p>
-          <Link
-            to={ROUTES.ADD}
-            className="inline-flex items-center gap-2 px-6 py-4 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-xl transition-colors shadow-sm"
-          >
-            <Plus className="w-5 h-5" />
+          <PrimaryButton to={ROUTES.ADD} icon={Plus} size="lg">
             Afegir el primer llibre
-          </Link>
+          </PrimaryButton>
         </div>
       ) : !hasFilteredResults ? (
         <div className="text-center py-12">

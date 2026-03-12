@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookMarked, Users, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass, BarChart2, Trophy, Info } from "lucide-react";
 import { ReadingBookCard } from "../common/ReadingBookCard";
+import { PrimaryButton } from "../common/Button";
 import { getDaysReading, safeProgress } from "../../utils/helpers";
 import { communityService } from "../../services/communityService";
 import { encouragementService } from "../../services/encouragementService";
@@ -244,32 +245,34 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   return (
     <div className="space-y-6">
       <div>
-        <div className="flex flex-wrap items-center gap-3 mb-2">
-          <h2 className="text-3xl font-serif text-slate-800">
-            Comunitat de Lectors
-          </h2>
-          {communities.length > 0 && (
-            <select
-              value={activeCommunityId ?? activeCommunity?.id ?? ""}
-              onChange={(e) => onSelectCommunity?.(e.target.value || null)}
-              className="px-3 py-1.5 text-sm bg-white/80 border border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 text-slate-700"
-              aria-label="Selecciona la comunitat"
-            >
-              {communities.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          )}
-          <button
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-3xl font-serif text-slate-800">
+              Comunitat de Lectors
+            </h2>
+            {communities.length > 0 && (
+              <select
+                value={activeCommunityId ?? activeCommunity?.id ?? ""}
+                onChange={(e) => onSelectCommunity?.(e.target.value || null)}
+                className="px-3 py-1.5 text-sm bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-200 text-slate-700"
+                aria-label="Selecciona la comunitat"
+              >
+                {communities.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+          <PrimaryButton
             type="button"
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+            icon={Plus}
+            size="sm"
           >
-            <Plus className="w-4 h-4" />
             Crear comunitat
-          </button>
+          </PrimaryButton>
         </div>
         {communities.length === 0 ? (
           <div className="mt-4 space-y-4">
