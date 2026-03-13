@@ -35,21 +35,27 @@ const PAGE_SIZE = 10;
 
 /**
  * Publicar una nova ressenya.
+ * El llibre es busca/crea al catàleg per (originalTitle, author) per evitar duplicats.
  * @param {string} userId - UID de l'autor
  * @param {string} displayName - Nom per mostrar
  * @param {string} [photoURL] - URL de la foto
- * @param {Object} book - Llibre { id, title, author }
+ * @param {Object} book - Llibre { id, title, author, originalTitle? }
  * @param {string} text - Text de la ressenya
  */
 export async function addReview(userId, displayName, photoURL, book, text) {
-  if (!userId || !displayName || !book?.title || !book?.author || !text?.trim()) {
+  const originalTitle = (book?.originalTitle?.trim() || book?.title?.trim()) ?? "";
+  if (!userId || !displayName || !originalTitle || !book?.author?.trim() || !text?.trim()) {
     throw new Error("Falten dades obligatòries per publicar la ressenya.");
   }
+  const { findOrCreateCatalogBook } = await import("./catalogBooksService");
+  const catalogBook = await findOrCreateCatalogBook(originalTitle.trim(), book.author.trim());
+
   const reviewsRef = collection(db, REVIEWS_COLLECTION);
   const docRef = await addDoc(reviewsRef, {
     bookId: book.id ?? "",
-    bookTitle: book.title,
-    bookAuthor: book.author,
+    catalogBookId: catalogBook.id,
+    bookTitle: catalogBook.originalTitle,
+    bookAuthor: catalogBook.author,
     authorUserId: userId,
     authorDisplayName: displayName,
     authorPhotoURL: photoURL ?? null,
@@ -57,7 +63,18 @@ export async function addReview(userId, displayName, photoURL, book, text) {
     createdAt: serverTimestamp(),
     likeCount: 0,
   });
-  return { id: docRef.id, bookId: book.id, bookTitle: book.title, bookAuthor: book.author, authorUserId: userId, authorDisplayName: displayName, authorPhotoURL: photoURL, text: text.trim(), likeCount: 0 };
+  return {
+    id: docRef.id,
+    bookId: book.id,
+    catalogBookId: catalogBook.id,
+    bookTitle: catalogBook.originalTitle,
+    bookAuthor: catalogBook.author,
+    authorUserId: userId,
+    authorDisplayName: displayName,
+    authorPhotoURL: photoURL,
+    text: text.trim(),
+    likeCount: 0,
+  };
 }
 
 /**

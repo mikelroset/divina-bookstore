@@ -56,10 +56,13 @@ export const BookForm = ({
   onSearchCover,
   onSearchDescription,
 }) => {
-  const [formData, setFormData] = useState(() => ({
-    ...defaultBook,
-    ...(initialData || {}),
-  }));
+  const [formData, setFormData] = useState(() => {
+    const data = { ...defaultBook, ...(initialData || {}) };
+    if (data.title && !data.originalTitle?.trim()) {
+      data.originalTitle = data.title;
+    }
+    return data;
+  });
   const [errors, setErrors] = useState({});
   const [searchingCover, setSearchingCover] = useState(false);
   const [searchingDescription, setSearchingDescription] = useState(false);
@@ -73,6 +76,11 @@ export const BookForm = ({
 
     if (!formData.author.trim()) {
       newErrors.author = "L'autor és obligatori";
+    }
+
+    const ot = formData.originalTitle?.trim();
+    if (!ot) {
+      newErrors.originalTitle = "El títol original és obligatori per agrupar ressenyes correctament.";
     }
 
     if (formData.pages && formData.pages < 0) {
