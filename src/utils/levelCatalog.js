@@ -80,8 +80,13 @@ export function getLevelInfo(level) {
   const entry = CATALOG[clamped - 1];
   const colorClass = entry.mineralRank ? MINERAL_COLORS[entry.mineralRank] : "text-amber-500";
   const bgClass = entry.mineralRank ? MINERAL_BG_COLORS[entry.mineralRank] : "bg-amber-500";
+  const roleIndex = clamped <= 70 ? Math.floor((clamped - 1) / 7) : null;
+  const mineralIndex = clamped <= 70 ? (clamped - 1) % 7 : null;
   return {
     ...entry,
+    roleIndex,
+    mineralIndex,
+    isLegend: clamped === 71,
     colorClass,
     bgClass,
   };

@@ -5,11 +5,11 @@ const PREFS_COLLECTION = "prefs";
 const PREFS_DOC_ID = "settings";
 
 /**
- * Get user prefs (annual goal, reading activity days, active community).
- * Firestore: users/{uid}/prefs/settings with { annualGoal?, readingActivityDays?, activeCommunityId? }
+ * Get user prefs (annual goal, reading activity days, active community, locale).
+ * Firestore: users/{uid}/prefs/settings with { annualGoal?, readingActivityDays?, activeCommunityId?, locale? }
  */
 export async function getUserPrefs(userId) {
-  if (!userId) return { annualGoal: 0, readingActivityDays: [], activeCommunityId: null, userCommunityIds: [] };
+  if (!userId) return { annualGoal: 0, readingActivityDays: [], activeCommunityId: null, userCommunityIds: [], locale: null };
   try {
     const ref = doc(db, "users", userId, PREFS_COLLECTION, PREFS_DOC_ID);
     const snap = await getDoc(ref);
@@ -21,10 +21,11 @@ export async function getUserPrefs(userId) {
         : [],
       activeCommunityId: data.activeCommunityId ?? null,
       userCommunityIds: Array.isArray(data.userCommunityIds) ? data.userCommunityIds : [],
+      locale: data.locale ?? null,
     };
   } catch (error) {
     console.error("Error al obtenir preferències:", error);
-    return { annualGoal: 0, readingActivityDays: [], activeCommunityId: null, userCommunityIds: [] };
+    return { annualGoal: 0, readingActivityDays: [], activeCommunityId: null, userCommunityIds: [], locale: null };
   }
 }
 

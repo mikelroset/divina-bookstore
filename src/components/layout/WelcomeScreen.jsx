@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   BookOpen,
   Flame,
@@ -56,8 +57,15 @@ const FEATURE_CARDS = [
 ];
 
 export const WelcomeScreen = ({ onLogin, loginError }) => {
+  const { t } = useTranslation();
   const [faqOpen, setFaqOpen] = React.useState(null);
   const [levelsOpen, setLevelsOpen] = React.useState(false);
+
+  const getLevelDisplayName = (info) => {
+    if (!info) return "";
+    if (info.isLegend) return t("levels.legend");
+    return `${t(`levels.roles.${info.roleIndex}`)} — ${t(`levels.minerals.${info.mineralIndex}`)}`;
+  };
 
   const handleClick = () => {
     if (onLogin) {
@@ -201,7 +209,7 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
                   {CATALOG.map((entry) => (
                     <li key={entry.level} className="flex justify-between gap-2 py-1 border-b border-slate-100 last:border-0">
                       <span className={getLevelInfo(entry.level).colorClass}>
-                        {entry.displayName}
+                        {getLevelDisplayName(getLevelInfo(entry.level))}
                       </span>
                       <span className="text-slate-500 shrink-0">
                         {getPointsForLevel(entry.level)} punts
