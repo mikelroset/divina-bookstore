@@ -83,6 +83,11 @@
     "empty": "You don't have any books in your library yet",
     "noResults": "No books found"
   },
+  "bookForm": {
+    "errorIsbnRequired": "ISBN is required to add a book.",
+    "errorIsbnInvalid": "ISBN must be valid (ISBN-10 or ISBN-13).",
+    "errorBookAlreadyExists": "This book already exists in your library"
+  },
   "addBook": {
     "title": "Add New Book",
     "editTitle": "Edit Book",
