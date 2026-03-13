@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { BookMarked, Users, Plus, Mail, Shield, UserX, UserCheck, Trash2, Compass, BarChart2, Trophy, Info } from "lucide-react";
 import { ReadingBookCard } from "../common/ReadingBookCard";
@@ -47,7 +48,14 @@ function readerBookKey(reader, book) {
 }
 
 export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSelectCommunity, userCommunityIds = [], addCommunityToUser, syncUserCommunityIds }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const getLevelDisplayName = (info) => {
+    if (!info) return "";
+    if (info.isLegend) return t("levels.legend");
+    return `${t(`levels.roles.${info.roleIndex}`)} — ${t(`levels.minerals.${info.mineralIndex}`)}`;
+  };
   const [communities, setCommunities] = useState([]);
   const [communityReaders, setCommunityReaders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -564,7 +572,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   <span className="font-medium text-slate-800">{m.email || m.displayName || m.userId}</span>
                   {levelInfo && (
                     <span className={`text-xs font-medium ${levelInfo.colorClass}`}>
-                      {levelInfo.displayName}
+                      {getLevelDisplayName(levelInfo)}
                     </span>
                   )}
                 </div>

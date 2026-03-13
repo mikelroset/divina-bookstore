@@ -16,7 +16,15 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isSuperadmin, loading } = useSuperadmin(user?.uid);
-  const { totalPoints, level, levelDisplayName, levelColorClass, toNextLevel, toNextLevelProgressPct, nextLevelDisplayName, showInLeaderboard, setShowInLeaderboard, loading: gamificationLoading } = useGamification(user?.uid);
+  const { totalPoints, level, levelInfo, levelColorClass, toNextLevel, toNextLevelProgressPct, nextLevelInfo, showInLeaderboard, setShowInLeaderboard, loading: gamificationLoading } = useGamification(user?.uid);
+
+  const getLevelDisplayName = (info) => {
+    if (!info) return "";
+    if (info.isLegend) return t("levels.legend");
+    return `${t(`levels.roles.${info.roleIndex}`)} — ${t(`levels.minerals.${info.mineralIndex}`)}`;
+  };
+  const levelDisplayName = levelInfo ? getLevelDisplayName(levelInfo) : "";
+  const nextLevelDisplayName = nextLevelInfo ? getLevelDisplayName(nextLevelInfo) : null;
   const completed = stats?.completedBooks ?? 0;
   const goal = Math.max(0, parseInt(annualGoal, 10) || 0);
   const progressPct = goal > 0 ? Math.min(100, Math.round((completed / goal) * 100)) : 0;
@@ -134,7 +142,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                     {CATALOG.map((entry) => (
                       <li key={entry.level} className="flex justify-between gap-2 py-0.5">
                         <span className={getLevelInfo(entry.level).colorClass}>
-                          {entry.displayName}
+                          {getLevelDisplayName(getLevelInfo(entry.level))}
                         </span>
                         <span className="text-slate-500 shrink-0">
                           {getPointsForLevel(entry.level)} {t("profile.points")}

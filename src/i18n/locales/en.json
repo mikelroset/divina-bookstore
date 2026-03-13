@@ -94,6 +94,11 @@
     "weeklyProgress": "Last week's progress",
     "addPagesForPrediction": "Add the number of pages to enable prediction and chart."
   },
+  "levels": {
+    "roles": ["Library Apprentice", "Book Apprentice", "Word Novice", "Ink Squire", "Stories Knight", "Scroll Guardian", "Chronicler", "Royal Archivist", "Head Librarian", "Ancient Wisdom"],
+    "minerals": ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Emerald", "Diamond"],
+    "legend": "Divine Legend"
+  },
   "constants": {
     "statusLabels": {
       "wishlist": "Wishlist",

@@ -94,6 +94,11 @@
     "weeklyProgress": "Progrés última setmana",
     "addPagesForPrediction": "Afegeix el número de pàgines per activar la predicció i el gràfic."
   },
+  "levels": {
+    "roles": ["Aprenent de Biblioteca", "Aprenent de Llibres", "Novici de la Paraula", "Escuder de la Tinta", "Cavaller de les Històries", "Guardià del Pergamí", "Cronista", "Arxiver Reial", "Gran Bibliotecari", "Saviesa Antiga"],
+    "minerals": ["Ferro", "Bronze", "Plata", "Or", "Platí", "Esmeralda", "Diamant"],
+    "legend": "Llegenda Divina"
+  },
   "constants": {
     "statusLabels": {
       "wishlist": "Desitjat",

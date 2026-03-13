@@ -10,7 +10,11 @@ const DEFAULT_LANG = "ca";
 export { SUPPORTED_LANGS, DEFAULT_LANG };
 
 i18n.use(initReactI18next).init({
-  resources: { ca, es, en },
+  resources: {
+    ca: { translation: ca },
+    es: { translation: es },
+    en: { translation: en },
+  },
   fallbackLng: DEFAULT_LANG,
   supportedLngs: SUPPORTED_LANGS,
   interpolation: { escapeValue: false },

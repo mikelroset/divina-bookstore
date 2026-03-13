@@ -94,6 +94,11 @@
     "weeklyProgress": "Progreso última semana",
     "addPagesForPrediction": "Añade el número de páginas para activar la predicción y el gráfico."
   },
+  "levels": {
+    "roles": ["Aprendiz de Biblioteca", "Aprendiz de Libros", "Novicio de la Palabra", "Escudero de la Tinta", "Caballero de las Historias", "Guardián del Pergamino", "Cronista", "Archivero Real", "Gran Bibliotecario", "Sabiduría Antigua"],
+    "minerals": ["Hierro", "Bronce", "Plata", "Oro", "Platino", "Esmeralda", "Diamante"],
+    "legend": "Leyenda Divina"
+  },
   "constants": {
     "statusLabels": {
       "wishlist": "Deseado",
