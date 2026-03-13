@@ -1,14 +1,16 @@
 import React from "react";
+import { Clock } from "lucide-react";
 import { getDaysReading, calculateProgress } from "../../utils/helpers";
 import { Avatar } from "./Avatar";
 import { BookCover } from "./BookCover";
+import { Box, ProgressBar } from "../../design-system";
 
 export const ReaderCard = ({ reader }) => {
   if (!reader?.currentBook) return null;
 
   const book = reader.currentBook;
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-primary-500 shadow-lg hover:shadow-xl transition-all">
+    <Box padding="md" className="hover:shadow-xl transition-all">
       <div className="flex items-center gap-3 mb-4">
         <Avatar
           src={reader.photoURL}
@@ -43,14 +45,13 @@ export const ReaderCard = ({ reader }) => {
 
           {/* Progress Bar */}
           <div className="mt-2">
-            <div className="bg-slate-100 rounded-full h-2 overflow-hidden mb-1">
-              <div
-                className="bg-slate-600 h-full rounded-full transition-all"
-                style={{
-                  width: `${calculateProgress(book.currentPage, book.pages)}%`,
-                }}
-              />
-            </div>
+            <ProgressBar
+              value={calculateProgress(book.currentPage, book.pages)}
+              max={100}
+              variant="secondary"
+              height="sm"
+              className="mb-1"
+            />
             <div className="flex justify-between text-xs text-slate-500">
               <span>
                 {book.currentPage ?? 0} / {book.pages ?? 0}
@@ -61,12 +62,13 @@ export const ReaderCard = ({ reader }) => {
             </div>
             {book.startDate && (
               <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                ⏱️ {getDaysReading(book.startDate)} dies
+                <Clock className="w-3 h-3 shrink-0" />
+                {getDaysReading(book.startDate)} dies
               </p>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </Box>
   );
 };

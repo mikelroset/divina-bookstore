@@ -27,6 +27,7 @@ import {
 import { getLeaderboard, syncMyLeaderboardEntry, pointsToLevel } from "../../services/gamificationService";
 import { getLevelInfo } from "../../utils/levelCatalog";
 import { DEFAULT_COMMUNITY_ID, ROUTES } from "../../utils/constants";
+import { Box, PageTitle, BoxTitle, SectionTitle, Select } from "../../design-system";
 
 /** Ordena per activitat: lastUpdatedAt desc, startDate desc, títol asc */
 function sortByActivity(items) {
@@ -247,31 +248,24 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-serif text-slate-800 mb-2">
+            <PageTitle
+              subtitle={
+                communities.length === 0
+                  ? "No formes part de cap comunitat. Descobreix comunitats obertes o crea'n una de nova."
+                  : "Descobreix què està llegint la comunitat ara mateix"
+              }
+            >
               Comunitat de Lectors
-            </h2>
-            {communities.length === 0 ? (
-              <p className="text-slate-600">
-                No formes part de cap comunitat. Descobreix comunitats obertes o crea'n una de nova.
-              </p>
-            ) : (
-              <>
-                <p className="text-slate-600 mb-3">
-                  Descobreix què està llegint la comunitat ara mateix
-                </p>
-                <select
+            </PageTitle>
+            {communities.length > 0 && (
+              <div className="mt-3">
+                <Select
                   value={activeCommunityId ?? activeCommunity?.id ?? ""}
                   onChange={(e) => onSelectCommunity?.(e.target.value || null)}
-                  className="w-full sm:w-auto px-3 py-2 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-200 text-slate-700"
+                  options={communities.map((c) => ({ value: c.id, label: c.name }))}
                   aria-label="Selecciona la comunitat"
-                >
-                  {communities.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </>
+                />
+              </div>
             )}
           </div>
           <PrimaryButton
@@ -284,11 +278,8 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
         </div>
         {communities.length === 0 ? (
           <div className="mt-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-              <h3 className="text-lg font-serif text-slate-800 mb-3 flex items-center gap-2">
-                <Compass className="w-5 h-5 text-primary-600" />
-                5 comunitats obertes més populars
-              </h3>
+            <Box>
+              <BoxTitle icon={Compass}>5 comunitats obertes més populars</BoxTitle>
               {loadingOpen ? (
                 <p className="text-slate-600">Carregant...</p>
               ) : openCommunities.length === 0 ? (
@@ -330,7 +321,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   ))}
                 </ul>
               )}
-            </div>
+            </Box>
           </div>
         ) : null}
       </div>
@@ -401,17 +392,15 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   rows={2}
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Tipus</label>
-                <select
-                  value={createVisibility}
-                  onChange={(e) => setCreateVisibility(e.target.value)}
-                  className="w-full px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
-                >
-                  <option value="private">Privada (només per invitació)</option>
-                  <option value="open">Oberta (qualsevol pot unir-se)</option>
-                </select>
-              </div>
+              <Select
+                label="Tipus"
+                value={createVisibility}
+                onChange={(e) => setCreateVisibility(e.target.value)}
+                options={[
+                  { value: "private", label: "Privada (només per invitació)" },
+                  { value: "open", label: "Oberta (qualsevol pot unir-se)" },
+                ]}
+              />
               {createError && (
                 <p className="text-sm text-red-600" role="alert">{createError}</p>
               )}
@@ -495,7 +484,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               Membres
             </h3>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+          <Box>
           {canDissolve && (
             <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200">
               <p className="text-sm text-red-800 mb-2">Dissoldre la comunitat és permanent. Tots els membres deixaran de tenir accés.</p>
@@ -616,7 +605,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
             );
             })}
           </ul>
-          </div>
+          </Box>
         </div>
       )}
 
@@ -689,7 +678,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               </div>
             </div>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+          <Box>
             <div className="flex gap-2 mb-4">
               {[
                 { value: "week", label: "Setmanal" },
@@ -730,7 +719,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                 ))}
               </ul>
             )}
-          </div>
+          </Box>
         </div>
       )}
 
@@ -754,7 +743,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
             (reader.currentBooks ?? []).map((book) => ({ reader, book }))
           );
           return otherReaderBooks.length === 0 ? (
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 border border-primary-500 shadow-lg text-center">
+            <Box padding="xl" className="text-center">
               <Users className="w-16 h-16 mx-auto text-slate-300 mb-4" />
               <h4 className="text-lg font-serif text-slate-800 mb-2">
                 Encara no hi ha altres lectors
@@ -762,7 +751,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               <p className="text-slate-600">
                 Sigues el primer en compartir què estàs llegint!
               </p>
-            </div>
+            </Box>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {sortByActivity(otherReaderBooks).map(({ reader, book }) => {
@@ -839,7 +828,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   Estadístiques de la Comunitat
                 </h3>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+              <Box>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
                   <p className="text-3xl font-serif text-slate-800">{activeReadersCount}</p>
@@ -858,7 +847,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   <p className="text-sm text-slate-600">Gèneres diversos</p>
                 </div>
               </div>
-              </div>
+              </Box>
             </div>
           );
         })()}

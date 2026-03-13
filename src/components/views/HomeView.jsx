@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { TrendingUp, Award, BookOpen, Heart, Flame, Calendar, Tag, Target, BarChart2, BookMarked, BookCheck, X } from "lucide-react";
+import { PageTitle, BoxTitle, ProgressBar, Box } from "../../design-system";
 import { StatCard } from "../common/StatCard";
-import { ProgressBar } from "../common/ProgressBar";
 import { ReadingBookBlock } from "../common/ReadingBookBlock";
 import { encouragementService } from "../../services/encouragementService";
 import {
@@ -55,21 +55,13 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-serif text-slate-800 mb-2">
-          Benvingut/da!
-        </h2>
-        <p className="text-slate-600">
-          Aquí tens un resum de la teva biblioteca
-        </p>
-      </div>
+      <PageTitle subtitle="Aquí tens un resum de la teva biblioteca">
+        Benvingut/da!
+      </PageTitle>
 
       {bookCompletedNotifs.length > 0 && (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-          <h3 className="text-sm font-medium text-slate-600 mb-4 flex items-center gap-3">
-            <BookCheck className="w-6 h-6 text-primary-600" />
-            Llibres llegits a la comunitat
-          </h3>
+        <Box>
+          <BoxTitle icon={BookCheck}>Llibres llegits a la comunitat</BoxTitle>
           <ul className="space-y-2 list-none pl-0">
             {bookCompletedNotifs.map((n) => (
               <li
@@ -92,15 +84,12 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
               </li>
             ))}
           </ul>
-        </div>
+        </Box>
       )}
 
       {encouragements.length > 0 && (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-          <h3 className="text-sm font-medium text-slate-600 mb-4 flex items-center gap-3">
-            <Heart className="w-6 h-6 text-primary-600" />
-            Encoratjaments
-          </h3>
+        <Box>
+          <BoxTitle icon={Heart}>Encoratjaments</BoxTitle>
           <ul className="space-y-2 list-none pl-0">
             {encouragements.map((enc) => (
               <li
@@ -127,7 +116,7 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
               </li>
             ))}
           </ul>
-        </div>
+        </Box>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -164,39 +153,28 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
       </div>
 
       {annualGoal > 0 && (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-          <h3 className="text-sm font-medium text-slate-600 mb-2 flex items-center gap-3">
-            <Target className="w-6 h-6 text-primary-600" />
-            Objectiu anual
-          </h3>
+        <Box>
+          <BoxTitle icon={Target}>Objectiu anual</BoxTitle>
           <p className="text-sm text-slate-600 mb-2">
             {stats.completedBooks} / {annualGoal} llibres
           </p>
-          <div className="bg-slate-100 rounded-full h-2 overflow-hidden">
-            <div
-              className="bg-primary-500 h-full rounded-full transition-all"
-              style={{
-                width: `${Math.min(100, Math.round((stats.completedBooks / annualGoal) * 100))}%`,
-              }}
-            />
-          </div>
-        </div>
+          <ProgressBar
+            value={Math.min(100, Math.round((stats.completedBooks / annualGoal) * 100))}
+            max={100}
+            variant="secondary"
+            height="sm"
+          />
+        </Box>
       )}
 
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-        <h3 className="text-sm font-medium text-slate-600 mb-4 flex items-center gap-3">
-          <BarChart2 className="w-6 h-6 text-primary-600" />
-          Progrés global de lectura
-        </h3>
-        <ProgressBar percentage={stats.progressPercentage} />
-      </div>
+      <Box>
+        <BoxTitle icon={BarChart2}>Progrés global de lectura</BoxTitle>
+        <ProgressBar value={stats.progressPercentage} max={100} variant="secondary" showLabel />
+      </Box>
 
       {readingBooks.length > 0 && (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
-          <h3 className="text-sm font-medium text-slate-600 mb-4 flex items-center gap-3">
-            <BookMarked className="w-6 h-6 text-primary-600" />
-            Llegint ara
-          </h3>
+        <Box>
+          <BoxTitle icon={BookMarked}>Llegint ara</BoxTitle>
           <div className="space-y-6">
             {readingBooks.map((book, index) => (
               <div key={book.id} className={index > 0 ? "pt-6 border-t border-slate-200" : undefined}>
@@ -207,7 +185,7 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
               </div>
             ))}
           </div>
-        </div>
+        </Box>
       )}
     </div>
   );

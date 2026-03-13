@@ -2,6 +2,7 @@ import React from "react";
 import { Plus } from "lucide-react";
 import { BookCard } from "../common/BookCard";
 import { PrimaryButton } from "../common/Button";
+import { Select, PageTitle } from "../../design-system";
 import { LIBRARY_FILTER_OPTIONS, ROUTES } from "../../utils/constants";
 
 export const LibraryView = ({
@@ -20,12 +21,9 @@ export const LibraryView = ({
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h2 className="text-3xl font-serif text-slate-800 mb-2">
-            La Meva Biblioteca
-          </h2>
-          <p className="text-slate-600">Gestiona la teva col·lecció de llibres</p>
-        </div>
+        <PageTitle subtitle="Gestiona la teva col·lecció de llibres">
+          La Meva Biblioteca
+        </PageTitle>
         {!isEmpty && (
           <PrimaryButton to={ROUTES.ADD} icon={Plus}>
             Afegir llibre
@@ -43,17 +41,13 @@ export const LibraryView = ({
             className="w-full pl-10 pr-4 py-3 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
           />
         </div>
-        <select
+        <Select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="px-4 py-3 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-        >
-          {LIBRARY_FILTER_OPTIONS.map(({ value, label }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+          options={LIBRARY_FILTER_OPTIONS}
+          aria-label="Filtre de llibres"
+          className="min-w-[10rem]"
+        />
       </div>
 
       {isEmpty ? (
