@@ -7,6 +7,7 @@ import {
   truncateText,
   generateId,
   validateISBN,
+  normalizeISBN,
   sortBooks,
 } from "./helpers";
 
@@ -118,6 +119,34 @@ describe("helpers", () => {
       expect(validateISBN("123")).toBe(false);
       expect(validateISBN("12345678901")).toBe(false);
       expect(validateISBN("abcdefghij")).toBe(false);
+    });
+  });
+
+  describe("normalizeISBN", () => {
+    it("retorna null si isbn és buit, null o no string", () => {
+      expect(normalizeISBN("")).toBe(null);
+      expect(normalizeISBN(null)).toBe(null);
+      expect(normalizeISBN(undefined)).toBe(null);
+      expect(normalizeISBN(123)).toBe(null);
+    });
+    it("normalitza ISBN-10 eliminant guions i espais", () => {
+      expect(normalizeISBN("0123456789")).toBe("0123456789");
+      expect(normalizeISBN("012-345-678-9")).toBe("0123456789");
+      expect(normalizeISBN("0 1 2 3 4 5 6 7 8 9")).toBe("0123456789");
+    });
+    it("normalitza ISBN-13 eliminant guions i espais", () => {
+      expect(normalizeISBN("9780123456789")).toBe("9780123456789");
+      expect(normalizeISBN("978-0-12-345678-9")).toBe("9780123456789");
+      expect(normalizeISBN("978 0 12 345678 9")).toBe("9780123456789");
+    });
+    it("elimina caràcters no numèrics (excepte dígits)", () => {
+      expect(normalizeISBN("978-0-12-345678-9")).toBe("9780123456789");
+    });
+    it("retorna null si la longitud no és 10 ni 13 dígits", () => {
+      expect(normalizeISBN("123")).toBe(null);
+      expect(normalizeISBN("12345678901")).toBe(null);
+      expect(normalizeISBN("12345678901234")).toBe(null);
+      expect(normalizeISBN("abcdefghij")).toBe(null);
     });
   });
 
