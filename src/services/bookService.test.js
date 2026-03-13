@@ -5,22 +5,18 @@ const mockAddDoc = vi.fn();
 const mockGetDocs = vi.fn();
 const mockUpdateDoc = vi.fn();
 
-vi.mock("firebase/firestore", async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    getFirestore: vi.fn(() => ({})),
-    collection: vi.fn(),
-    doc: vi.fn(),
-    addDoc: (...args) => mockAddDoc(...args),
-    getDocs: (...args) => mockGetDocs(...args),
-    updateDoc: (...args) => mockUpdateDoc(...args),
-    deleteDoc: vi.fn(),
-    query: vi.fn(),
-    orderBy: vi.fn(),
-    serverTimestamp: vi.fn(() => ({ seconds: 0, nanoseconds: 0 })),
-  };
-});
+vi.mock("firebase/firestore", () => ({
+  collection: vi.fn(),
+  doc: vi.fn(),
+  addDoc: (...args) => mockAddDoc(...args),
+  getDocs: (...args) => mockGetDocs(...args),
+  updateDoc: (...args) => mockUpdateDoc(...args),
+  deleteDoc: vi.fn(),
+  query: vi.fn(),
+  orderBy: vi.fn(),
+  serverTimestamp: vi.fn(() => ({ seconds: 0, nanoseconds: 0 })),
+  getFirestore: vi.fn(() => ({})),
+}));
 
 function createMockSnapshot(books) {
   return {

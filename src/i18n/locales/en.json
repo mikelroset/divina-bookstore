@@ -99,11 +99,6 @@
     "weeklyProgress": "Last week's progress",
     "addPagesForPrediction": "Add the number of pages to enable prediction and chart."
   },
-  "bookForm": {
-    "errorIsbnRequired": "ISBN is required to add a book.",
-    "errorIsbnInvalid": "ISBN must be valid (ISBN-10 or ISBN-13).",
-    "errorBookAlreadyExists": "This book already exists in your library"
-  },
   "levels": {
     "roles": ["Library Apprentice", "Book Apprentice", "Word Novice", "Ink Squire", "Stories Knight", "Scroll Guardian", "Chronicler", "Royal Archivist", "Head Librarian", "Ancient Wisdom"],
     "minerals": ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Emerald", "Diamond"],
