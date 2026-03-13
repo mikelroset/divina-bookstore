@@ -155,15 +155,16 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
       {annualGoal > 0 && (
         <Box>
           <BoxTitle icon={Target}>Objectiu anual</BoxTitle>
-          <p className="text-sm text-slate-600 mb-2">
-            {stats.completedBooks} / {annualGoal} llibres
-          </p>
           <ProgressBar
             value={Math.min(100, Math.round((stats.completedBooks / annualGoal) * 100))}
             max={100}
             variant="secondary"
             height="sm"
+            className="mb-2"
           />
+          <p className="text-sm text-slate-600">
+            Progrés anual: {stats.completedBooks} / {annualGoal} llibres
+          </p>
         </Box>
       )}
 
