@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "../common/Avatar";
-import { ChevronDown, ChevronRight, Award } from "lucide-react";
+import { ChevronDown, ChevronRight, Award, Target } from "lucide-react";
 import { useSuperadmin } from "../../hooks/useSuperadmin";
 import { useGamification } from "../../hooks/useGamification";
 import { useBadges } from "../../hooks/useBadges";
@@ -9,7 +9,7 @@ import { BadgeGrid } from "../common/BadgeGrid";
 import { useToast } from "../../context/ToastContext";
 import { CATALOG, getLevelInfo, getPointsForLevel } from "../../utils/levelCatalog";
 import { ROUTES } from "../../utils/constants";
-import { Box, PageTitle, ProgressBar } from "../../design-system";
+import { Box, BoxTitle, PageTitle, ProgressBar } from "../../design-system";
 
 export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal, books = [], readingActivityDays = [] }) => {
   const navigate = useNavigate();
@@ -150,14 +150,13 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
         )}
 
         {setAnnualGoal && (
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Objectiu de llibres aquest any
-            </label>
+          <Box className="mb-6">
+            <BoxTitle icon={Target}>Objectiu de llibres aquest any</BoxTitle>
             <input
               type="text"
               inputMode="numeric"
               pattern="[0-9]*"
+              aria-label="Objectiu de llibres aquest any"
               value={inputStr}
               onChange={(e) => setInputStr(e.target.value.replace(/\D/g, ""))}
               onFocus={() => setIsFocused(true)}
@@ -167,24 +166,24 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                 setAnnualGoal(num);
                 setInputStr(num > 0 ? String(num) : "");
               }}
-              placeholder="0"
-              className="w-full rounded-xl border border-primary-500 px-4 py-2 text-slate-800"
+              placeholder="Ex: 10"
+              className="w-full rounded-xl border border-primary-500 px-4 py-2 text-slate-800 mb-4"
             />
-          </div>
-        )}
-
-        {goal > 0 && (
-          <div className="mb-6">
-            <p className="text-sm text-slate-600 mb-2">
-              Progrés anual: {completed} / {goal} llibres
-            </p>
-            <ProgressBar
-              value={progressPct}
-              max={100}
-              variant="secondary"
-              height="md"
-            />
-          </div>
+            {goal > 0 && (
+              <>
+                <ProgressBar
+                  value={progressPct}
+                  max={100}
+                  variant="secondary"
+                  height="md"
+                  className="mb-2"
+                />
+                <p className="text-sm text-slate-600">
+                  Progrés anual: {completed} / {goal} llibres
+                </p>
+              </>
+            )}
+          </Box>
         )}
 
         {!loading && isSuperadmin && (

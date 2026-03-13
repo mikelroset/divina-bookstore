@@ -8,6 +8,8 @@ The system SHALL allow the user to set an annual reading goal (number of books) 
 
 The annual goal value SHALL be persisted to storage (e.g. Firestore prefs) when the user changes it (on blur or on a debounced update). The profile form SHALL allow the user to type the number normally (e.g. "10" without the field forcing a leading zero or showing "010"). After page refresh or re-login, the saved annual goal SHALL be loaded and displayed correctly.
 
+**Box grouping:** The annual goal information SHALL be grouped inside a single Box component for visual consistency and motivation. On the home page, when `annualGoal > 0`, a Box SHALL display: title "Objectiu anual", ProgressBar, and "Progrés anual: X / Y llibres" in that order. On the profile, a single Box SHALL contain: title "Objectiu de llibres aquest any", input to set/edit the goal, and when goal > 0: ProgressBar plus "Progrés anual: X / Y llibres".
+
 ### Requirement: Pace-based completion prediction
 
 The system SHALL compute the user's average reading pace (pages per day) from "current page" updates over the last 7 days. On the currently-reading book view, the system SHALL display dynamic text: "Al teu ritme actual, acabaràs aquest llibre en X dies (Data estimada: DD/MM)". If pace is zero or negative (no activity or re-reading), the system SHALL NOT show an estimated date and SHALL show a motivational empty state (e.g. "Llegeix unes quantes pàgines per calcular el teu ritme!").
