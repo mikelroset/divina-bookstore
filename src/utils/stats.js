@@ -27,11 +27,11 @@ export function computeStats(books) {
   // Progrés només dels llibres que s’estan llegint (no pendents ni completats)
   const readingBooksList = books.filter((b) => b.status === "reading");
   const totalPages = readingBooksList.reduce(
-    (sum, book) => sum + (book.pages || 0),
+    (sum, book) => sum + (Number(book.pages) || 0),
     0,
   );
   const readPages = readingBooksList.reduce(
-    (sum, book) => sum + (book.currentPage || 0),
+    (sum, book) => sum + (Number(book.currentPage) || 0),
     0,
   );
   const progressPercentage =
