@@ -6,11 +6,12 @@ import {
   deleteDoc,
   getDocs,
   query,
-  where,
   orderBy,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { normalizeISBN, validateISBN } from "../utils/helpers";
+import i18n from "../i18n";
 
 /**
  * @typedef {Object} Book
@@ -48,11 +49,33 @@ export const bookService = {
 
   /**
    * Afegir un nou llibre.
+   * ISBN obligatori. Comprova duplicats per usuari (mateix ISBN normalitzat).
    * @param {string} userId - UID de l'usuari
    * @param {Partial<Book>} bookData - Dades del llibre
    * @returns {Promise<Book>} Llibre creat amb id
    */
   addBook: async (userId, bookData) => {
+    const isbn = (bookData.isbn ?? "").trim();
+    if (!isbn) {
+      throw new Error(i18n.t("bookForm.errorIsbnRequired"));
+    }
+    if (!validateISBN(isbn)) {
+      throw new Error(i18n.t("bookForm.errorIsbnInvalid"));
+    }
+    const normalizedIsbn = normalizeISBN(isbn);
+    if (!normalizedIsbn) {
+      throw new Error(i18n.t("bookForm.errorIsbnInvalid"));
+    }
+
+    const existingBooks = await bookService.getUserBooks(userId);
+    const hasDuplicate = existingBooks.some((b) => {
+      const existingNorm = normalizeISBN(b.isbn);
+      return existingNorm && existingNorm === normalizedIsbn;
+    });
+    if (hasDuplicate) {
+      throw new Error(i18n.t("bookForm.errorBookAlreadyExists"));
+    }
+
     try {
       const booksRef = collection(db, "users", userId, "books");
       const docRef = await addDoc(booksRef, {
@@ -69,12 +92,30 @@ export const bookService = {
 
   /**
    * Actualitzar un llibre existent.
+   * Si bookData inclou isbn, comprova que no sigui duplicat (en un altre llibre del mateix usuari).
    * @param {string} userId - UID de l'usuari
    * @param {string} bookId - ID del llibre
    * @param {Partial<Book>} bookData - Dades a actualitzar
    * @returns {Promise<Book>} Llibre actualitzat
    */
   updateBook: async (userId, bookId, bookData) => {
+    const newIsbn = bookData?.isbn != null ? (bookData.isbn + "").trim() : null;
+    if (newIsbn) {
+      if (!validateISBN(newIsbn)) {
+        throw new Error(i18n.t("bookForm.errorIsbnInvalid"));
+      }
+      const normalizedIsbn = normalizeISBN(newIsbn);
+      const existingBooks = await bookService.getUserBooks(userId);
+      const hasDuplicate = existingBooks.some((b) => {
+        if (b.id === bookId) return false;
+        const existingNorm = normalizeISBN(b.isbn);
+        return existingNorm && existingNorm === normalizedIsbn;
+      });
+      if (hasDuplicate) {
+        throw new Error(i18n.t("bookForm.errorBookAlreadyExists"));
+      }
+    }
+
     try {
       const bookRef = doc(db, "users", userId, "books", bookId);
       await updateDoc(bookRef, {

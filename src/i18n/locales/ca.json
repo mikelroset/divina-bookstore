@@ -99,6 +99,11 @@
     "minerals": ["Ferro", "Bronze", "Plata", "Or", "Platí", "Esmeralda", "Diamant"],
     "legend": "Llegenda Divina"
   },
+  "bookForm": {
+    "errorIsbnRequired": "L'ISBN és obligatori per afegir un llibre.",
+    "errorIsbnInvalid": "L'ISBN ha de ser vàlid (ISBN-10 o ISBN-13).",
+    "errorBookAlreadyExists": "Aquest llibre ja existeix a la teva biblioteca"
+  },
   "constants": {
     "statusLabels": {
       "wishlist": "Desitjat",

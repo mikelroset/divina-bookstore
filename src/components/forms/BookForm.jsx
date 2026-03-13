@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Search, Globe } from "lucide-react";
 import { STATUS_LABELS } from "../../utils/constants";
+import { validateISBN } from "../../utils/helpers";
 import { Box, Select, StarRating, TextInput, Textarea } from "../../design-system";
 import { BookCover } from "../common/BookCover";
 
@@ -56,6 +58,8 @@ export const BookForm = ({
   onSearchCover,
   onSearchDescription,
 }) => {
+  const { t } = useTranslation();
+  const isNewBook = !initialData?.id;
   const [formData, setFormData] = useState(() => {
     const data = { ...defaultBook, ...(initialData || {}) };
     if (data.title && !data.originalTitle?.trim()) {
@@ -93,6 +97,15 @@ export const BookForm = ({
       parseInt(formData.currentPage) > parseInt(formData.pages)
     ) {
       newErrors.currentPage = "La pàgina actual no pot ser major que el total";
+    }
+
+    if (isNewBook) {
+      const isbn = formData.isbn?.trim();
+      if (!isbn) {
+        newErrors.isbn = t("bookForm.errorIsbnRequired");
+      } else if (!validateISBN(isbn)) {
+        newErrors.isbn = t("bookForm.errorIsbnInvalid");
+      }
     }
 
     setErrors(newErrors);
@@ -183,11 +196,12 @@ export const BookForm = ({
       {/* ISBN, Pàgines, Pàgina Actual */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <TextInput
-          label="ISBN"
+          label={isNewBook ? "ISBN *" : "ISBN"}
           type="text"
           value={formData.isbn}
           onChange={(e) => handleChange("isbn", e.target.value)}
           placeholder="978-0-123456-78-9"
+          error={errors.isbn}
         />
         <TextInput
           label="Pàgines"

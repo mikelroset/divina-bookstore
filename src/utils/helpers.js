@@ -48,6 +48,18 @@ export const validateISBN = (isbn) => {
   return /^\d{10}$/.test(cleanISBN) || /^\d{13}$/.test(cleanISBN);
 };
 
+/**
+ * Normalitza l'ISBN per a comparació (elimina guions, espais, retorna només dígits).
+ * @param {string} isbn
+ * @returns {string|null} ISBN normalitzat (10 o 13 dígits) o null si invàlid
+ */
+export const normalizeISBN = (isbn) => {
+  if (!isbn || typeof isbn !== "string") return null;
+  const clean = isbn.replace(/[-\s]/g, "").toLowerCase().replace(/\D/g, "");
+  if (clean.length === 10 || clean.length === 13) return clean;
+  return null;
+};
+
 export const sortBooks = (books, sortBy = "title") => {
   const sorted = [...books];
   switch (sortBy) {

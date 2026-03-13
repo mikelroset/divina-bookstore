@@ -83,6 +83,11 @@
     "empty": "Aún no tienes libros en tu biblioteca",
     "noResults": "No se han encontrado libros"
   },
+  "bookForm": {
+    "errorIsbnRequired": "El ISBN es obligatorio para añadir un libro.",
+    "errorIsbnInvalid": "El ISBN debe ser válido (ISBN-10 o ISBN-13).",
+    "errorBookAlreadyExists": "Este libro ya existe en tu biblioteca"
+  },
   "addBook": {
     "title": "Añadir Nuevo Libro",
     "editTitle": "Editar Libro",
@@ -93,6 +98,11 @@
     "readMoreForEta": "¡Lee unas cuantas páginas para calcular tu ritmo!",
     "weeklyProgress": "Progreso última semana",
     "addPagesForPrediction": "Añade el número de páginas para activar la predicción y el gráfico."
+  },
+  "bookForm": {
+    "errorIsbnRequired": "El ISBN es obligatorio para añadir un libro.",
+    "errorIsbnInvalid": "El ISBN debe ser válido (ISBN-10 o ISBN-13).",
+    "errorBookAlreadyExists": "Este libro ya existe en tu biblioteca"
   },
   "levels": {
     "roles": ["Aprendiz de Biblioteca", "Aprendiz de Libros", "Novicio de la Palabra", "Escudero de la Tinta", "Caballero de las Historias", "Guardián del Pergamino", "Cronista", "Archivero Real", "Gran Bibliotecario", "Sabiduría Antigua"],
