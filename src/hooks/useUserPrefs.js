@@ -7,6 +7,15 @@ import {
 } from "../services/userPrefsService";
 import { ensureUserInDefaultCommunity } from "../services/communityManagementService";
 import { DEFAULT_COMMUNITY_ID } from "../utils/constants";
+import i18n, { SUPPORTED_LANGS, DEFAULT_LANG } from "../i18n";
+
+function detectBrowserLocale() {
+  const lang = navigator.language?.toLowerCase() || navigator.languages?.[0]?.toLowerCase() || "";
+  if (lang.startsWith("ca")) return "ca";
+  if (lang.startsWith("es")) return "es";
+  if (lang.startsWith("en")) return "en";
+  return null;
+}
 
 /**
  * @param {string | undefined} userId
@@ -17,17 +26,22 @@ export function useUserPrefs(userId, profile) {
   const [readingActivityDays, setReadingActivityDays] = useState([]);
   const [activeCommunityId, setActiveCommunityIdState] = useState(null);
   const [userCommunityIds, setUserCommunityIdsState] = useState([]);
+  const [locale, setLocaleState] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async (cancelledRef) => {
     if (!userId) {
+      const detected = detectBrowserLocale();
+      const initialLocale = detected && SUPPORTED_LANGS.includes(detected) ? detected : DEFAULT_LANG;
       if (!cancelledRef?.current) {
+        setLocaleState(initialLocale);
         setAnnualGoalState(0);
         setReadingActivityDays([]);
         setActiveCommunityIdState(null);
         setUserCommunityIdsState([]);
         setLoading(false);
       }
+      i18n.changeLanguage(initialLocale);
       return;
     }
     try {
@@ -36,6 +50,11 @@ export function useUserPrefs(userId, profile) {
       if (cancelledRef?.current) return;
       setAnnualGoalState(prefs.annualGoal ?? 0);
       setReadingActivityDays(prefs.readingActivityDays ?? []);
+      const savedLocale = prefs.locale && SUPPORTED_LANGS.includes(prefs.locale) ? prefs.locale : null;
+      const browserLocale = detectBrowserLocale();
+      const effectiveLocale = savedLocale ?? (browserLocale && SUPPORTED_LANGS.includes(browserLocale) ? browserLocale : null) ?? DEFAULT_LANG;
+      setLocaleState(effectiveLocale);
+      i18n.changeLanguage(effectiveLocale);
       let communityId = prefs.activeCommunityId ?? null;
       let communityIds = prefs.userCommunityIds ?? [];
       if (communityIds.length === 0 || !communityId) {
@@ -93,6 +112,21 @@ export function useUserPrefs(userId, profile) {
 
   const streak = computeStreak(readingActivityDays);
 
+  const setLocale = useCallback(
+    async (newLocale) => {
+      if (!SUPPORTED_LANGS.includes(newLocale)) return;
+      setLocaleState(newLocale);
+      i18n.changeLanguage(newLocale);
+      if (!userId) return;
+      try {
+        await updateUserPrefs(userId, { locale: newLocale });
+      } catch (err) {
+        console.error("Error saving locale:", err);
+      }
+    },
+    [userId],
+  );
+
   const setActiveCommunityId = useCallback(
     async (communityId) => {
       setActiveCommunityIdState(communityId);
@@ -145,6 +179,8 @@ export function useUserPrefs(userId, profile) {
     userCommunityIds,
     addCommunityToUser,
     syncUserCommunityIds,
+    locale,
+    setLocale,
     loading,
     refreshPrefs: load,
   };

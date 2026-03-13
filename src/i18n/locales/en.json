@@ -1,0 +1,112 @@
+{
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "avatarUnavailable": "Avatar unavailable",
+    "avatarOf": "Avatar of {{name}}",
+    "coverUnavailable": "Cover unavailable",
+    "coverOf": "Cover of {{title}}",
+    "loading": "Loading...",
+    "errorRetry": "Error. Please try again."
+  },
+  "header": {
+    "ariaGoHome": "Go to home",
+    "ariaGoProfile": "Go to profile",
+    "logoAlt": "Logo"
+  },
+  "nav": {
+    "home": "Home",
+    "library": "Library",
+    "community": "Community",
+    "reviews": "Reviews",
+    "profile": "Profile",
+    "ariaEncouragements": "{{count}} encouragements"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Your account information",
+    "totalBooks": "Total Books",
+    "completedBooks": "Books Completed",
+    "badges": "Badges",
+    "loadingBadges": "Loading badges...",
+    "totalPoints": "Total points",
+    "progressTo": "Progress to {{level}}: {{pct}}%",
+    "hide": "Hide",
+    "viewAllLevels": "View all levels",
+    "points": "pt",
+    "showInLeaderboard": "Show in leaderboard",
+    "annualGoalTitle": "Books goal this year",
+    "annualGoalPlaceholder": "E.g. 10",
+    "annualProgress": "Annual progress: {{completed}} / {{goal}} books",
+    "adminCommunities": "Community management",
+    "logout": "Log Out",
+    "badgeUnlocked": "You've unlocked a new badge: {{name}}!",
+    "language": "Interface language",
+    "languageOption_ca": "Catalan",
+    "languageOption_es": "Spanish",
+    "languageOption_en": "English"
+  },
+  "home": {
+    "title": "Welcome!",
+    "subtitle": "Here's a summary of your library",
+    "booksReadInCommunity": "Books read in the community",
+    "someoneFinished": "{{name}} finished {{bookTitle}}",
+    "someone": "Someone",
+    "aBook": "a book",
+    "encouragements": "Encouragements",
+    "encouragesYou": "{{name}} encourages you to keep reading",
+    "streak": "Streak",
+    "dayConsecutive": "consecutive day",
+    "daysConsecutive": "consecutive days",
+    "thisMonth": "This month",
+    "booksCompleted": "Books completed",
+    "favoriteGenre": "Favorite genre",
+    "yourFavorite": "Your favorite",
+    "totalBooks": "Total books",
+    "completed": "completed",
+    "annualGoal": "Annual goal",
+    "annualProgress": "Annual progress: {{completed}} / {{goal}} books",
+    "globalProgress": "Global reading progress",
+    "readingNow": "Reading now"
+  },
+  "library": {
+    "title": "My Library",
+    "subtitle": "Manage your book collection",
+    "addBook": "Add book",
+    "addFirstBook": "Add first book",
+    "searchPlaceholder": "Search by title or author...",
+    "ariaFilter": "Book filter",
+    "empty": "You don't have any books in your library yet",
+    "noResults": "No books found"
+  },
+  "addBook": {
+    "title": "Add New Book",
+    "editTitle": "Edit Book",
+    "subtitle": "Complete the book information",
+    "etaMessage": "At your current pace, you'll finish this book in {{days}} {{daysLabel}} (Estimated date: {{date}})",
+    "day": "day",
+    "days": "days",
+    "readMoreForEta": "Read a few pages to calculate your pace!",
+    "weeklyProgress": "Last week's progress",
+    "addPagesForPrediction": "Add the number of pages to enable prediction and chart."
+  },
+  "constants": {
+    "statusLabels": {
+      "wishlist": "Wishlist",
+      "pending": "Pending",
+      "reading": "Reading",
+      "completed": "Completed"
+    },
+    "libraryFilters": {
+      "all": "All books",
+      "wishlist": "Wishlist",
+      "pending": "Pending",
+      "reading": "Reading",
+      "completed": "Completed"
+    }
+  }
+}

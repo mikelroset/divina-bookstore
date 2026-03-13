@@ -1,0 +1,112 @@
+{
+  "common": {
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "avatarUnavailable": "Avatar no disponible",
+    "avatarOf": "Avatar de {{name}}",
+    "coverUnavailable": "Portada no disponible",
+    "coverOf": "Portada de {{title}}",
+    "loading": "Cargando...",
+    "errorRetry": "Error. Inténtalo de nuevo."
+  },
+  "header": {
+    "ariaGoHome": "Ir al inicio",
+    "ariaGoProfile": "Ir al perfil",
+    "logoAlt": "Logo"
+  },
+  "nav": {
+    "home": "Inicio",
+    "library": "Biblioteca",
+    "community": "Comunidad",
+    "reviews": "Reseñas",
+    "profile": "Perfil",
+    "ariaEncouragements": "{{count}} ánimos"
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "subtitle": "Información de tu cuenta",
+    "totalBooks": "Total de Libros",
+    "completedBooks": "Libros Completados",
+    "badges": "Insignias",
+    "loadingBadges": "Cargando insignias...",
+    "totalPoints": "Puntos totales",
+    "progressTo": "Progreso hacia {{level}}: {{pct}}%",
+    "hide": "Ocultar",
+    "viewAllLevels": "Ver todos los niveles",
+    "points": "pt",
+    "showInLeaderboard": "Aparecer en el ranking",
+    "annualGoalTitle": "Objetivo de libros este año",
+    "annualGoalPlaceholder": "Ej: 10",
+    "annualProgress": "Progreso anual: {{completed}} / {{goal}} libros",
+    "adminCommunities": "Gestión de comunidades",
+    "logout": "Cerrar Sesión",
+    "badgeUnlocked": "¡Has desbloqueado una nueva insignia: {{name}}!",
+    "language": "Idioma de la interfaz",
+    "languageOption_ca": "Catalán",
+    "languageOption_es": "Castellano",
+    "languageOption_en": "Inglés"
+  },
+  "home": {
+    "title": "¡Bienvenido/a!",
+    "subtitle": "Aquí tienes un resumen de tu biblioteca",
+    "booksReadInCommunity": "Libros leídos en la comunidad",
+    "someoneFinished": "{{name}} ha terminado {{bookTitle}}",
+    "someone": "Alguien",
+    "aBook": "un libro",
+    "encouragements": "Ánimos",
+    "encouragesYou": "{{name}} te anima a seguir leyendo",
+    "streak": "Racha",
+    "dayConsecutive": "día consecutivo",
+    "daysConsecutive": "días consecutivos",
+    "thisMonth": "Este mes",
+    "booksCompleted": "Libros completados",
+    "favoriteGenre": "Género favorito",
+    "yourFavorite": "Tu favorito",
+    "totalBooks": "Total libros",
+    "completed": "completados",
+    "annualGoal": "Objetivo anual",
+    "annualProgress": "Progreso anual: {{completed}} / {{goal}} libros",
+    "globalProgress": "Progreso global de lectura",
+    "readingNow": "Leyendo ahora"
+  },
+  "library": {
+    "title": "Mi Biblioteca",
+    "subtitle": "Gestiona tu colección de libros",
+    "addBook": "Añadir libro",
+    "addFirstBook": "Añadir el primer libro",
+    "searchPlaceholder": "Buscar por título o autor...",
+    "ariaFilter": "Filtro de libros",
+    "empty": "Aún no tienes libros en tu biblioteca",
+    "noResults": "No se han encontrado libros"
+  },
+  "addBook": {
+    "title": "Añadir Nuevo Libro",
+    "editTitle": "Editar Libro",
+    "subtitle": "Completa la información del libro",
+    "etaMessage": "A tu ritmo actual, terminarás este libro en {{days}} {{daysLabel}} (Fecha estimada: {{date}})",
+    "day": "día",
+    "days": "días",
+    "readMoreForEta": "¡Lee unas cuantas páginas para calcular tu ritmo!",
+    "weeklyProgress": "Progreso última semana",
+    "addPagesForPrediction": "Añade el número de páginas para activar la predicción y el gráfico."
+  },
+  "constants": {
+    "statusLabels": {
+      "wishlist": "Deseado",
+      "pending": "Pendiente",
+      "reading": "Leyendo",
+      "completed": "Completado"
+    },
+    "libraryFilters": {
+      "all": "Todos los libros",
+      "wishlist": "Deseados",
+      "pending": "Pendientes",
+      "reading": "Leyendo",
+      "completed": "Completados"
+    }
+  }
+}

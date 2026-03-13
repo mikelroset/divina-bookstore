@@ -1,0 +1,112 @@
+{
+  "common": {
+    "close": "Tancar",
+    "cancel": "Cancel·lar",
+    "confirm": "Confirmar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "avatarUnavailable": "Avatar no disponible",
+    "avatarOf": "Avatar de {{name}}",
+    "coverUnavailable": "Portada no disponible",
+    "coverOf": "Portada de {{title}}",
+    "loading": "Carregant...",
+    "errorRetry": "Error. Torna-ho a intentar."
+  },
+  "header": {
+    "ariaGoHome": "Anar a l'inici",
+    "ariaGoProfile": "Anar al perfil",
+    "logoAlt": "Logo"
+  },
+  "nav": {
+    "home": "Inici",
+    "library": "Biblioteca",
+    "community": "Comunitat",
+    "reviews": "Ressenyes",
+    "profile": "Perfil",
+    "ariaEncouragements": "{{count}} encoratjaments"
+  },
+  "profile": {
+    "title": "El Meu Perfil",
+    "subtitle": "Informació del teu compte",
+    "totalBooks": "Total de Llibres",
+    "completedBooks": "Llibres Completats",
+    "badges": "Insígnies",
+    "loadingBadges": "Carregant badges...",
+    "totalPoints": "Punts totals",
+    "progressTo": "Progrés cap a {{level}}: {{pct}}%",
+    "hide": "Amagar",
+    "viewAllLevels": "Veure tots els nivells",
+    "points": "pt",
+    "showInLeaderboard": "Aparèixer al rànquing",
+    "annualGoalTitle": "Objectiu de llibres aquest any",
+    "annualGoalPlaceholder": "Ex: 10",
+    "annualProgress": "Progrés anual: {{completed}} / {{goal}} llibres",
+    "adminCommunities": "Gestió de comunitats",
+    "logout": "Tancar Sessió",
+    "badgeUnlocked": "Has desbloquejat un nou badge: {{name}}!",
+    "language": "Idioma de la interfície",
+    "languageOption_ca": "Català",
+    "languageOption_es": "Castellà",
+    "languageOption_en": "Anglès"
+  },
+  "home": {
+    "title": "Benvingut/da!",
+    "subtitle": "Aquí tens un resum de la teva biblioteca",
+    "booksReadInCommunity": "Llibres llegits a la comunitat",
+    "someoneFinished": "{{name}} ha acabat {{bookTitle}}",
+    "someone": "Algú",
+    "aBook": "un llibre",
+    "encouragements": "Encoratjaments",
+    "encouragesYou": "{{name}} t'anima a seguir llegint",
+    "streak": "Ratxa",
+    "dayConsecutive": "dia consecutiu",
+    "daysConsecutive": "dies consecutius",
+    "thisMonth": "Aquest mes",
+    "booksCompleted": "Llibres completats",
+    "favoriteGenre": "Gènere preferit",
+    "yourFavorite": "El teu favorit",
+    "totalBooks": "Total llibres",
+    "completed": "completats",
+    "annualGoal": "Objectiu anual",
+    "annualProgress": "Progrés anual: {{completed}} / {{goal}} llibres",
+    "globalProgress": "Progrés global de lectura",
+    "readingNow": "Llegint ara"
+  },
+  "library": {
+    "title": "La Meva Biblioteca",
+    "subtitle": "Gestiona la teva col·lecció de llibres",
+    "addBook": "Afegir llibre",
+    "addFirstBook": "Afegir el primer llibre",
+    "searchPlaceholder": "Cerca per títol o autor...",
+    "ariaFilter": "Filtre de llibres",
+    "empty": "Encara no tens llibres a la teva biblioteca",
+    "noResults": "No s'han trobat llibres"
+  },
+  "addBook": {
+    "title": "Afegir Nou Llibre",
+    "editTitle": "Editar Llibre",
+    "subtitle": "Completa la informació del llibre",
+    "etaMessage": "Al teu ritme actual, acabaràs aquest llibre en {{days}} {{daysLabel}} (Data estimada: {{date}})",
+    "day": "dia",
+    "days": "dies",
+    "readMoreForEta": "Llegeix unes quantes pàgines per calcular el teu ritme!",
+    "weeklyProgress": "Progrés última setmana",
+    "addPagesForPrediction": "Afegeix el número de pàgines per activar la predicció i el gràfic."
+  },
+  "constants": {
+    "statusLabels": {
+      "wishlist": "Desitjat",
+      "pending": "Pendent",
+      "reading": "Llegint",
+      "completed": "Completat"
+    },
+    "libraryFilters": {
+      "all": "Tots els llibres",
+      "wishlist": "Desitjats",
+      "pending": "Pendents",
+      "reading": "Llegint",
+      "completed": "Completats"
+    }
+  }
+}
