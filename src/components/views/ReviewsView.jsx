@@ -198,6 +198,12 @@ export const ReviewsView = ({ currentUser, books }) => {
     if (!publishBook || !publishText?.trim() || !currentUser) return;
     setPublishing(true);
     try {
+      const originalTitle = (publishBook.originalTitle?.trim() || publishBook.title?.trim()) ?? "";
+      if (!originalTitle || !publishBook.author?.trim()) {
+        setError("El títol original i l'autor són obligatoris per publicar una ressenya.");
+        setPublishing(false);
+        return;
+      }
       await addReview(
         currentUser.uid,
         currentUser.displayName || "Membre",
@@ -206,6 +212,7 @@ export const ReviewsView = ({ currentUser, books }) => {
           id: publishBook.id,
           title: publishBook.title,
           author: publishBook.author,
+          originalTitle,
         },
         publishText.trim()
       );
