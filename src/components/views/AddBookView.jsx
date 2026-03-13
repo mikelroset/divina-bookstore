@@ -3,7 +3,7 @@ import { coverService } from "../../services/coverService";
 import { descriptionService } from "../../services/descriptionService";
 import { BOOK_GENRES } from "../../utils/constants";
 import { computeETA, getWeeklyPagesRead } from "../../utils/readingInsights";
-import { Box } from "../../design-system";
+import { Box, PageTitle } from "../../design-system";
 import { BookForm } from "../forms/BookForm";
 
 function WeeklyMiniChart({ data }) {
@@ -59,11 +59,9 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          {/* TODO: use PageTitle */}
-          <h2 className="text-3xl font-serif text-slate-800 mb-2">
+          <PageTitle subtitle="Completa la informació del llibre">
             {editingBook ? "Editar Llibre" : "Afegir Nou Llibre"}
-          </h2>
-          <p className="text-slate-600">Completa la informació del llibre</p>
+          </PageTitle>
         </div>
         <button
           onClick={onCancel}
