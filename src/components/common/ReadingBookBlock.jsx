@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BookCover } from "./BookCover";
+import { ProgressBar } from "../../design-system";
 import { computeETA, getWeeklyPagesRead } from "../../utils/readingInsights";
 import { safeProgress } from "../../utils/helpers";
 
@@ -96,14 +97,13 @@ export function ReadingBookBlock({ book, onUpdateCurrentPage }) {
         <p className="text-slate-600 text-sm mb-3">{book?.author ?? ""}</p>
         {book.currentPage != null && book.pages > 0 && (
           <div>
-            <div className="bg-slate-100 rounded-full h-2 overflow-hidden mb-2">
-              <div
-                className="bg-slate-700 h-full rounded-full"
-                style={{
-                  width: `${safeProgress(book.currentPage, book.pages) ?? 0}%`,
-                }}
-              />
-            </div>
+            <ProgressBar
+              value={safeProgress(book.currentPage, book.pages) ?? 0}
+              max={100}
+              variant="secondary"
+              height="sm"
+              className="mb-2"
+            />
             <p className="text-xs text-slate-600 mb-2">
               {book.currentPage} / {book.pages} pàgines
             </p>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { Star, Heart, ChevronDown, ChevronUp, Search, Plus } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, Plus } from "lucide-react";
 import { PrimaryButton } from "../common/Button";
+import { PageTitle, Select, LikeButton, Textarea, Box } from "../../design-system";
 import { Avatar } from "../common/Avatar";
 import { dateUtils } from "../../utils/dateUtils";
 import {
@@ -231,14 +232,9 @@ export const ReviewsView = ({ currentUser, books }) => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-serif text-slate-800 mb-2">
-            Ressenyes
-          </h2>
-          <p className="text-slate-600">
-            Descobreix opinions i comparteix les teves
-          </p>
-        </div>
+        <PageTitle subtitle="Descobreix opinions i comparteix les teves">
+          Ressenyes
+        </PageTitle>
         {completedBooks.length > 0 && (
           <PrimaryButton
             type="button"
@@ -324,7 +320,7 @@ export const ReviewsView = ({ currentUser, books }) => {
       )}
 
       {filteredReviews.length === 0 ? (
-        <div className="text-center py-16 bg-white/60 rounded-2xl border border-primary-500">
+        <Box className="text-center py-16 !bg-white/60">
           <p className="text-slate-600 mb-2">
             No s'han trobat ressenyes amb aquests criteris.
           </p>
@@ -336,7 +332,7 @@ export const ReviewsView = ({ currentUser, books }) => {
               Netejar filtres
             </button>
           )}
-        </div>
+        </Box>
       ) : (
         <>
           <div className="space-y-4">
@@ -352,15 +348,15 @@ export const ReviewsView = ({ currentUser, books }) => {
                 : null;
 
               return (
-                <article
+                <Box
+                  as="article"
                   key={review.id}
+                  padding="md"
+                  className={`!shadow-sm ${showReadMore ? "cursor-pointer" : ""}`}
                   onClick={() =>
                     showReadMore &&
                     setExpandedId((id) => (id === review.id ? null : review.id))
                   }
-                  className={`bg-white/80 backdrop-blur-sm rounded-2xl border border-primary-500 p-5 shadow-sm ${
-                    showReadMore ? "cursor-pointer" : ""
-                  }`}
                   role={showReadMore ? "button" : undefined}
                   tabIndex={showReadMore ? 0 : undefined}
                   onKeyDown={
@@ -385,25 +381,15 @@ export const ReviewsView = ({ currentUser, books }) => {
                         {review.bookAuthor}
                       </p>
                     </div>
-                    <button
+                    <LikeButton
+                      liked={liked}
+                      count={review.likeCount ?? 0}
                       onClick={(e) => {
                         e.stopPropagation();
                         debouncedLike(review.id);
                       }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors shrink-0 ${
-                        liked
-                          ? "text-primary-600 bg-primary-50"
-                          : "text-slate-500 hover:bg-slate-100"
-                      }`}
-                      aria-label={liked ? "Desfer like" : "Fer like"}
-                    >
-                      <Heart
-                        className={`w-5 h-5 ${liked ? "fill-current" : ""}`}
-                      />
-                      <span className="text-sm font-medium">
-                        {review.likeCount ?? 0}
-                      </span>
-                    </button>
+                      size="md"
+                    />
                   </div>
                   <div className="mt-2 flex items-center gap-2">
                     <Avatar
@@ -445,7 +431,7 @@ export const ReviewsView = ({ currentUser, books }) => {
                       </button>
                     )}
                   </div>
-                </article>
+                </Box>
               );
             })}
           </div>
@@ -500,7 +486,8 @@ export const ReviewsView = ({ currentUser, books }) => {
             <h3 className="text-xl font-semibold text-slate-800 mb-4">
               Publicar ressenya
             </h3>
-            <select
+            <Select
+              label="Llibre"
               value={publishBook?.id ?? ""}
               onChange={(e) => {
                 const id = e.target.value;
@@ -508,21 +495,22 @@ export const ReviewsView = ({ currentUser, books }) => {
                   id ? completedBooks.find((b) => b.id === id) ?? null : null
                 );
               }}
-              className="w-full px-4 py-2 border border-primary-500 rounded-xl mb-4"
-            >
-              <option value="">Selecciona un llibre (completat)</option>
-              {completedBooks.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.title} – {b.author}
-                </option>
-              ))}
-            </select>
-            <textarea
+              options={[
+                { value: "", label: "Selecciona un llibre (completat)" },
+                ...completedBooks.map((b) => ({
+                  value: b.id,
+                  label: `${b.title} – ${b.author}`,
+                })),
+              ]}
+              className="mb-4"
+            />
+            <Textarea
+              label="Ressenya"
               value={publishText}
               onChange={(e) => setPublishText(e.target.value)}
               placeholder="Què t'ha semblat el llibre?"
               rows={5}
-              className="w-full px-4 py-2 border border-primary-500 rounded-xl mb-4"
+              className="mb-4"
             />
             <div className="flex gap-3 justify-end">
               <button

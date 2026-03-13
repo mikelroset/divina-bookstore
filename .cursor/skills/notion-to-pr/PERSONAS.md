@@ -17,7 +17,10 @@ Revisió de proposta, disseny i implementació des de perspectives d’experts. 
 
 ## Senior Designer
 
+**Obligatori:** El Senior Designer ha de consultar sempre el Design System del projecte (`src/design-system/` si existeix, o tokens/component existents) abans de proposar dissenys. Totes les decisions visuals han d’estar alineades amb els tokens, components i patrons definits per garantir consistència visual al 100%.
+
 **Al proposal i design:**
+- [ ] Design System consultat i referenciat (tokens, components, espaiats)
 - [ ] UX consistent amb el sistema existent
 - [ ] Accessibilitat bàsica considerada (aria, contrast, focus)
 - [ ] Jerarquia visual clara
@@ -25,6 +28,7 @@ Revisió de proposta, disseny i implementació des de perspectives d’experts. 
 - [ ] Responsive o adaptació a diferents mides de pantalla (si aplica)
 
 **Durant implementació:**
+- [ ] Ús de components i tokens del Design System (quan existeix) per garantir consistència visual
 - [ ] Components i patrons visuals consistents amb el disseny del projecte
 - [ ] Estats d’error i loading tenen representació visual
 - [ ] Focus visible i ordre lògic de tabulació

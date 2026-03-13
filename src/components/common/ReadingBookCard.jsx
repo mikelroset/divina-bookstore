@@ -2,6 +2,7 @@ import React from "react";
 import { Clock, Heart } from "lucide-react";
 import { BookCover } from "./BookCover";
 import { Avatar } from "./Avatar";
+import { Box, ProgressBar } from "../../design-system";
 import { getDaysReading, safeProgress } from "../../utils/helpers";
 
 /**
@@ -23,8 +24,9 @@ export function ReadingBookCard({
   const prog = safeProgress(book.currentPage, book.pages);
 
   return (
-    <div
-      className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 border border-primary-500 shadow-lg hover:shadow-xl transition-all"
+    <Box
+      padding="md"
+      className="hover:shadow-xl transition-all"
       role="article"
     >
       <div className="flex items-center gap-3 mb-4">
@@ -82,12 +84,12 @@ export function ReadingBookCard({
                     </span>
                     <span>{prog}%</span>
                   </div>
-                  <div className="bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div
-                      className="bg-slate-600 h-full rounded-full"
-                      style={{ width: `${prog}%` }}
-                    />
-                  </div>
+                  <ProgressBar
+                    value={prog}
+                    max={100}
+                    variant="secondary"
+                    height="sm"
+                  />
                   {book.startDate && (
                     <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
@@ -114,6 +116,6 @@ export function ReadingBookCard({
           {isSent ? "Encoratjat ✓" : isCooldown ? "Encoratjat" : isSending ? "Enviant..." : sendError ? "Error. Torna-ho a intentar" : "Encoratja"}
         </button>
       )}
-    </div>
+    </Box>
   );
 }

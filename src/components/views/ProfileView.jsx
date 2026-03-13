@@ -9,6 +9,7 @@ import { BadgeGrid } from "../common/BadgeGrid";
 import { useToast } from "../../context/ToastContext";
 import { CATALOG, getLevelInfo, getPointsForLevel } from "../../utils/levelCatalog";
 import { ROUTES } from "../../utils/constants";
+import { Box, PageTitle, ProgressBar } from "../../design-system";
 
 export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGoal, books = [], readingActivityDays = [] }) => {
   const navigate = useNavigate();
@@ -43,14 +44,11 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-serif text-slate-800 mb-2">
-          El Meu Perfil
-        </h2>
-        <p className="text-slate-600">Informació del teu compte</p>
-      </div>
+      <PageTitle subtitle="Informació del teu compte">
+        El Meu Perfil
+      </PageTitle>
 
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg">
+      <Box>
         <div className="flex items-center gap-4 mb-6">
           <Avatar
             src={user.photoURL}
@@ -67,32 +65,32 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-primary-50 rounded-xl p-4 border border-primary-500">
+          <Box padding="sm">
             <p className="text-sm text-slate-600 mb-1">Total de Llibres</p>
             <p className="text-3xl font-serif text-slate-800">
               {stats.totalBooks}
             </p>
-          </div>
-          <div className="bg-primary-50 rounded-xl p-4 border border-primary-500">
+          </Box>
+          <Box padding="sm">
             <p className="text-sm text-slate-600 mb-1">Llibres Completats</p>
             <p className="text-3xl font-serif text-slate-800">
               {stats.completedBooks}
             </p>
-          </div>
+          </Box>
         </div>
 
-        <div className="bg-primary-50 rounded-xl p-4 border border-primary-500 mb-6">
+        <Box padding="md" className="mb-6">
           <p className="text-sm text-slate-600 mb-3">Insígnies</p>
           {badgesLoading ? (
             <p className="text-sm text-slate-500">Carregant badges...</p>
           ) : (
             <BadgeGrid unlockedIds={unlockedIds} />
           )}
-        </div>
+        </Box>
 
         {!gamificationLoading && (
           <div className="mb-6 space-y-4">
-            <div className="bg-primary-50 rounded-xl p-4 border border-primary-500">
+            <Box padding="sm">
               <div className="flex justify-between items-center mb-2">
                 <p className="text-sm text-slate-600">Punts totals</p>
                 <p className="text-2xl font-serif text-primary-800">{totalPoints}</p>
@@ -105,12 +103,12 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                   <p className="text-xs text-slate-600">
                     Progrés cap a {nextLevelDisplayName}: {toNextLevelProgressPct}%
                   </p>
-                  <div className="bg-slate-200 rounded-full h-2 overflow-hidden">
-                    <div
-                      className="bg-primary-500 h-full rounded-full transition-all"
-                      style={{ width: `${Math.min(100, Math.max(0, toNextLevelProgressPct))}%` }}
-                    />
-                  </div>
+                  <ProgressBar
+                    value={toNextLevelProgressPct}
+                    max={100}
+                    variant="secondary"
+                    height="sm"
+                  />
                 </div>
               )}
               <button
@@ -138,7 +136,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                   </ul>
                 </div>
               )}
-            </div>
+            </Box>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -180,12 +178,12 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
             <p className="text-sm text-slate-600 mb-2">
               Progrés anual: {completed} / {goal} llibres
             </p>
-            <div className="bg-slate-100 rounded-full h-3 overflow-hidden">
-              <div
-                className="bg-primary-500 h-full rounded-full transition-all"
-                style={{ width: `${progressPct}%` }}
-              />
-            </div>
+            <ProgressBar
+              value={progressPct}
+              max={100}
+              variant="secondary"
+              height="md"
+            />
           </div>
         )}
 
@@ -207,7 +205,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
         >
           Tancar Sessió
         </button>
-      </div>
+      </Box>
     </div>
   );
 };

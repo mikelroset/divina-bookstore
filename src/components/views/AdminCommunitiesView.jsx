@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Users, Plus, Edit2, Archive, UserX, UserCheck } from "lucide-react";
+import { Box, Select } from "../../design-system";
 import { ROUTES } from "../../utils/constants";
 import { isSuperadmin } from "../../services/superadminService";
 import {
@@ -266,7 +267,7 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
           <p className="text-slate-600 mt-4">Carregant comunitats...</p>
         </div>
       ) : filteredCommunities.length === 0 ? (
-        <div className="bg-white/80 rounded-2xl p-12 border border-primary-500 text-center">
+        <Box padding="xl" className="text-center">
           <Users className="w-16 h-16 mx-auto text-slate-300 mb-4" />
           <p className="text-slate-600 mb-4">Cap comunitat. Crea la primera.</p>
           <button
@@ -276,14 +277,12 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
           >
             Crear comunitat
           </button>
-        </div>
+        </Box>
       ) : (
         <ul className="space-y-4">
           {filteredCommunities.map((c) => (
-            <li
-              key={c.id}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-primary-500 shadow"
-            >
+            <li key={c.id}>
+              <Box padding="sm" className="!shadow">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <h3 className="font-serif text-lg text-slate-800">{c.name}</h3>
@@ -424,6 +423,7 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
                   )}
                 </div>
               )}
+            </Box>
             </li>
           ))}
         </ul>
@@ -506,17 +506,15 @@ function CreateCommunityModal({ onSave, onCancel }) {
               className="w-full px-4 py-2 border border-primary-500 rounded-lg"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Privacitat</label>
-            <select
-              value={visibility}
-              onChange={(e) => setVisibility(e.target.value)}
-              className="w-full px-4 py-2 border border-primary-500 rounded-lg"
-            >
-              <option value="private">Privada</option>
-              <option value="open">Pública</option>
-            </select>
-          </div>
+          <Select
+            label="Privacitat"
+            value={visibility}
+            onChange={(e) => setVisibility(e.target.value)}
+            options={[
+              { value: "private", label: "Privada" },
+              { value: "open", label: "Pública" },
+            ]}
+          />
           {err && <p className="text-red-600 text-sm">{err}</p>}
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={onCancel} className="px-4 py-2 text-slate-600">
@@ -584,17 +582,15 @@ function EditCommunityModal({ communityId, community, onSave, onCancel }) {
               className="w-full px-4 py-2 border border-primary-500 rounded-lg"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Privacitat</label>
-            <select
-              value={visibility}
-              onChange={(e) => setVisibility(e.target.value)}
-              className="w-full px-4 py-2 border border-primary-500 rounded-lg"
-            >
-              <option value="private">Privada</option>
-              <option value="open">Pública</option>
-            </select>
-          </div>
+          <Select
+            label="Privacitat"
+            value={visibility}
+            onChange={(e) => setVisibility(e.target.value)}
+            options={[
+              { value: "private", label: "Privada" },
+              { value: "open", label: "Pública" },
+            ]}
+          />
           {err && <p className="text-red-600 text-sm">{err}</p>}
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={onCancel} className="px-4 py-2 text-slate-600">

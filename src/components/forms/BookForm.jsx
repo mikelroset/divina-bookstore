@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { Search, Globe } from "lucide-react";
 import { STATUS_LABELS } from "../../utils/constants";
+import { Box, Select, StarRating, TextInput, Textarea } from "../../design-system";
 import { BookCover } from "../common/BookCover";
 
 const defaultBook = {
@@ -105,57 +107,27 @@ export const BookForm = ({
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-primary-500 shadow-lg space-y-5">
+    <Box className="space-y-5">
       {/* Títol, Títol original i Autor */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Títol *
-          </label>
-          <input
-            type="text"
-            value={formData.title}
-            onChange={(e) => handleChange("title", e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-              errors.title
-                ? "border-red-300 focus:border-red-400 focus:ring-red-200"
-                : "border-primary-500 focus:border-primary-400 focus:ring-primary-200"
-            }`}
-          />
-          {errors.title && (
-            <p className="text-red-500 text-xs mt-1">{errors.title}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Autor *
-          </label>
-          <input
-            type="text"
-            value={formData.author}
-            onChange={(e) => handleChange("author", e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-              errors.author
-                ? "border-red-300 focus:border-red-400 focus:ring-red-200"
-                : "border-primary-500 focus:border-primary-400 focus:ring-primary-200"
-            }`}
-          />
-          {errors.author && (
-            <p className="text-red-500 text-xs mt-1">{errors.author}</p>
-          )}
-        </div>
-
+        <TextInput
+          label="Títol *"
+          value={formData.title}
+          onChange={(e) => handleChange("title", e.target.value)}
+          error={errors.title}
+        />
+        <TextInput
+          label="Autor *"
+          value={formData.author}
+          onChange={(e) => handleChange("author", e.target.value)}
+          error={errors.author}
+        />
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Títol original
-          </label>
-          <input
-            type="text"
+          <TextInput
+            label="Títol original"
             value={formData.originalTitle ?? ""}
             onChange={(e) => handleChange("originalTitle", e.target.value)}
             placeholder="p. ex. The Great Gatsby (si el títol és traduït)"
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:border-primary-400 focus:ring-primary-200"
           />
         </div>
       </div>
@@ -167,159 +139,100 @@ export const BookForm = ({
             Gènere
           </label>
           {genreOptions?.length > 0 ? (
-            <select
+            <Select
+              label="Gènere"
               value={formData.genre}
               onChange={(e) => handleChange("genre", e.target.value)}
-              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-            >
-              <option value="">Selecciona un gènere</option>
-              {genreOptions.map((genre) => (
-                <option key={genre} value={genre}>
-                  {genre}
-                </option>
-              ))}
-            </select>
+              options={[
+                { value: "", label: "Selecciona un gènere" },
+                ...genreOptions.map((g) => ({ value: g, label: g })),
+              ]}
+              className="[&_.relative]:!block"
+            />
           ) : (
-            <input
-              type="text"
+            <TextInput
+              label="Gènere"
               value={formData.genre}
               onChange={(e) => handleChange("genre", e.target.value)}
               placeholder="Fantasia, Novel·la, Assaig..."
-              className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
             />
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Estat
-          </label>
-          <select
+          <Select
+            label="Estat"
             value={formData.status}
             onChange={(e) => handleChange("status", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-          >
-            {Object.entries(STATUS_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+            options={Object.entries(STATUS_LABELS).map(([value, label]) => ({
+              value,
+              label,
+            }))}
+          />
         </div>
       </div>
 
       {/* ISBN, Pàgines, Pàgina Actual */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            ISBN
-          </label>
-          <input
-            type="text"
-            value={formData.isbn}
-            onChange={(e) => handleChange("isbn", e.target.value)}
-            placeholder="978-0-123456-78-9"
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Pàgines
-          </label>
-          <input
-            type="number"
-            value={formData.pages}
-            onChange={(e) => handleChange("pages", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-          />
-          {errors.pages && (
-            <p className="text-red-500 text-xs mt-1">{errors.pages}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Pàgina Actual
-          </label>
-          <input
-            type="number"
-            value={formData.currentPage}
-            onChange={(e) => handleChange("currentPage", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-          />
-          {errors.currentPage && (
-            <p className="text-red-500 text-xs mt-1">{errors.currentPage}</p>
-          )}
-        </div>
+        <TextInput
+          label="ISBN"
+          type="text"
+          value={formData.isbn}
+          onChange={(e) => handleChange("isbn", e.target.value)}
+          placeholder="978-0-123456-78-9"
+        />
+        <TextInput
+          label="Pàgines"
+          type="number"
+          value={formData.pages}
+          onChange={(e) => handleChange("pages", e.target.value)}
+          error={errors.pages}
+        />
+        <TextInput
+          label="Pàgina Actual"
+          type="number"
+          value={formData.currentPage}
+          onChange={(e) => handleChange("currentPage", e.target.value)}
+          error={errors.currentPage}
+        />
       </div>
 
       {/* Editorial, Any, Idioma */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Editorial
-          </label>
-          <input
-            type="text"
-            value={formData.publisher}
-            onChange={(e) => handleChange("publisher", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Any
-          </label>
-          <input
-            type="number"
-            value={formData.year}
-            onChange={(e) => handleChange("year", e.target.value)}
-            placeholder="2024"
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Idioma
-          </label>
-          <input
-            type="text"
-            value={formData.language}
-            onChange={(e) => handleChange("language", e.target.value)}
-            placeholder="Català, Castellà..."
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-          />
-        </div>
+        <TextInput
+          label="Editorial"
+          value={formData.publisher}
+          onChange={(e) => handleChange("publisher", e.target.value)}
+        />
+        <TextInput
+          label="Any"
+          type="number"
+          value={formData.year}
+          onChange={(e) => handleChange("year", e.target.value)}
+          placeholder="2024"
+        />
+        <TextInput
+          label="Idioma"
+          value={formData.language}
+          onChange={(e) => handleChange("language", e.target.value)}
+          placeholder="Català, Castellà..."
+        />
       </div>
 
       {/* Dates */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Data d'Inici
-          </label>
-          <input
-            type="date"
-            value={formData.startDate}
-            onChange={(e) => handleChange("startDate", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Data de Finalització
-          </label>
-          <input
-            type="date"
-            value={formData.endDate}
-            onChange={(e) => handleChange("endDate", e.target.value)}
-            className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-          />
-        </div>
+        <TextInput
+          label="Data d'Inici"
+          type="date"
+          value={formData.startDate}
+          onChange={(e) => handleChange("startDate", e.target.value)}
+        />
+        <TextInput
+          label="Data de Finalització"
+          type="date"
+          value={formData.endDate}
+          onChange={(e) => handleChange("endDate", e.target.value)}
+        />
       </div>
 
       {/* Valoració */}
@@ -327,18 +240,12 @@ export const BookForm = ({
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Valoració
         </label>
-        <div className="flex gap-2">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              type="button"
-              onClick={() => handleChange("rating", star)}
-              className="focus:outline-none text-2xl hover:scale-110 transition-transform"
-            >
-              {star <= formData.rating ? "⭐" : "☆"}
-            </button>
-          ))}
-        </div>
+        <StarRating
+          value={formData.rating}
+          onChange={(v) => handleChange("rating", v)}
+          readOnly={false}
+          size="lg"
+        />
       </div>
 
       {/* URL Portada */}
@@ -370,24 +277,25 @@ export const BookForm = ({
                 }
               }}
               disabled={searchingCover || !formData.title?.trim()}
-              className="text-sm px-3 py-1 bg-primary-500 hover:bg-primary-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
+              className="inline-flex items-center gap-2 whitespace-nowrap text-sm px-3 py-1 bg-primary-500 hover:bg-primary-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
             >
               {searchingCover ? (
-                <span className="flex items-center gap-2">
-                  <Spinner /> Buscant...
-                </span>
+                <>
+                  <Spinner className="shrink-0" /> Buscant...
+                </>
               ) : (
-                "🔍 Buscar portada"
+                <><Search className="w-4 h-4 shrink-0" /> Buscar portada</>
               )}
             </button>
           )}
         </div>
-        <input
+        <TextInput
+          label="URL de la Portada"
           type="url"
           value={formData.coverUrl}
           onChange={(e) => handleChange("coverUrl", e.target.value)}
           placeholder="https://..."
-          className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
+          className="[&_label]:sr-only"
         />
         {formData.coverUrl && formData.coverUrl.startsWith("http") && (
           <div className="mt-2">
@@ -429,40 +337,34 @@ export const BookForm = ({
                 }
               }}
               disabled={searchingDescription || !formData.title?.trim()}
-              className="text-sm px-3 py-1 bg-primary-500 hover:bg-primary-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
+              className="inline-flex items-center gap-2 whitespace-nowrap text-sm px-3 py-1 bg-primary-500 hover:bg-primary-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
             >
               {searchingDescription ? (
-                <span className="flex items-center gap-2">
-                  <Spinner /> Traduint...
-                </span>
+                <>
+                  <Spinner className="shrink-0" /> Traduint...
+                </>
               ) : (
-                "🌐 Buscar descripció"
+                <><Globe className="w-4 h-4 shrink-0" /> Buscar descripció</>
               )}
             </button>
           )}
         </div>
-        <textarea
+        <Textarea
           value={formData.description}
           onChange={(e) => handleChange("description", e.target.value)}
-          rows="4"
+          rows={4}
           placeholder="Sinopsi del llibre..."
-          className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
         />
       </div>
 
       {/* Comentaris */}
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">
-          Comentaris Personals
-        </label>
-        <textarea
-          value={formData.comments}
-          onChange={(e) => handleChange("comments", e.target.value)}
-          rows="3"
-          placeholder="Les teves notes i impressions..."
-          className="w-full px-4 py-2 border border-primary-500 rounded-lg focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
-        />
-      </div>
+      <Textarea
+        label="Comentaris Personals"
+        value={formData.comments}
+        onChange={(e) => handleChange("comments", e.target.value)}
+        rows={3}
+        placeholder="Les teves notes i impressions..."
+      />
 
       {/* Botons d'acció */}
       <div className="flex gap-3 pt-4">
@@ -481,6 +383,6 @@ export const BookForm = ({
           Cancel·lar
         </button>
       </div>
-    </div>
+    </Box>
   );
 };

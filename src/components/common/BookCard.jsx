@@ -1,13 +1,15 @@
 import React from "react";
-import { Star } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { BookCover } from "./BookCover";
+import { Box, BookTitle, StarRating } from "../../design-system";
 import { STATUS_LABELS, STATUS_COLORS } from "../../utils/constants";
 
 export const BookCard = ({ book, onEdit, onDelete }) => {
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-primary-500 shadow-lg hover:shadow-xl transition-all duration-300 group">
-      <div className="relative mb-3">
-        <BookCover
+    <Box padding="sm" className="flex flex-col h-full hover:shadow-xl transition-all duration-300 group">
+      <div className="flex-1 min-h-0 flex flex-col">
+        <div className="relative mb-3">
+          <BookCover
           src={book.coverUrl}
           alt={book.title ? `Portada de ${book.title}` : "Portada no disponible"}
         />
@@ -16,24 +18,12 @@ export const BookCard = ({ book, onEdit, onDelete }) => {
         >
           {STATUS_LABELS[book.status]}
         </span>
-      </div>
-      <h3 className="font-serif text-lg text-slate-800 mb-1 line-clamp-2">
-        {book.title}
-      </h3>
+        </div>
+      <BookTitle className="mb-1">{book.title}</BookTitle>
       <p className="text-slate-600 text-sm mb-2">{book.author}</p>
-      <div className="flex items-center gap-1 mb-3">
-        {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            className={`w-4 h-4 ${
-              i < (book.rating || 0)
-                ? "fill-primary-500 text-primary-500"
-                : "text-slate-300"
-            }`}
-          />
-        ))}
+      <StarRating value={book.rating ?? 0} size="sm" className="mb-3" />
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2 mt-auto pt-3">
         <button
           onClick={() => onEdit(book)}
           className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary-50 hover:bg-primary-100 text-primary-700 rounded-lg transition-colors"
@@ -43,10 +33,11 @@ export const BookCard = ({ book, onEdit, onDelete }) => {
         <button
           onClick={() => onDelete(book.id)}
           className="flex items-center justify-center px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors"
+          aria-label="Eliminar"
         >
-          🗑️
+          <Trash2 className="w-4 h-4" />
         </button>
       </div>
-    </div>
+    </Box>
   );
 };
