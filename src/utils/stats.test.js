@@ -87,6 +87,29 @@ describe("computeStats", () => {
     expect(result.progressPercentage).toBe(0);
   });
 
+  it("calcula progressPercentage correctament amb múltiples llibres en reading", () => {
+    const books = [
+      { status: "reading", pages: 100, currentPage: 50 },
+      { status: "reading", pages: 200, currentPage: 80 },
+      { status: "reading", pages: 50, currentPage: 10 },
+    ];
+    const result = computeStats(books);
+    expect(result.totalPages).toBe(350);
+    expect(result.readPages).toBe(140);
+    expect(result.progressPercentage).toBe(40); // 140/350 ≈ 40%
+  });
+
+  it("coerceix strings a nombre per al càlcul de progrés (Firebase)", () => {
+    const books = [
+      { status: "reading", pages: "100", currentPage: "50" },
+      { status: "reading", pages: "200", currentPage: "30" },
+    ];
+    const result = computeStats(books);
+    expect(result.totalPages).toBe(300);
+    expect(result.readPages).toBe(80);
+    expect(result.progressPercentage).toBe(27); // 80/300 ≈ 27%
+  });
+
   it("favoriteGenre és N/A si no hi ha completats", () => {
     const result = computeStats([{ status: "reading", pages: 100 }]);
     expect(result.favoriteGenre).toBe("N/A");
