@@ -1,5 +1,6 @@
 {
   "common": {
+    "userDisabled": "Usuario desactivado",
     "close": "Cerrar",
     "cancel": "Cancelar",
     "confirm": "Confirmar",

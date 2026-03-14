@@ -1,5 +1,6 @@
 {
   "common": {
+    "userDisabled": "Usuari desactivat",
     "close": "Tancar",
     "cancel": "Cancel·lar",
     "confirm": "Confirmar",
@@ -43,6 +44,7 @@
     "annualGoalPlaceholder": "Ex: 10",
     "annualProgress": "Progrés anual: {{completed}} / {{goal}} llibres",
     "adminCommunities": "Gestió de comunitats",
+    "adminUsers": "Gestió d'usuaris",
     "logout": "Tancar Sessió",
     "badgeUnlocked": "Has desbloquejat un nou badge: {{name}}!",
     "language": "Idioma de la interfície",

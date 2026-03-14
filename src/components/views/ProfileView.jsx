@@ -216,13 +216,20 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
         )}
 
         {!loading && isSuperadmin && (
-          <div className="mb-6">
+          <div className="mb-6 space-y-3">
             <button
               type="button"
               onClick={() => navigate(ROUTES.ADMIN_COMMUNITIES)}
               className="w-full bg-primary-100 hover:bg-primary-200 text-primary-800 py-3 rounded-xl font-medium border border-primary-500 transition-all"
             >
               {t("profile.adminCommunities")}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(ROUTES.ADMIN_USERS)}
+              className="w-full bg-primary-100 hover:bg-primary-200 text-primary-800 py-3 rounded-xl font-medium border border-primary-500 transition-all"
+            >
+              {t("profile.adminUsers")}
             </button>
           </div>
         )}

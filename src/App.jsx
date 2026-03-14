@@ -13,6 +13,7 @@ import { AddBookView } from "./components/views/AddBookView";
 import { ProfileView } from "./components/views/ProfileView";
 import { MemberProfileView } from "./components/views/MemberProfileView";
 import { AdminCommunitiesView } from "./components/views/AdminCommunitiesView";
+import { AdminUsersView } from "./components/views/AdminUsersView";
 import { getCommunityMembers } from "./services/communityManagementService";
 import { useAuth } from "./hooks/useAuth";
 import { useBooks } from "./hooks/useBooks";
@@ -247,6 +248,10 @@ const App = () => {
           <Route
             path={ROUTES.ADMIN_COMMUNITIES}
             element={<AdminCommunitiesView currentUser={user} onBack={() => navigate(ROUTES.PROFILE)} />}
+          />
+          <Route
+            path={ROUTES.ADMIN_USERS}
+            element={<AdminUsersView currentUser={user} onBack={() => navigate(ROUTES.PROFILE)} />}
           />
           <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>

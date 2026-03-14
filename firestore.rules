@@ -1,6 +1,28 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // config: superadmins (només lectura), disabledUsers (superadmin pot escriure)
+    match /config/superadmins {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+    match /config/disabledUsers {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null
+        && exists(/databases/$(database)/documents/config/superadmins)
+        && request.auth.uid in get(/databases/$(database)/documents/config/superadmins).data.uids;
+      allow delete: if false;
+    }
+    match /config/{docId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+    match /adminLog/{docId} {
+      allow create: if request.auth != null
+        && exists(/databases/$(database)/documents/config/superadmins)
+        && request.auth.uid in get(/databases/$(database)/documents/config/superadmins).data.uids;
+      allow read, update, delete: if false;
+    }
     // Permet llegir perfils d'altres usuaris: l'app ja restringeix als membres de la comunitat.
     // L'usuari visitat no ha d'estar connectat; les dades estan a Firestore.
     match /users/{userId}/books/{bookId} {

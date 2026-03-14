@@ -9,11 +9,17 @@
  */
 
 const { onDocumentWritten } = require("firebase-functions/v2/firestore");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { defineString } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const { Resend } = require("resend");
 
 admin.initializeApp();
+
+const CONFIG_COLLECTION = "config";
+const SUPERADMINS_DOC = "superadmins";
+const ADMIN_LOG_COLLECTION = "adminLog";
+const DISABLED_USERS_DOC = "disabledUsers";
 
 const INVITE_RESEND_COOLDOWN_MS = 10 * 60 * 1000; // 10 min
 const RATE_LIMIT_PER_HOUR = 30;
@@ -171,3 +177,153 @@ exports.onCommunityInviteWritten = onDocumentWritten(
     });
   }
 );
+
+// ========== Gestió d'usuaris (superadmin) ==========
+
+async function ensureSuperadmin(callerUid) {
+  if (!callerUid) throw new HttpsError("unauthenticated", "Cal estar autenticat.");
+  const db = admin.firestore();
+  const ref = db.collection(CONFIG_COLLECTION).doc(SUPERADMINS_DOC);
+  const snap = await ref.get();
+  if (!snap.exists) {
+    throw new HttpsError("permission-denied", "Config superadmins no trobada. Contacta l’administrador.");
+  }
+  const uids = snap.data()?.uids ?? [];
+  if (!Array.isArray(uids) || !uids.includes(callerUid)) {
+    throw new HttpsError("permission-denied", "No tens permisos de superadmin.");
+  }
+}
+
+function logAdminAction(db, superadminUserId, targetUserId, action) {
+  return db.collection(ADMIN_LOG_COLLECTION).add({
+    superadminUserId,
+    targetUserId,
+    action,
+    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+  });
+}
+
+exports.listUsersForAdmin = onCall(async (request) => {
+  await ensureSuperadmin(request.auth?.uid);
+
+  const { pageToken } = request.data || {};
+  const listResult = await admin.auth().listUsers(100, pageToken);
+
+  const users = listResult.users.map((u) => ({
+    uid: u.uid,
+    email: u.email || "",
+    displayName: u.displayName || "",
+    disabled: u.disabled || false,
+    creationTime: u.metadata?.creationTime,
+  }));
+
+  return { users, nextPageToken: listResult.pageToken || null };
+});
+
+exports.disableUserForAdmin = onCall(async (request) => {
+  const callerUid = request.auth?.uid;
+  await ensureSuperadmin(callerUid);
+
+  const { targetUserId } = request.data || {};
+  if (!targetUserId || typeof targetUserId !== "string") {
+    throw new HttpsError("invalid-argument", "Falta targetUserId.");
+  }
+
+  if (targetUserId === callerUid) {
+    throw new HttpsError("failed-precondition", "No pots desactivar el teu propi compte.");
+  }
+
+  const db = admin.firestore();
+
+  await admin.auth().updateUser(targetUserId, { disabled: true });
+
+  const ref = db.collection(CONFIG_COLLECTION).doc(DISABLED_USERS_DOC);
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const data = snap.exists ? snap.data() : {};
+    const uids = data.uids || [];
+    if (!uids.includes(targetUserId)) {
+      tx.set(ref, { uids: [...uids, targetUserId], updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+    }
+  });
+
+  await logAdminAction(db, callerUid, targetUserId, "disable");
+
+  const userRef = db.collection("users").doc(targetUserId).collection("prefs").doc("settings");
+  const prefsSnap = await userRef.get();
+  if (prefsSnap.exists) {
+    await userRef.update({ disabledAt: Date.now() });
+  } else {
+    await userRef.set({ disabledAt: Date.now() });
+  }
+
+  return { success: true };
+});
+
+async function deleteAllUserData(db, userId) {
+  const batch = db.batch();
+
+  const userRef = db.collection("users").doc(userId);
+  const booksSnap = await userRef.collection("books").get();
+  booksSnap.docs.forEach((d) => batch.delete(d.ref));
+
+  const prefsSnap = await userRef.collection("prefs").get();
+  prefsSnap.docs.forEach((d) => batch.delete(d.ref));
+
+  const communitiesSnap = await db.collection("communities").get();
+  for (const com of communitiesSnap.docs) {
+    const memberRef = com.ref.collection("members").doc(userId);
+    const m = await memberRef.get();
+    if (m.exists) batch.delete(memberRef);
+
+    const leaderRef = com.ref.collection("leaderboard").doc(userId);
+    const l = await leaderRef.get();
+    if (l.exists) batch.delete(leaderRef);
+  }
+
+  const reviewsSnap = await db.collection("reviews").where("authorUserId", "==", userId).get();
+  for (const r of reviewsSnap.docs) {
+    const likesSnap = await r.ref.collection("likes").get();
+    likesSnap.docs.forEach((d) => batch.delete(d.ref));
+    batch.delete(r.ref);
+  }
+
+  const encouragementsFrom = await db.collection("encouragements").where("fromUserId", "==", userId).get();
+  encouragementsFrom.docs.forEach((d) => batch.delete(d.ref));
+
+  const encouragementsTo = await db.collection("encouragements").where("toUserId", "==", userId).get();
+  encouragementsTo.docs.forEach((d) => batch.delete(d.ref));
+
+  await batch.commit();
+}
+
+exports.deleteUserForAdmin = onCall(async (request) => {
+  const callerUid = request.auth?.uid;
+  await ensureSuperadmin(callerUid);
+
+  const { targetUserId } = request.data || {};
+  if (!targetUserId || typeof targetUserId !== "string") {
+    throw new HttpsError("invalid-argument", "Falta targetUserId.");
+  }
+
+  if (targetUserId === callerUid) {
+    throw new HttpsError("failed-precondition", "No pots eliminar el teu propi compte.");
+  }
+
+  const db = admin.firestore();
+
+  await deleteAllUserData(db, targetUserId);
+
+  const configRef = db.collection(CONFIG_COLLECTION).doc(DISABLED_USERS_DOC);
+  const snap = await configRef.get();
+  if (snap.exists) {
+    const uids = (snap.data().uids || []).filter((id) => id !== targetUserId);
+    await configRef.set({ uids, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+  }
+
+  await logAdminAction(db, callerUid, targetUserId, "delete");
+
+  await admin.auth().deleteUser(targetUserId);
+
+  return { success: true };
+});
