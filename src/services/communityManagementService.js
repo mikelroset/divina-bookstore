@@ -14,7 +14,6 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { db } from "./firebase";
 import { getDisabledUserIds } from "./userManagementService";
 import {
   DEFAULT_COMMUNITY_ID,
