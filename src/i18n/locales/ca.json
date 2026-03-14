@@ -99,6 +99,15 @@
     "minerals": ["Ferro", "Bronze", "Plata", "Or", "Platí", "Esmeralda", "Diamant"],
     "legend": "Llegenda Divina"
   },
+  "memberProfile": {
+    "subtitle": "Perfil de membre de la comunitat",
+    "back": "Tornar a la comunitat",
+    "unknownMember": "Membre",
+    "noActivity": "Aquest membre encara no ha registrat activitat de lectura",
+    "noAnnualGoal": "Aquest membre encara no ha definit un objectiu de lectura",
+    "userNotAvailable": "Usuari no disponible",
+    "accessDenied": "No pots accedir al perfil d'aquest membre"
+  },
   "bookForm": {
     "errorIsbnRequired": "L'ISBN és obligatori per afegir un llibre.",
     "errorIsbnInvalid": "L'ISBN ha de ser vàlid (ISBN-10 o ISBN-13).",
