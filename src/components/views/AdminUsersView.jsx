@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, Ban, Trash2, ChevronLeft } from "lucide-react";
+import { Users, Ban, ChevronLeft } from "lucide-react";
 import { Box, BoxTitle } from "../../design-system";
 import { ROUTES } from "../../utils/constants";
 import { isSuperadmin } from "../../services/superadminService";
 import {
   listUsersForAdmin,
   disableUserForAdmin,
-  deleteUserForAdmin,
 } from "../../services/userManagementService";
 import { ConfirmModal } from "../common/ConfirmModal";
 import { useToast } from "../../context/ToastContext";
@@ -17,7 +16,6 @@ export const AdminUsersView = ({ currentUser, onBack }) => {
   const { showSuccess, showError } = useToast();
   const [authorized, setAuthorized] = useState(null);
   const [users, setUsers] = useState([]);
-  const [nextPageToken, setNextPageToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
@@ -43,14 +41,13 @@ export const AdminUsersView = ({ currentUser, onBack }) => {
     return () => { cancelled = true; };
   }, [currentUser?.uid, navigate]);
 
-  const loadUsers = async (pageToken = null) => {
+  const loadUsers = async () => {
     if (!authorized) return;
     setLoading(true);
     setError(null);
     try {
-      const result = await listUsersForAdmin({ pageToken });
-      setUsers((prev) => (pageToken ? [...prev, ...result.users] : result.users));
-      setNextPageToken(result.nextPageToken);
+      const result = await listUsersForAdmin();
+      setUsers(result.users);
     } catch (err) {
       setError(err.message || "Error carregant usuaris.");
     } finally {
@@ -71,32 +68,14 @@ export const AdminUsersView = ({ currentUser, onBack }) => {
     });
   };
 
-  const handleDelete = async (user) => {
-    if (user.uid === currentUser?.uid) {
-      showError("No pots eliminar el teu propi compte.");
-      return;
-    }
-    setConfirmModal({
-      type: "delete",
-      user,
-      title: "Eliminar usuari",
-      message: `Estàs segur que vols eliminar definitivament "${user.displayName || user.email}"? Aquesta acció eliminarà el compte i totes les seves dades. És irreversible.`,
-    });
-  };
-
   const handleConfirm = async () => {
     if (!confirmModal) return;
-    const { type, user } = confirmModal;
-    setActionLoading(type);
+    const { user } = confirmModal;
+    setActionLoading("disable");
     setConfirmModal(null);
     try {
-      if (type === "disable") {
-        await disableUserForAdmin(user.uid);
-        showSuccess("Usuari desactivat correctament.");
-      } else {
-        await deleteUserForAdmin(user.uid);
-        showSuccess("Usuari eliminat correctament.");
-      }
+      await disableUserForAdmin(user.uid, currentUser.uid);
+      showSuccess("Usuari desactivat correctament.");
       loadUsers();
     } catch (err) {
       showError(err.message || "Error en executar l'acció.");
@@ -151,34 +130,16 @@ export const AdminUsersView = ({ currentUser, onBack }) => {
                   <button
                     type="button"
                     onClick={() => handleDisable(u)}
-                    disabled={u.disabled || actionLoading}
+                    disabled={u.disabled || u.uid === currentUser?.uid || actionLoading}
                     className="p-2 rounded-lg border border-amber-500 text-amber-700 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     title="Desactivar usuari"
                   >
                     <Ban className="w-5 h-5" />
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(u)}
-                    disabled={u.uid === currentUser?.uid || actionLoading}
-                    className="p-2 rounded-lg border border-red-500 text-red-700 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    title="Eliminar usuari"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
                 </div>
               </li>
             ))}
           </ul>
-        )}
-        {nextPageToken && !loading && (
-          <button
-            type="button"
-            onClick={() => loadUsers(nextPageToken)}
-            className="mt-4 w-full py-2 text-primary-600 hover:text-primary-700 font-medium"
-          >
-            Carregar més
-          </button>
         )}
       </Box>
 

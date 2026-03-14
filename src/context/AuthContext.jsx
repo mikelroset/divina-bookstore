@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { authService } from "../services/authService";
+import { getDisabledUserIds } from "../services/userManagementService";
 
 export const AuthContext = createContext();
 
@@ -8,19 +9,29 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Escoltar canvis d'autenticació
-    const unsubscribe = authService.onAuthStateChanged((firebaseUser) => {
-      if (firebaseUser) {
-        // Convertir l'usuari de Firebase al nostre format
-        setUser({
-          uid: firebaseUser.uid,
-          displayName: firebaseUser.displayName,
-          email: firebaseUser.email,
-          photoURL: firebaseUser.photoURL,
-        });
-      } else {
+    const unsubscribe = authService.onAuthStateChanged(async (firebaseUser) => {
+      if (!firebaseUser) {
         setUser(null);
+        setLoading(false);
+        return;
       }
+      try {
+        const disabledIds = await getDisabledUserIds();
+        if (disabledIds.has(firebaseUser.uid)) {
+          await authService.logout();
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+      } catch {
+        // Si falla la comprovació, deixem passar (evitar bloquejos)
+      }
+      setUser({
+        uid: firebaseUser.uid,
+        displayName: firebaseUser.displayName,
+        email: firebaseUser.email,
+        photoURL: firebaseUser.photoURL,
+      });
       setLoading(false);
     });
 

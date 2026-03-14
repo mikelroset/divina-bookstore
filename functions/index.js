@@ -1,7 +1,6 @@
 /**
  * Cloud Functions – Divina Bookstore
  * Fase 2: Enviament de correu d'invitació quan l'email no té compte.
- * Gestió d'usuaris: superadmin pot desactivar i eliminar comptes.
  *
  * Requereix variables de configuració (firebase functions:config:set o .env en emulador):
  * - resend.api_key: API key de Resend (https://resend.com)
