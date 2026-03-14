@@ -2,9 +2,9 @@ name: Test
 
 on:
   push:
-    branches: [main]
+    branches: [main, "feature/**"]
   pull_request:
-    branches: [main]
+    branches: [main, "feature/**"]
 
 jobs:
   test:
@@ -16,4 +16,4 @@ jobs:
           node-version: "20"
           cache: "npm"
       - run: npm ci
-      - run: npm run test:run
+      - run: npm run test:coverage

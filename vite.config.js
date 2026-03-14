@@ -9,5 +9,17 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: "./vitest.setup.js",
     include: ["src/**/*.{test,spec}.{js,jsx}"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "lcov"],
+      include: ["src/**/*.{js,jsx}"],
+      exclude: ["src/**/*.test.{js,jsx}", "src/**/*.spec.{js,jsx}", "src/main.jsx", "src/i18n.js"],
+      // Objectiu 70% (Notion AC1). Ara: ~7% - anirem augmentant amb nous tests.
+      thresholds: {
+        lines: 5,
+        functions: 5,
+        branches: 5,
+      },
+    },
   },
 });

@@ -25,6 +25,9 @@ dist-ssr
 
 .env
 
+# Test coverage
+coverage/
+
 # Firebase
 firebase-debug.log
 firebase-debug.*.log
