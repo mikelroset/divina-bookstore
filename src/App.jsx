@@ -11,7 +11,9 @@ import { ReviewsView } from "./components/views/ReviewsView";
 import { InviteAcceptView } from "./components/views/InviteAcceptView";
 import { AddBookView } from "./components/views/AddBookView";
 import { ProfileView } from "./components/views/ProfileView";
+import { MemberProfileView } from "./components/views/MemberProfileView";
 import { AdminCommunitiesView } from "./components/views/AdminCommunitiesView";
+import { getCommunityMembers } from "./services/communityManagementService";
 import { useAuth } from "./hooks/useAuth";
 import { useBooks } from "./hooks/useBooks";
 import { useToast } from "./context/ToastContext";
@@ -62,6 +64,59 @@ function AddBookRoute({ recordReadingActivity, userCommunityIds = [], user }) {
       editingBook={editingBook}
       onSave={handleSave}
       onCancel={() => navigate(ROUTES.LIBRARY)}
+    />
+  );
+}
+
+/** Ruta /community/member/:userId: mostra perfil públic d'un membre (només si és de la comunitat activa) */
+function MemberProfileRoute({ currentUser, activeCommunityId, showError, navigate }) {
+  const { userId } = useParams();
+  const [member, setMember] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    if (!userId || !currentUser?.uid) return;
+    if (userId === currentUser.uid) {
+      navigate(ROUTES.PROFILE, { replace: true });
+      return;
+    }
+    if (!activeCommunityId) {
+      showError("No pots accedir al perfil d'aquest membre.");
+      navigate(ROUTES.COMMUNITY, { replace: true });
+      return;
+    }
+    let cancelled = false;
+    getCommunityMembers(activeCommunityId)
+      .then((membersList) => {
+        if (cancelled) return;
+        const m = membersList.find((x) => x.userId === userId);
+        if (!m) {
+          showError("No pots accedir al perfil d'aquest membre.");
+          navigate(ROUTES.COMMUNITY, { replace: true });
+          return;
+        }
+        setMember(m);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          showError("Error carregant membres.");
+          navigate(ROUTES.COMMUNITY, { replace: true });
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setAuthLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [userId, currentUser?.uid, activeCommunityId, navigate, showError]);
+
+  if (authLoading || !member) return null;
+  return (
+    <MemberProfileView
+      memberUserId={member.userId}
+      memberDisplayName={member.displayName}
+      memberPhotoURL={member.photoURL}
+      memberEmail={member.email}
+      onBack={() => navigate(ROUTES.COMMUNITY)}
     />
   );
 }
@@ -177,6 +232,10 @@ const App = () => {
           <Route
             path={`${ROUTES.COMMUNITY_INVITE}/:inviteId`}
             element={<InviteAcceptView currentUser={user} addCommunityToUser={addCommunityToUser} onSelectCommunity={setActiveCommunityId} />}
+          />
+          <Route
+            path={`${ROUTES.COMMUNITY_MEMBER}/:userId`}
+            element={<MemberProfileRoute currentUser={user} activeCommunityId={activeCommunityId} showError={showError} navigate={navigate} />}
           />
           <Route path={ROUTES.ADD} element={<AddBookRoute recordReadingActivity={recordReadingActivity} userCommunityIds={userCommunityIds} user={user} />} />
           <Route path={`${ROUTES.ADD}/:id`} element={<AddBookRoute recordReadingActivity={recordReadingActivity} userCommunityIds={userCommunityIds} user={user} />} />

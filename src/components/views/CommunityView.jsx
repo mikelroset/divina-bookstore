@@ -568,8 +568,14 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               const levelInfo = level != null ? getLevelInfo(level) : null;
               return (
               <li key={m.userId} className="flex items-center justify-between gap-2 py-2 border-b border-slate-100 last:border-0">
-                <div className="flex flex-col gap-1 min-w-0">
-                  <span className="font-medium text-slate-800">{m.email || m.displayName || m.userId}</span>
+                <div className="flex flex-col gap-1 min-w-0 flex-1">
+                  <button
+                    type="button"
+                    onClick={() => navigate(`${ROUTES.COMMUNITY_MEMBER}/${m.userId}`)}
+                    className="text-left font-medium text-slate-800 hover:text-primary-600 transition-colors"
+                  >
+                    {m.email || m.displayName || m.userId}
+                  </button>
                   {levelInfo && (
                     <span className={`text-xs font-medium ${levelInfo.colorClass}`}>
                       {getLevelDisplayName(levelInfo)}
@@ -791,7 +797,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                       }
                     }}
                     onBookClick={null}
-                    onReaderClick={null}
+                    onReaderClick={(reader) => navigate(`${ROUTES.COMMUNITY_MEMBER}/${reader.uid}`)}
                     isSent={sentKeys.has(key)}
                     isCooldown={cooldownKeys.has(key)}
                     isSending={sendingToKey === key}

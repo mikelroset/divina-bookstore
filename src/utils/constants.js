@@ -13,6 +13,7 @@ export const ROUTES = {
   HOME: "/",
   LIBRARY: "/library",
   COMMUNITY: "/community",
+  COMMUNITY_MEMBER: "/community/member",
   COMMUNITY_INVITE: "/community/invite",
   REVIEWS: "/reviews",
   ADD: "/add",

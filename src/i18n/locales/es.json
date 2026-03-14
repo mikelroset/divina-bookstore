@@ -83,6 +83,24 @@
     "empty": "Aún no tienes libros en tu biblioteca",
     "noResults": "No se han encontrado libros"
   },
+  "memberProfile": {
+    "subtitle": "Perfil de miembro de la comunidad",
+    "back": "Volver a la comunidad",
+    "unknownMember": "Miembro",
+    "noActivity": "Este miembro aún no ha registrado actividad de lectura",
+    "noAnnualGoal": "Este miembro aún no ha definido un objetivo de lectura",
+    "userNotAvailable": "Usuario no disponible",
+    "accessDenied": "No puedes acceder al perfil de este miembro"
+  },
+  "memberProfile": {
+    "subtitle": "Perfil de miembro de la comunidad",
+    "back": "Volver a la comunidad",
+    "unknownMember": "Miembro",
+    "noActivity": "Este miembro aún no ha registrado actividad de lectura",
+    "noAnnualGoal": "Este miembro aún no ha definido un objetivo de lectura",
+    "userNotAvailable": "Usuario no disponible",
+    "accessDenied": "No puedes acceder al perfil de este miembro"
+  },
   "bookForm": {
     "errorIsbnRequired": "El ISBN es obligatorio para añadir un libro.",
     "errorIsbnInvalid": "El ISBN debe ser válido (ISBN-10 o ISBN-13).",
@@ -103,6 +121,15 @@
     "roles": ["Aprendiz de Biblioteca", "Aprendiz de Libros", "Novicio de la Palabra", "Escudero de la Tinta", "Caballero de las Historias", "Guardián del Pergamino", "Cronista", "Archivero Real", "Gran Bibliotecario", "Sabiduría Antigua"],
     "minerals": ["Hierro", "Bronce", "Plata", "Oro", "Platino", "Esmeralda", "Diamante"],
     "legend": "Leyenda Divina"
+  },
+  "memberProfile": {
+    "subtitle": "Perfil de miembro de la comunidad",
+    "back": "Volver a la comunidad",
+    "unknownMember": "Miembro",
+    "noActivity": "Este miembro aún no ha registrado actividad de lectura",
+    "noAnnualGoal": "Este miembro aún no ha definido un objetivo de lectura",
+    "userNotAvailable": "Usuario no disponible",
+    "accessDenied": "No puedes acceder al perfil de este miembro"
   },
   "constants": {
     "statusLabels": {

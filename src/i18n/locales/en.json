@@ -83,6 +83,24 @@
     "empty": "You don't have any books in your library yet",
     "noResults": "No books found"
   },
+  "memberProfile": {
+    "subtitle": "Community member profile",
+    "back": "Back to community",
+    "unknownMember": "Member",
+    "noActivity": "This member has not yet registered any reading activity",
+    "noAnnualGoal": "This member has not yet set a reading goal",
+    "userNotAvailable": "User not available",
+    "accessDenied": "You cannot access this member's profile"
+  },
+  "memberProfile": {
+    "subtitle": "Community member profile",
+    "back": "Back to community",
+    "unknownMember": "Member",
+    "noActivity": "This member has not registered any reading activity yet",
+    "noAnnualGoal": "This member has not set a reading goal yet",
+    "userNotAvailable": "User not available",
+    "accessDenied": "You cannot access this member's profile"
+  },
   "bookForm": {
     "errorIsbnRequired": "ISBN is required to add a book.",
     "errorIsbnInvalid": "ISBN must be valid (ISBN-10 or ISBN-13).",
@@ -103,6 +121,15 @@
     "roles": ["Library Apprentice", "Book Apprentice", "Word Novice", "Ink Squire", "Stories Knight", "Scroll Guardian", "Chronicler", "Royal Archivist", "Head Librarian", "Ancient Wisdom"],
     "minerals": ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Emerald", "Diamond"],
     "legend": "Divine Legend"
+  },
+  "memberProfile": {
+    "subtitle": "Community member profile",
+    "back": "Back to community",
+    "unknownMember": "Member",
+    "noActivity": "This member has not yet registered any reading activity",
+    "noAnnualGoal": "This member has not yet set a reading goal",
+    "userNotAvailable": "User not available",
+    "accessDenied": "You cannot access this member's profile"
   },
   "constants": {
     "statusLabels": {
