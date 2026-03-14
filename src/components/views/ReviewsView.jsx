@@ -10,6 +10,8 @@ import {
   toggleLike,
   addReview,
 } from "../../services/reviewService";
+import { useTranslation } from "react-i18next";
+import { useDisabledUsers } from "../../hooks/useDisabledUsers";
 
 const TRUNCATE_LENGTH = 250;
 const PAGE_SIZE = 10;
@@ -37,6 +39,8 @@ function useLikeDebounce(handler) {
 }
 
 export const ReviewsView = ({ currentUser, books }) => {
+  const { t } = useTranslation();
+  const { disabledIds } = useDisabledUsers();
   const [allReviews, setAllReviews] = useState([]);
   const [lastDoc, setLastDoc] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -349,7 +353,9 @@ export const ReviewsView = ({ currentUser, books }) => {
               const truncated = text.length > TRUNCATE_LENGTH ? text.slice(0, TRUNCATE_LENGTH) + "…" : text;
               const showReadMore = text.length > TRUNCATE_LENGTH;
               const liked = likedIds.has(review.id);
-              const authorName = review.authorDisplayName?.trim() || "Membre eliminat";
+              const authorName = disabledIds.has(review.authorUserId)
+                ? t("common.userDisabled")
+                : (review.authorDisplayName?.trim() || "Membre eliminat");
               const createdAt = review.createdAt
                 ? new Date(timestampToMs(review.createdAt))
                 : null;

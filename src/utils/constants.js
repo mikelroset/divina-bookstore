@@ -19,6 +19,7 @@ export const ROUTES = {
   ADD: "/add",
   PROFILE: "/profile",
   ADMIN_COMMUNITIES: "/profile/admin-communities",
+  ADMIN_USERS: "/profile/admin-users",
 };
 
 export const BOOK_GENRES = [

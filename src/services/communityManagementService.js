@@ -14,6 +14,8 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { db } from "./firebase";
+import { getDisabledUserIds } from "./userManagementService";
 import {
   DEFAULT_COMMUNITY_ID,
   DEFAULT_COMMUNITY_NAME,
@@ -181,23 +183,28 @@ export async function getMemberRole(communityId, userId) {
 }
 
 /**
- * List active members of a community.
+ * List active members of a community. Excludes disabled users.
  * @returns {Promise<Array<{ userId: string, role: string, displayName?: string, photoURL?: string, email?: string }>>}
  */
 export async function getCommunityMembers(communityId) {
-  const snap = await getDocs(
-    query(
-      collection(db, COMMUNITIES_COLLECTION, communityId, MEMBERS_SUBCOLLECTION),
-      where("status", "==", "active"),
+  const [disabledIds, snap] = await Promise.all([
+    getDisabledUserIds(),
+    getDocs(
+      query(
+        collection(db, COMMUNITIES_COLLECTION, communityId, MEMBERS_SUBCOLLECTION),
+        where("status", "==", "active"),
+      ),
     ),
-  );
-  return snap.docs.map((d) => ({
-    userId: d.id,
-    role: d.data().role ?? "participant",
-    displayName: d.data().displayName,
-    photoURL: d.data().photoURL,
-    email: d.data().email,
-  }));
+  ]);
+  return snap.docs
+    .filter((d) => !disabledIds.has(d.id))
+    .map((d) => ({
+      userId: d.id,
+      role: d.data().role ?? "participant",
+      displayName: d.data().displayName,
+      photoURL: d.data().photoURL,
+      email: d.data().email,
+    }));
 }
 
 /**
@@ -268,21 +275,24 @@ export async function updateCommunity(communityId, data) {
 }
 
 /**
- * Get all members of a community (active + banned). For admin view.
+ * Get all members of a community (active + banned). For admin view. Excludes disabled users.
  * @returns {Promise<Array<{ userId: string, role: string, status: string, displayName?: string, photoURL?: string, email?: string }>>}
  */
 export async function getCommunityMembersAllStatuses(communityId) {
-  const snap = await getDocs(
-    collection(db, COMMUNITIES_COLLECTION, communityId, MEMBERS_SUBCOLLECTION),
-  );
-  return snap.docs.map((d) => ({
-    userId: d.id,
-    role: d.data().role ?? "participant",
-    status: d.data().status ?? "active",
-    displayName: d.data().displayName,
-    photoURL: d.data().photoURL,
-    email: d.data().email,
-  }));
+  const [disabledIds, snap] = await Promise.all([
+    getDisabledUserIds(),
+    getDocs(collection(db, COMMUNITIES_COLLECTION, communityId, MEMBERS_SUBCOLLECTION)),
+  ]);
+  return snap.docs
+    .filter((d) => !disabledIds.has(d.id))
+    .map((d) => ({
+      userId: d.id,
+      role: d.data().role ?? "participant",
+      status: d.data().status ?? "active",
+      displayName: d.data().displayName,
+      photoURL: d.data().photoURL,
+      email: d.data().email,
+    }));
 }
 
 /**
