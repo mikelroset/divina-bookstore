@@ -113,8 +113,14 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   }, [currentUser?.uid, userCommunityIds, syncUserCommunityIds]);
 
   useEffect(() => {
-    if (!activeCommunityId || !currentUser?.uid) return;
+    if (!activeCommunityId || !currentUser?.uid) {
+      setMembers([]);
+      setMyRole(null);
+      return;
+    }
     let cancelled = false;
+    setMembers([]);
+    setMyRole(null);
     Promise.all([
       getMemberRole(activeCommunityId, currentUser.uid),
       getCommunityMembers(activeCommunityId),
@@ -135,8 +141,11 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
   useEffect(() => {
     if (!activeCommunityId || !currentUser?.uid) {
       setLeaderboard([]);
+      setMemberPointsByUserId({});
       return;
     }
+    setLeaderboard([]);
+    setMemberPointsByUserId({});
     const displayName =
       members.find((m) => m.userId === currentUser.uid)?.displayName ??
       members.find((m) => m.userId === currentUser.uid)?.email ??
@@ -190,8 +199,12 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
 
   // Carregar lectors de la comunitat (només membres de la comunitat activa; excloent l'usuari actual a "Estàs llegint")
   useEffect(() => {
-    if (!activeCommunityId) return;
+    if (!activeCommunityId) {
+      setCommunityReaders([]);
+      return;
+    }
     let cancelled = false;
+    setCommunityReaders([]);
     const loadCommunity = async () => {
       try {
         setLoading(true);
