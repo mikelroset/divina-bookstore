@@ -76,7 +76,7 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-stone-50 to-primary-100">
+    <div className="min-h-screen bg-[var(--color-bg)] transition-colors duration-150">
       <div className="min-h-screen flex flex-col lg:flex-row lg:min-h-0">
         {/* Columna esquerra: CTA */}
         <div className="flex flex-col justify-center p-6 lg:p-12 lg:w-[420px] lg:shrink-0">
@@ -86,16 +86,16 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
               alt="Logo DivinaBookStore"
               className="w-16 h-16 mx-auto lg:mx-0 mb-4"
             />
-            <h1 className="text-3xl lg:text-4xl font-serif text-slate-800 mb-2">
+            <h1 className="text-3xl lg:text-4xl font-serif text-[var(--color-text-primary)] mb-2">
               DivinaBookStore
             </h1>
-            <p className="text-slate-600 mb-6">
+            <p className="text-[var(--color-text-secondary)] mb-6">
               La teva biblioteca personal
             </p>
 
             <button
               onClick={handleClick}
-              className="w-full max-w-sm mx-auto lg:mx-0 flex items-center justify-center gap-3 bg-white hover:bg-primary-50 text-slate-800 px-6 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-primary-500 font-medium"
+              className="w-full max-w-sm mx-auto lg:mx-0 flex items-center justify-center gap-3 bg-[var(--color-surface)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] px-6 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-[var(--color-primary)] font-medium"
             >
               <svg className="w-6 h-6 shrink-0" viewBox="0 0 24 24">
                 <path
@@ -118,7 +118,7 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
               <span>Continua amb Google</span>
             </button>
 
-            <p className="mt-3 text-sm text-slate-600 max-w-sm mx-auto lg:mx-0">
+            <p className="mt-3 text-sm text-[var(--color-text-secondary)] max-w-sm mx-auto lg:mx-0">
               Per guardar la teva biblioteca i la teva ratxa
             </p>
 
@@ -137,28 +137,28 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
         <div className="flex-1 overflow-y-auto p-6 lg:p-12 space-y-6">
           {/* Bloc 1 — Value proposition */}
           <section>
-            <h2 className="text-2xl font-serif text-slate-800 mb-2">
+            <h2 className="text-2xl font-serif text-[var(--color-text-primary)] mb-2">
               Organitza la teva lectura i gaudeix més dels llibres
             </h2>
-            <p className="text-slate-600">
+            <p className="text-[var(--color-text-secondary)]">
               Segueix el progrés, mantén la ratxa i descobreix què llegeix la comunitat.
             </p>
           </section>
 
           {/* Bloc 2 — Com funciona */}
-          <section className="bg-white/70 backdrop-blur-sm rounded-xl p-5 border border-primary-200">
-            <h3 className="font-semibold text-slate-800 mb-3">Com funciona</h3>
-            <ol className="space-y-2 text-slate-700">
+          <section className="bg-[var(--color-surface)]/70 backdrop-blur-sm rounded-xl p-5 border border-[var(--color-border)]">
+            <h3 className="font-semibold text-[var(--color-text-primary)] mb-3">Com funciona</h3>
+            <ol className="space-y-2 text-[var(--color-text-secondary)]">
               <li className="flex gap-2">
-                <span className="font-medium text-primary-600">1.</span>
+                <span className="font-medium text-[var(--color-primary)]">1.</span>
                 Entra amb Google.
               </li>
               <li className="flex gap-2">
-                <span className="font-medium text-primary-600">2.</span>
+                <span className="font-medium text-[var(--color-primary)]">2.</span>
                 Afegeix llibres a "Vull llegir", "Llegint" i "Llegit".
               </li>
               <li className="flex gap-2">
-                <span className="font-medium text-primary-600">3.</span>
+                <span className="font-medium text-[var(--color-primary)]">3.</span>
                 Fes seguiment del progrés i la teva ratxa.
               </li>
             </ol>

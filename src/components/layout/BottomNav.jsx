@@ -15,7 +15,7 @@ const navKeys = [
 export const BottomNav = ({ encouragementCount = 0 }) => {
   const { t } = useTranslation();
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-primary-500 shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 bg-[var(--color-surface)]/90 backdrop-blur-sm border-t border-[var(--color-border)] shadow-lg transition-colors duration-150">
       <div className="max-w-4xl mx-auto px-3 py-3 flex justify-around">
         {navKeys.map(({ to, Icon, key }) => {
           const showEncouragementBadge =
@@ -28,8 +28,8 @@ export const BottomNav = ({ encouragementCount = 0 }) => {
               className={({ isActive }) =>
                 `flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all relative ${
                   isActive
-                    ? "text-primary-600 bg-primary-50"
-                    : "text-slate-600 hover:text-primary-600 hover:bg-primary-50/50"
+                    ? "text-[var(--color-primary)] bg-[var(--color-bg-secondary)]"
+                    : "text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-bg-secondary)]/50"
                 }`
               }
             >
@@ -37,7 +37,7 @@ export const BottomNav = ({ encouragementCount = 0 }) => {
                 <Icon className="w-6 h-6" />
                 {showEncouragementBadge && (
                   <span
-                    className="absolute -top-1.5 -right-2 min-w-[1.25rem] h-5 px-1 flex items-center justify-center rounded-full bg-primary-500 text-white text-xs font-bold"
+                    className="absolute -top-1.5 -right-2 min-w-[1.25rem] h-5 px-1 flex items-center justify-center rounded-full bg-[var(--color-primary)] text-white text-xs font-bold"
                     aria-label={t("nav.ariaEncouragements", { count: encouragementCount })}
                   >
                     {encouragementCount > 99 ? "99+" : encouragementCount}

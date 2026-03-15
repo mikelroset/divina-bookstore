@@ -28,7 +28,7 @@ export function TextInput({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-slate-700"
+          className="block text-sm font-medium text-[var(--color-text-primary)]"
         >
           {label}
         </label>
