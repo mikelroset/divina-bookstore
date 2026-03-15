@@ -19,15 +19,15 @@ const ROLES = [
   "Saviesa Antiga",
 ];
 
-/** Colors Tailwind per a cada rang mineral */
+/** Colors Tailwind per a cada rang mineral (amb variants dark per llegibilitat) */
 const MINERAL_COLORS = {
-  Ferro: "text-slate-700",
-  Bronze: "text-amber-800",
-  Plata: "text-slate-400",
-  Or: "text-amber-500",
-  Platí: "text-sky-400",
-  Esmeralda: "text-emerald-500",
-  Diamant: "text-blue-400",
+  Ferro: "text-slate-700 dark:text-slate-200",
+  Bronze: "text-amber-800 dark:text-amber-300",
+  Plata: "text-slate-400 dark:text-slate-300",
+  Or: "text-amber-500 dark:text-amber-400",
+  Platí: "text-sky-400 dark:text-sky-300",
+  Esmeralda: "text-emerald-500 dark:text-emerald-400",
+  Diamant: "text-blue-400 dark:text-blue-300",
 };
 
 /** Classes per a fons/badge */
@@ -78,7 +78,7 @@ export function getLevelInfo(level) {
     console.warn(`[levelCatalog] Nivell fora de rang: ${level}, assignat ${clamped}`);
   }
   const entry = CATALOG[clamped - 1];
-  const colorClass = entry.mineralRank ? MINERAL_COLORS[entry.mineralRank] : "text-amber-500";
+  const colorClass = entry.mineralRank ? MINERAL_COLORS[entry.mineralRank] : "text-amber-500 dark:text-amber-400";
   const bgClass = entry.mineralRank ? MINERAL_BG_COLORS[entry.mineralRank] : "bg-amber-500";
   const roleIndex = clamped <= 70 ? Math.floor((clamped - 1) / 7) : null;
   const mineralIndex = clamped <= 70 ? (clamped - 1) % 7 : null;
@@ -97,7 +97,7 @@ export function getLevelInfo(level) {
  * @returns {string} Tailwind class
  */
 export function getMineralColor(mineralRank) {
-  return MINERAL_COLORS[mineralRank] ?? "text-slate-600";
+  return MINERAL_COLORS[mineralRank] ?? "text-slate-600 dark:text-slate-300";
 }
 
 const POINTS_PER_LEVEL = 171;

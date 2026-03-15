@@ -17,7 +17,11 @@
   "header": {
     "ariaGoHome": "Go to home",
     "ariaGoProfile": "Go to profile",
-    "logoAlt": "Logo"
+    "logoAlt": "Logo",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "ariaThemeSelector": "Select theme"
   },
   "nav": {
     "home": "Home",

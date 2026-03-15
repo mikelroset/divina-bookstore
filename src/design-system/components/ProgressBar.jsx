@@ -21,13 +21,13 @@ export function ProgressBar({
   const pct = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
 
   const trackClasses = {
-    primary: "bg-slate-100",
-    secondary: "bg-slate-200",
+    primary: "bg-[var(--color-bg-secondary)]",
+    secondary: "bg-[var(--color-border)]",
   };
 
   const fillClasses = {
-    primary: "bg-slate-700",
-    secondary: "bg-primary-500",
+    primary: "bg-[var(--color-text-secondary)]",
+    secondary: "bg-[var(--color-primary)]",
   };
 
   const heightClasses = { sm: "h-2", md: "h-4" };
@@ -44,7 +44,7 @@ export function ProgressBar({
         />
       </div>
       {showLabel && (
-        <p className="text-right mt-1 text-sm font-medium text-slate-700">
+        <p className="text-right mt-1 text-sm font-medium text-[var(--color-text-primary)]">
           {label ?? `${Math.round(pct)}% completat`}
         </p>
       )}

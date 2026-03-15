@@ -76,7 +76,7 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-stone-50 to-primary-100">
+    <div className="min-h-screen bg-[var(--color-bg)] transition-colors duration-150">
       <div className="min-h-screen flex flex-col lg:flex-row lg:min-h-0">
         {/* Columna esquerra: CTA */}
         <div className="flex flex-col justify-center p-6 lg:p-12 lg:w-[420px] lg:shrink-0">
@@ -86,16 +86,16 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
               alt="Logo DivinaBookStore"
               className="w-16 h-16 mx-auto lg:mx-0 mb-4"
             />
-            <h1 className="text-3xl lg:text-4xl font-serif text-slate-800 mb-2">
+            <h1 className="text-3xl lg:text-4xl font-serif text-[var(--color-text-primary)] mb-2">
               DivinaBookStore
             </h1>
-            <p className="text-slate-600 mb-6">
+            <p className="text-[var(--color-text-secondary)] mb-6">
               La teva biblioteca personal
             </p>
 
             <button
               onClick={handleClick}
-              className="w-full max-w-sm mx-auto lg:mx-0 flex items-center justify-center gap-3 bg-white hover:bg-primary-50 text-slate-800 px-6 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-primary-500 font-medium"
+              className="w-full max-w-sm mx-auto lg:mx-0 flex items-center justify-center gap-3 bg-[var(--color-surface)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] px-6 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-[var(--color-primary)] font-medium"
             >
               <svg className="w-6 h-6 shrink-0" viewBox="0 0 24 24">
                 <path
@@ -118,7 +118,7 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
               <span>Continua amb Google</span>
             </button>
 
-            <p className="mt-3 text-sm text-slate-600 max-w-sm mx-auto lg:mx-0">
+            <p className="mt-3 text-sm text-[var(--color-text-secondary)] max-w-sm mx-auto lg:mx-0">
               Per guardar la teva biblioteca i la teva ratxa
             </p>
 
@@ -137,28 +137,28 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
         <div className="flex-1 overflow-y-auto p-6 lg:p-12 space-y-6">
           {/* Bloc 1 — Value proposition */}
           <section>
-            <h2 className="text-2xl font-serif text-slate-800 mb-2">
+            <h2 className="text-2xl font-serif text-[var(--color-text-primary)] mb-2">
               Organitza la teva lectura i gaudeix més dels llibres
             </h2>
-            <p className="text-slate-600">
+            <p className="text-[var(--color-text-secondary)]">
               Segueix el progrés, mantén la ratxa i descobreix què llegeix la comunitat.
             </p>
           </section>
 
           {/* Bloc 2 — Com funciona */}
-          <section className="bg-white/70 backdrop-blur-sm rounded-xl p-5 border border-primary-200">
-            <h3 className="font-semibold text-slate-800 mb-3">Com funciona</h3>
-            <ol className="space-y-2 text-slate-700">
+          <section className="bg-[var(--color-surface)]/70 backdrop-blur-sm rounded-xl p-5 border border-[var(--color-border)]">
+            <h3 className="font-semibold text-[var(--color-text-primary)] mb-3">Com funciona</h3>
+            <ol className="space-y-2 text-[var(--color-text-secondary)]">
               <li className="flex gap-2">
-                <span className="font-medium text-primary-600">1.</span>
+                <span className="font-medium text-[var(--color-primary)]">1.</span>
                 Entra amb Google.
               </li>
               <li className="flex gap-2">
-                <span className="font-medium text-primary-600">2.</span>
+                <span className="font-medium text-[var(--color-primary)]">2.</span>
                 Afegeix llibres a "Vull llegir", "Llegint" i "Llegit".
               </li>
               <li className="flex gap-2">
-                <span className="font-medium text-primary-600">3.</span>
+                <span className="font-medium text-[var(--color-primary)]">3.</span>
                 Fes seguiment del progrés i la teva ratxa.
               </li>
             </ol>
@@ -166,17 +166,17 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
 
           {/* Bloc 3 — Features */}
           <section>
-            <h3 className="font-semibold text-slate-800 mb-3">Què hi pots fer</h3>
+            <h3 className="font-semibold text-[var(--color-text-primary)] mb-3">Què hi pots fer</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {FEATURE_CARDS.map(({ icon: Icon, title, desc }) => (
                 <div
                   key={title}
-                  className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-primary-200 flex gap-3"
+                  className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-[var(--color-border)] flex gap-3"
                 >
-                  <Icon className="w-6 h-6 text-primary-600 shrink-0 mt-0.5" />
+                  <Icon className="w-6 h-6 text-[var(--color-primary)] shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-slate-800">{title}</p>
-                    <p className="text-sm text-slate-600">{desc}</p>
+                    <p className="font-medium text-[var(--color-text-primary)]">{title}</p>
+                    <p className="text-sm text-[var(--color-text-secondary)]">{desc}</p>
                   </div>
                 </div>
               ))}
@@ -184,14 +184,14 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
           </section>
 
           {/* Bloc — Sistema de nivells (desplegable) */}
-          <section className="bg-white/70 backdrop-blur-sm rounded-xl border border-primary-200 overflow-hidden">
+          <section className="bg-white/70 backdrop-blur-sm rounded-xl border border-[var(--color-border)] overflow-hidden">
             <button
               type="button"
               onClick={() => setLevelsOpen(!levelsOpen)}
-              className="w-full flex items-center justify-between gap-2 p-4 text-left text-slate-800 font-semibold hover:bg-primary-50/50 transition-colors"
+              className="w-full flex items-center justify-between gap-2 p-4 text-left text-[var(--color-text-primary)] font-semibold hover:bg-[var(--color-primary-soft)] transition-colors"
             >
               <span className="flex items-center gap-2">
-                <Award className="w-5 h-5 text-primary-600" />
+                <Award className="w-5 h-5 text-[var(--color-primary)]" />
                 Sistema de nivells
               </span>
               {levelsOpen ? (
@@ -202,7 +202,7 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
             </button>
             {levelsOpen && (
               <div className="px-4 pb-4 pt-0 max-h-64 overflow-y-auto">
-                <p className="text-xs text-slate-600 mb-2">
+                <p className="text-xs text-[var(--color-text-secondary)] mb-2">
                   Guanya punts llegint; cada ~171 punts pugen de rang. El nivell 71 és <span className="font-medium text-amber-500">Llegenda Divina</span>.
                 </p>
                 <ul className="space-y-1 text-sm">
@@ -211,7 +211,7 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
                       <span className={getLevelInfo(entry.level).colorClass}>
                         {getLevelDisplayName(getLevelInfo(entry.level))}
                       </span>
-                      <span className="text-slate-500 shrink-0">
+                      <span className="text-[var(--color-text-secondary)] shrink-0">
                         {getPointsForLevel(entry.level)} punts
                       </span>
                     </li>
@@ -222,22 +222,22 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
           </section>
 
           {/* Bloc 4 — Confiança */}
-          <section className="bg-white/70 backdrop-blur-sm rounded-xl p-5 border border-primary-200">
-            <h3 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-              <Shield className="w-5 h-5 text-primary-600" />
+          <section className="bg-white/70 backdrop-blur-sm rounded-xl p-5 border border-[var(--color-border)]">
+            <h3 className="font-semibold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">
+              <Shield className="w-5 h-5 text-[var(--color-primary)]" />
               Confiança i privacitat
             </h3>
-            <ul className="space-y-2 text-slate-700 text-sm">
+            <ul className="space-y-2 text-[var(--color-text-primary)] text-sm">
               <li className="flex gap-2">
-                <Lock className="w-4 h-4 text-primary-500 shrink-0 mt-0.5" />
+                <Lock className="w-4 h-4 text-[var(--color-primary)] shrink-0 mt-0.5" />
                 Només fem servir el teu compte Google per identificar-te.
               </li>
               <li className="flex gap-2">
-                <Lock className="w-4 h-4 text-primary-500 shrink-0 mt-0.5" />
+                <Lock className="w-4 h-4 text-[var(--color-primary)] shrink-0 mt-0.5" />
                 No publiquem res sense el teu permís.
               </li>
               <li className="flex gap-2">
-                <Trash2 className="w-4 h-4 text-primary-500 shrink-0 mt-0.5" />
+                <Trash2 className="w-4 h-4 text-[var(--color-primary)] shrink-0 mt-0.5" />
                 Pots esborrar el compte quan vulguis.
               </li>
             </ul>
@@ -245,17 +245,17 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
 
           {/* Bloc 5 — FAQ */}
           <section>
-            <h3 className="font-semibold text-slate-800 mb-3">Preguntes freqüents</h3>
+            <h3 className="font-semibold text-[var(--color-text-primary)] mb-3">Preguntes freqüents</h3>
             <div className="space-y-2">
               {FAQ_ITEMS.map(({ q, a }, i) => (
                 <div
                   key={i}
-                  className="bg-white/70 backdrop-blur-sm rounded-xl border border-primary-200 overflow-hidden"
+                  className="bg-white/70 backdrop-blur-sm rounded-xl border border-[var(--color-border)] overflow-hidden"
                 >
                   <button
                     type="button"
                     onClick={() => setFaqOpen(faqOpen === i ? null : i)}
-                    className="w-full flex items-center justify-between gap-2 p-4 text-left text-slate-800 font-medium hover:bg-primary-50/50 transition-colors"
+                    className="w-full flex items-center justify-between gap-2 p-4 text-left text-[var(--color-text-primary)] font-medium hover:bg-[var(--color-primary-soft)] transition-colors"
                   >
                     {q}
                     {faqOpen === i ? (
@@ -265,7 +265,7 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
                     )}
                   </button>
                   {faqOpen === i && (
-                    <div className="px-4 pb-4 pt-0 text-slate-600 text-sm">
+                    <div className="px-4 pb-4 pt-0 text-[var(--color-text-secondary)] text-sm">
                       {a}
                     </div>
                   )}
@@ -274,13 +274,13 @@ export const WelcomeScreen = ({ onLogin, loginError }) => {
             </div>
           </section>
 
-          <p className="text-xs text-slate-500 pt-4">
+          <p className="text-xs text-[var(--color-text-secondary)] pt-4">
             Cal un compte Google per entrar. Si no en tens, pots crear-ne un a{" "}
             <a
               href="https://accounts.google.com/signup"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary-600 underline hover:text-primary-700"
+              className="text-[var(--color-primary)] underline hover:opacity-90"
             >
               accounts.google.com
             </a>

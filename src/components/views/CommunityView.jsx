@@ -302,17 +302,17 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
             <Box>
               <BoxTitle icon={Compass}>5 comunitats obertes més populars</BoxTitle>
               {loadingOpen ? (
-                <p className="text-slate-600">Carregant...</p>
+                <p className="text-[var(--color-text-secondary)]">Carregant...</p>
               ) : openCommunities.length === 0 ? (
-                <p className="text-slate-600">No hi ha comunitats obertes ara mateix.</p>
+                <p className="text-[var(--color-text-secondary)]">No hi ha comunitats obertes ara mateix.</p>
               ) : (
                 <ul className="space-y-2">
                   {openCommunities.map((c) => (
                     <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 py-2 border-b border-slate-100 last:border-0">
                       <div>
-                        <span className="font-medium text-slate-800">{c.name}</span>
+                        <span className="font-medium text-[var(--color-text-primary)]">{c.name}</span>
                         {c.memberCount != null && (
-                          <span className="ml-2 text-xs text-slate-500">{c.memberCount} membres</span>
+                          <span className="ml-2 text-xs text-[var(--color-text-secondary)]">{c.memberCount} membres</span>
                         )}
                       </div>
                       <PrimaryButton
@@ -350,8 +350,8 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
       {/* Modal Crear comunitat */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" role="dialog" aria-modal="true" aria-labelledby="create-community-title">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-primary-500">
-            <h3 id="create-community-title" className="text-xl font-serif text-slate-800 mb-4">
+          <div className="bg-[var(--color-surface)] rounded-2xl shadow-xl max-w-md w-full p-6 border border-[var(--color-border)]">
+            <h3 id="create-community-title" className="text-xl font-serif text-[var(--color-text-primary)] mb-4">
               Crear comunitat
             </h3>
             <form
@@ -393,22 +393,22 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               className="space-y-4"
             >
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Nom *</label>
+                <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Nom *</label>
                 <input
                   type="text"
                   value={createName}
                   onChange={(e) => setCreateName(e.target.value)}
-                  className="w-full px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
+                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/30 bg-[var(--color-surface)] text-[var(--color-text-primary)]"
                   placeholder="Nom de la comunitat"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Descripció (opcional)</label>
+                <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Descripció (opcional)</label>
                 <textarea
                   value={createDescription}
                   onChange={(e) => setCreateDescription(e.target.value)}
-                  className="w-full px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
+                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/30 bg-[var(--color-surface)] text-[var(--color-text-primary)]"
                   placeholder="Descripció breu"
                   rows={2}
                 />
@@ -456,7 +456,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
           <ul className="space-y-2">
             {pendingInvites.map((inv) => (
               <li key={inv.id} className="flex flex-wrap items-center justify-between gap-2 py-2 border-b border-amber-100 last:border-0">
-                <span className="text-slate-800">{inv.communityName ?? inv.communityId}</span>
+                <span className="text-[var(--color-text-primary)]">{inv.communityName ?? inv.communityId}</span>
                 <div className="flex gap-2">
                   <button
                     type="button"
@@ -475,7 +475,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                         setInviteError(e.message ?? "No s’ha pogut acceptar la invitació.");
                       }
                     }}
-                    className="flex items-center gap-1 px-2 py-1 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+                    className="flex items-center gap-1 px-2 py-1 text-sm bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary)]"
                   >
                     <UserCheck className="w-4 h-4" /> Acceptar
                   </button>
@@ -485,7 +485,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                       await rejectInvite(inv.id);
                       setPendingInvites((prev) => prev.filter((i) => i.id !== inv.id));
                     }}
-                    className="px-2 py-1 text-sm bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
+                    className="px-2 py-1 text-sm bg-[var(--color-secondary-bg)] text-[var(--color-secondary-text)] rounded-lg hover:opacity-90 transition-colors"
                   >
                     Rebutjar
                   </button>
@@ -500,8 +500,8 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
       {communities.length > 0 && canManageMembers && activeCommunityId && (
         <div className="mt-10">
           <div className="flex items-center gap-2 mb-4">
-            <Shield className="w-5 h-5 text-primary-600" />
-            <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
+            <Shield className="w-5 h-5 text-[var(--color-primary)]" />
+            <h3 className="text-sm font-medium text-[var(--color-text-primary)] uppercase tracking-wide">
               Membres
             </h3>
           </div>
@@ -539,7 +539,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               value={inviteEmail}
               onChange={(e) => { setInviteEmail(e.target.value); setInviteError(null); setInviteSuccessMessage(null); }}
               placeholder="Email a convidar"
-              className="flex-1 min-w-0 px-3 py-2 border border-primary-500 rounded-lg focus:ring-2 focus:ring-primary-200"
+              className="flex-1 min-w-0 px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]/30"
             />
             <PrimaryButton
               type="button"
@@ -573,7 +573,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
             </PrimaryButton>
           </div>
           {inviteError && <p className="text-sm text-red-600 mb-2" role="alert">{inviteError}</p>}
-          {inviteSuccessMessage && <p className="text-sm text-primary-700 mb-2" role="status">{inviteSuccessMessage}</p>}
+          {inviteSuccessMessage && <p className="text-sm text-[var(--color-primary)] mb-2" role="status">{inviteSuccessMessage}</p>}
           <ul className="space-y-2">
             {members.map((m) => {
               const points = memberPointsByUserId[m.userId];
@@ -585,7 +585,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   <button
                     type="button"
                     onClick={() => navigate(`${ROUTES.COMMUNITY_MEMBER}/${m.userId}`)}
-                    className="text-left font-medium text-slate-800 hover:text-primary-600 transition-colors"
+                    className="text-left font-medium text-[var(--color-text-primary)] hover:text-[var(--color-primary)] transition-colors"
                   >
                     {m.email || m.displayName || m.userId}
                   </button>
@@ -596,7 +596,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-[var(--color-text-secondary)]">
                     {m.role === "owner" ? "Propietari" : m.role === "admin" ? "Admin" : "Participant"}
                   </span>
                 {m.userId !== currentUser.uid && m.role !== "owner" && (
@@ -608,7 +608,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                           await updateMemberRole(activeCommunityId, m.userId, "admin");
                           getCommunityMembers(activeCommunityId).then(setMembers).catch((err) => console.error("Error carregant membres:", err));
                         }}
-                        className="px-2 py-1 text-xs bg-primary-100 text-primary-700 rounded hover:bg-primary-200"
+                        className="px-2 py-1 text-xs bg-[var(--color-primary-soft)] text-[var(--color-primary)] rounded hover:bg-[var(--color-primary-soft)]"
                       >
                         Fer admin
                       </button>
@@ -640,13 +640,13 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
       {communities.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <BookMarked className="w-5 h-5 text-primary-600" />
-            <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
+            <BookMarked className="w-5 h-5 text-[var(--color-primary)]" />
+            <h3 className="text-sm font-medium text-[var(--color-text-primary)] uppercase tracking-wide">
               Estàs llegint
             </h3>
           </div>
           {currentUserReadingBooks.length === 0 ? (
-            <p className="text-slate-600">Ara mateix no estàs llegint cap llibre.</p>
+            <p className="text-[var(--color-text-secondary)]">Ara mateix no estàs llegint cap llibre.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {sortByActivity(
@@ -673,8 +673,8 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
       {communities.length > 0 && members.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <Trophy className="w-5 h-5 text-primary-600" />
-            <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
+            <Trophy className="w-5 h-5 text-[var(--color-primary)]" />
+            <h3 className="text-sm font-medium text-[var(--color-text-primary)] uppercase tracking-wide">
               Rànquing
             </h3>
             <div className="relative group">
@@ -682,7 +682,7 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                 type="button"
                 onClick={() => setShowRankingTooltip((v) => !v)}
                 onBlur={() => setShowRankingTooltip(false)}
-                className="p-0.5 rounded-full text-slate-400 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:text-primary-600"
+                className="p-0.5 rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30 focus:text-[var(--color-primary)]"
                 aria-label="Explicació del càlcul del rànquing"
               >
                 <Info className="w-4 h-4" />
@@ -718,8 +718,8 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
                   onClick={() => setLeaderboardPeriod(tab.value)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     leaderboardPeriod === tab.value
-                      ? "bg-primary-600 text-white"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      ? "bg-[var(--color-primary)] text-white"
+                      : "bg-[var(--color-secondary-bg)] text-[var(--color-secondary-text)] hover:opacity-90"
                   }`}
                 >
                   {tab.label}
@@ -727,21 +727,21 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
               ))}
             </div>
             {leaderboardLoading ? (
-              <p className="text-slate-600 text-sm">Carregant rànquing...</p>
+              <p className="text-[var(--color-text-secondary)] text-sm">Carregant rànquing...</p>
             ) : leaderboard.length === 0 ? (
-              <p className="text-slate-600 text-sm">Encara no hi ha puntuacions en aquest període.</p>
+              <p className="text-[var(--color-text-secondary)] text-sm">Encara no hi ha puntuacions en aquest període.</p>
             ) : (
               <ul className="space-y-2">
                 {leaderboard.map((entry) => (
                   <li
                     key={entry.userId}
-                    className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-50 border border-slate-100"
+                    className="flex items-center justify-between py-2 px-3 rounded-lg bg-[var(--color-bg-secondary)] border border-[var(--color-border)]"
                   >
                     <span className="flex items-center gap-2">
-                      <span className="text-slate-500 font-mono text-sm w-6">#{entry.rank}</span>
-                      <span className="font-medium text-slate-800">{entry.displayName}</span>
+                      <span className="text-[var(--color-text-secondary)] font-mono text-sm w-6">#{entry.rank}</span>
+                      <span className="font-medium text-[var(--color-text-primary)]">{entry.displayName}</span>
                     </span>
-                    <span className="text-primary-600 font-semibold">{entry.points} pt</span>
+                    <span className="text-[var(--color-primary)] font-semibold">{entry.points} pt</span>
                   </li>
                 ))}
               </ul>
@@ -754,16 +754,16 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
       {communities.length > 0 && (
       <div>
         <div className="flex items-center gap-2 mb-4">
-          <Users className="w-5 h-5 text-primary-600" />
-          <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
+          <Users className="w-5 h-5 text-[var(--color-primary)]" />
+          <h3 className="text-sm font-medium text-[var(--color-text-primary)] uppercase tracking-wide">
             La resta de lectors ara mateix
           </h3>
         </div>
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary-500 border-t-transparent"></div>
-            <p className="text-slate-600 mt-4">Carregant comunitat...</p>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[var(--color-border)] border-t-transparent"></div>
+            <p className="text-[var(--color-text-secondary)] mt-4">Carregant comunitat...</p>
           </div>
         ) : (() => {
           const otherReaderBooks = communityReaders.flatMap((reader) =>
@@ -772,10 +772,10 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
           return otherReaderBooks.length === 0 ? (
             <Box padding="xl" className="text-center">
               <Users className="w-16 h-16 mx-auto text-slate-300 mb-4" />
-              <h4 className="text-lg font-serif text-slate-800 mb-2">
+              <h4 className="text-lg font-serif text-[var(--color-text-primary)] mb-2">
                 Encara no hi ha altres lectors
               </h4>
-              <p className="text-slate-600">
+              <p className="text-[var(--color-text-secondary)]">
                 Sigues el primer en compartir què estàs llegint!
               </p>
             </Box>
@@ -850,28 +850,28 @@ export const CommunityView = ({ currentUser, userBooks, activeCommunityId, onSel
           return (
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <BarChart2 className="w-5 h-5 text-primary-600" />
-                <h3 className="text-sm font-medium text-primary-800 uppercase tracking-wide">
+                <BarChart2 className="w-5 h-5 text-[var(--color-primary)]" />
+                <h3 className="text-sm font-medium text-[var(--color-text-primary)] uppercase tracking-wide">
                   Estadístiques de la Comunitat
                 </h3>
               </div>
               <Box>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <p className="text-3xl font-serif text-slate-800">{activeReadersCount}</p>
-                  <p className="text-sm text-slate-600">Lectors actius</p>
+                  <p className="text-3xl font-serif text-[var(--color-text-primary)]">{activeReadersCount}</p>
+                  <p className="text-sm text-[var(--color-text-secondary)]">Lectors actius</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-serif text-slate-800">{totalBooksInProgress}</p>
-                  <p className="text-sm text-slate-600">Llibres en curs</p>
+                  <p className="text-3xl font-serif text-[var(--color-text-primary)]">{totalBooksInProgress}</p>
+                  <p className="text-sm text-[var(--color-text-secondary)]">Llibres en curs</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-serif text-slate-800">{avgProgress}%</p>
-                  <p className="text-sm text-slate-600">Progrés mitjà</p>
+                  <p className="text-3xl font-serif text-[var(--color-text-primary)]">{avgProgress}%</p>
+                  <p className="text-sm text-[var(--color-text-secondary)]">Progrés mitjà</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-serif text-slate-800">{new Set(allGenres).size}</p>
-                  <p className="text-sm text-slate-600">Gèneres diversos</p>
+                  <p className="text-3xl font-serif text-[var(--color-text-primary)]">{new Set(allGenres).size}</p>
+                  <p className="text-sm text-[var(--color-text-secondary)]">Gèneres diversos</p>
                 </div>
               </div>
               </Box>

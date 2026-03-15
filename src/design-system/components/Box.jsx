@@ -18,11 +18,11 @@ export function Box({
   padding = "lg",
   ...props
 }) {
-  const baseClasses = "rounded-2xl border border-primary-500";
+  const baseClasses = "rounded-2xl border border-[var(--color-border)]";
   const variantClasses = {
     default:
-      "bg-white/80 backdrop-blur-sm shadow-lg",
-    soft: "bg-primary-50",
+      "bg-[var(--color-surface)]/80 backdrop-blur-sm shadow-lg",
+    soft: "bg-[var(--color-bg-secondary)]",
   };
   const paddingClasses = {
     sm: "p-4",

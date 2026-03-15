@@ -38,8 +38,8 @@ export const ConfirmModal = ({
 
   const confirmClass =
     confirmVariant === "danger"
-      ? "bg-red-600 hover:bg-red-700 focus:ring-red-500"
-      : "bg-primary-500 hover:bg-primary-600 focus:ring-primary-500";
+      ? "bg-[var(--color-error)] hover:opacity-90 focus:ring-[var(--color-error)]"
+      : "bg-[var(--color-primary)] hover:opacity-90 focus:ring-[var(--color-primary)]";
 
   return (
     <div
@@ -50,32 +50,32 @@ export const ConfirmModal = ({
       aria-describedby="confirm-modal-desc"
     >
       <div
-        className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onCancel}
         aria-hidden="true"
       />
-      <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl border border-slate-200">
+      <div className="relative w-full max-w-md rounded-2xl bg-[var(--color-surface)] p-6 shadow-xl border border-[var(--color-border)]">
         <h2
           id="confirm-modal-title"
-          className="text-lg font-semibold text-slate-800 mb-2"
+          className="text-lg font-semibold text-[var(--color-text-primary)] mb-2"
         >
           {title}
         </h2>
-        <p id="confirm-modal-desc" className="text-slate-600 mb-6">
+        <p id="confirm-modal-desc" className="text-[var(--color-text-secondary)] mb-6">
           {message}
         </p>
         <div className="flex gap-3 justify-end">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 rounded-xl font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
+            className="px-4 py-2 rounded-xl font-medium bg-[var(--color-secondary-bg)] text-[var(--color-secondary-text)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--color-border)] focus:ring-offset-2 transition-colors duration-150"
           >
             {cancelLabel}
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className={`px-4 py-2 rounded-xl font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 ${confirmClass}`}
+            className={`px-4 py-2 rounded-xl font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-150 ${confirmClass}`}
           >
             {confirmLabel}
           </button>

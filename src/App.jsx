@@ -201,7 +201,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-stone-50 to-slate-100 pb-20">
+    <div className="min-h-screen bg-[var(--color-bg)] pb-20 transition-colors duration-150" style={{ backgroundImage: 'linear-gradient(to bottom right, var(--color-bg-secondary), var(--color-bg))' }}>
       <Header user={user} />
 
       <div className="max-w-4xl mx-auto px-6 py-8 overflow-x-hidden">

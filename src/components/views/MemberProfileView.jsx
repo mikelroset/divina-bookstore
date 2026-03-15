@@ -35,12 +35,12 @@ export const MemberProfileView = ({ memberUserId, memberDisplayName, memberPhoto
   if (error) {
     return (
       <div className="space-y-6">
-        <button type="button" onClick={handleBack} className="flex items-center gap-2 text-slate-600 hover:text-primary-600">
+        <button type="button" onClick={handleBack} className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]">
           <ArrowLeft className="w-5 h-5" />
           {t("memberProfile.back")}
         </button>
         <Box>
-          <p className="text-slate-600">{t("memberProfile.userNotAvailable")}</p>
+          <p className="text-[var(--color-text-secondary)]">{t("memberProfile.userNotAvailable")}</p>
         </Box>
       </div>
     );
@@ -49,12 +49,12 @@ export const MemberProfileView = ({ memberUserId, memberDisplayName, memberPhoto
   if (loading && !stats) {
     return (
       <div className="space-y-6">
-        <button type="button" onClick={handleBack} className="flex items-center gap-2 text-slate-600 hover:text-primary-600">
+        <button type="button" onClick={handleBack} className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]">
           <ArrowLeft className="w-5 h-5" />
           {t("memberProfile.back")}
         </button>
         <Box>
-          <p className="text-slate-600">{t("profile.loadingBadges")}</p>
+          <p className="text-[var(--color-text-secondary)]">{t("profile.loadingBadges")}</p>
         </Box>
       </div>
     );
@@ -63,7 +63,7 @@ export const MemberProfileView = ({ memberUserId, memberDisplayName, memberPhoto
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-4">
-        <button type="button" onClick={handleBack} className="flex items-center gap-2 text-slate-600 hover:text-primary-600 p-1 -m-1 rounded">
+        <button type="button" onClick={handleBack} className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] p-1 -m-1 rounded">
           <ArrowLeft className="w-5 h-5" />
           <span className="text-sm">{t("memberProfile.back")}</span>
         </button>
@@ -79,34 +79,34 @@ export const MemberProfileView = ({ memberUserId, memberDisplayName, memberPhoto
             src={memberPhotoURL}
             alt={memberDisplayName ? t("common.avatarOf", { name: memberDisplayName }) : t("common.avatarUnavailable")}
             displayName={memberDisplayName}
-            className="w-20 h-20 rounded-full border-4 border-primary-500 shadow-lg"
+            className="w-20 h-20 rounded-full border-4 border-[var(--color-primary)] shadow-lg"
           />
           <div>
-            <h3 className="text-2xl font-serif text-slate-800">
+            <h3 className="text-2xl font-serif text-[var(--color-text-primary)]">
               {memberDisplayName || t("memberProfile.unknownMember")}
             </h3>
-            {memberEmail && <p className="text-slate-600">{memberEmail}</p>}
+            {memberEmail && <p className="text-[var(--color-text-secondary)]">{memberEmail}</p>}
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <Box padding="sm">
-            <p className="text-sm text-slate-600 mb-1">{t("profile.totalBooks")}</p>
-            <p className="text-3xl font-serif text-slate-800">{stats.totalBooks}</p>
+            <p className="text-sm text-[var(--color-text-secondary)] mb-1">{t("profile.totalBooks")}</p>
+            <p className="text-3xl font-serif text-[var(--color-text-primary)]">{stats.totalBooks}</p>
           </Box>
           <Box padding="sm">
-            <p className="text-sm text-slate-600 mb-1">{t("profile.completedBooks")}</p>
-            <p className="text-3xl font-serif text-slate-800">{stats.completedBooks}</p>
+            <p className="text-sm text-[var(--color-text-secondary)] mb-1">{t("profile.completedBooks")}</p>
+            <p className="text-3xl font-serif text-[var(--color-text-primary)]">{stats.completedBooks}</p>
           </Box>
         </div>
         {stats.totalBooks === 0 && stats.completedBooks === 0 && (
-          <p className="text-slate-600 mb-6">{t("memberProfile.noActivity")}</p>
+          <p className="text-[var(--color-text-secondary)] mb-6">{t("memberProfile.noActivity")}</p>
         )}
 
         <Box padding="md" className="mb-6">
-          <p className="text-sm text-slate-600 mb-3">{t("profile.badges")}</p>
+          <p className="text-sm text-[var(--color-text-secondary)] mb-3">{t("profile.badges")}</p>
           {loading ? (
-            <p className="text-sm text-slate-500">{t("profile.loadingBadges")}</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">{t("profile.loadingBadges")}</p>
           ) : (
             <BadgeGrid unlockedIds={unlockedIds} />
           )}
@@ -115,15 +115,15 @@ export const MemberProfileView = ({ memberUserId, memberDisplayName, memberPhoto
         <div className="mb-6 space-y-4">
           <Box padding="sm">
             <div className="flex justify-between items-center mb-2">
-              <p className="text-sm text-slate-600">{t("profile.totalPoints")}</p>
-              <p className="text-2xl font-serif text-primary-800">{totalPoints}</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">{t("profile.totalPoints")}</p>
+              <p className="text-2xl font-serif text-[var(--color-primary)]">{totalPoints}</p>
             </div>
             <p className={`text-sm mb-2 font-medium ${levelColorClass}`}>
               {levelDisplayName}
             </p>
             {toNextLevel > 0 && nextLevelDisplayName && (
               <div className="space-y-1 mb-3">
-                <p className="text-xs text-slate-600">
+                <p className="text-xs text-[var(--color-text-secondary)]">
                   {t("profile.progressTo", { level: nextLevelDisplayName, pct: toNextLevelProgressPct })}
                 </p>
                 <ProgressBar
@@ -137,21 +137,21 @@ export const MemberProfileView = ({ memberUserId, memberDisplayName, memberPhoto
             <button
               type="button"
               onClick={() => setLevelsInfoOpen(!levelsInfoOpen)}
-              className="flex items-center gap-2 text-xs text-slate-600 hover:text-primary-600 transition-colors"
+              className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
             >
               <Award className="w-4 h-4" />
               {levelsInfoOpen ? t("profile.hide") : t("profile.viewAllLevels")}
               {levelsInfoOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
             </button>
             {levelsInfoOpen && (
-              <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-primary-200 bg-white/50 p-2">
+              <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-white/50 p-2">
                 <ul className="space-y-1 text-xs">
                   {CATALOG.map((entry) => (
                     <li key={entry.level} className="flex justify-between gap-2 py-0.5">
                       <span className={getLevelInfo(entry.level).colorClass}>
                         {getLevelDisplayName(getLevelInfo(entry.level))}
                       </span>
-                      <span className="text-slate-500 shrink-0">
+                      <span className="text-[var(--color-text-secondary)] shrink-0">
                         {getPointsForLevel(entry.level)} {t("profile.points")}
                       </span>
                     </li>
@@ -173,12 +173,12 @@ export const MemberProfileView = ({ memberUserId, memberDisplayName, memberPhoto
                 height="md"
                 className="mb-2"
               />
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-[var(--color-text-secondary)]">
                 {t("profile.annualProgress", { completed, goal })}
               </p>
             </>
           ) : (
-            <p className="text-slate-600">{t("memberProfile.noAnnualGoal")}</p>
+            <p className="text-[var(--color-text-secondary)]">{t("memberProfile.noAnnualGoal")}</p>
           )}
         </Box>
       </Box>

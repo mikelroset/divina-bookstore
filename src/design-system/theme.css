@@ -1,0 +1,62 @@
+/**
+ * Design tokens per al sistema de temes (Light / Dark).
+ * Les variables s'apliquen a :root (light) i [data-theme="dark"].
+ */
+
+/* Light theme (default) */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-border: #e5e7eb;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-primary: #0ea5e9;
+  /* Alerts - iguals en tots els temes */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #0ea5e9;
+  /* Secondary button */
+  --color-secondary-bg: #f1f5f9;
+  --color-secondary-text: #111827;
+  /* Soft primary (hover, badges, links) */
+  --color-primary-soft: #e0f2fe;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-surface: #1e293b;
+  --color-border: #334155;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-primary: #38bdf8;
+  /* Alerts */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #0ea5e9;
+  /* Secondary button */
+  --color-secondary-bg: #334155;
+  --color-secondary-text: #f8fafc;
+  /* Soft primary (hover, badges, links) */
+  --color-primary-soft: #1e3a5f;
+}
+
+/* Form elements: fons i text explícits per garantir contrast en dark mode */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--color-text-secondary);
+}

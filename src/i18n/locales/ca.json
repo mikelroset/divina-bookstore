@@ -17,7 +17,11 @@
   "header": {
     "ariaGoHome": "Anar a l'inici",
     "ariaGoProfile": "Anar al perfil",
-    "logoAlt": "Logo"
+    "logoAlt": "Logo",
+    "themeLight": "Clar",
+    "themeDark": "Fosc",
+    "themeSystem": "Sistema",
+    "ariaThemeSelector": "Seleccionar tema"
   },
   "nav": {
     "home": "Inici",

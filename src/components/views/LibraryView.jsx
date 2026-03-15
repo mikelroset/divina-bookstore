@@ -38,7 +38,7 @@ export const LibraryView = ({
             placeholder="Cerca per títol o autor..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
+            className="w-full pl-10 pr-4 py-3 bg-[var(--color-surface)]/80 border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/30 text-[var(--color-text-primary)] transition-colors duration-150"
           />
         </div>
         <Select
@@ -52,7 +52,7 @@ export const LibraryView = ({
 
       {isEmpty ? (
         <div className="text-center py-16 px-4">
-          <p className="text-slate-600 text-lg mb-6">
+          <p className="text-[var(--color-text-secondary)] text-lg mb-6">
             Encara no tens llibres a la teva biblioteca
           </p>
           <PrimaryButton to={ROUTES.ADD} icon={Plus} size="lg">
@@ -61,7 +61,7 @@ export const LibraryView = ({
         </div>
       ) : !hasFilteredResults ? (
         <div className="text-center py-12">
-          <p className="text-slate-500">No s'han trobat llibres</p>
+          <p className="text-[var(--color-text-secondary)]">No s'han trobat llibres</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -16,11 +16,11 @@ export const ReaderCard = ({ reader }) => {
           src={reader.photoURL}
           alt={reader.displayName ? `Avatar de ${reader.displayName}` : "Avatar no disponible"}
           displayName={reader.displayName}
-          className="w-12 h-12 rounded-full border-2 border-primary-500"
+          className="w-12 h-12 rounded-full border-2 border-[var(--color-primary)]"
         />
         <div>
-          <h4 className="font-medium text-slate-800">{reader.displayName}</h4>
-          <p className="text-xs text-slate-500">està llegint</p>
+          <h4 className="font-medium text-[var(--color-text-primary)]">{reader.displayName}</h4>
+          <p className="text-xs text-[var(--color-text-secondary)]">està llegint</p>
         </div>
       </div>
 
@@ -31,14 +31,14 @@ export const ReaderCard = ({ reader }) => {
           className="w-20 h-28 object-cover rounded-lg shadow-md"
         />
         <div className="flex-1">
-          <h5 className="font-serif text-lg text-slate-800 mb-1 line-clamp-2">
+          <h5 className="font-serif text-lg text-[var(--color-text-primary)] mb-1 line-clamp-2">
             {book.title ?? ""}
           </h5>
-          <p className="text-sm text-slate-600 mb-2">
+          <p className="text-sm text-[var(--color-text-secondary)] mb-2">
             {book.author ?? ""}
           </p>
           {book.genre && (
-            <span className="inline-block px-2 py-1 bg-slate-100 rounded-full text-xs text-slate-700 mb-2">
+            <span className="inline-block px-2 py-1 bg-slate-100 rounded-full text-xs text-[var(--color-text-primary)] mb-2">
               {book.genre}
             </span>
           )}
@@ -52,7 +52,7 @@ export const ReaderCard = ({ reader }) => {
               height="sm"
               className="mb-1"
             />
-            <div className="flex justify-between text-xs text-slate-500">
+            <div className="flex justify-between text-xs text-[var(--color-text-secondary)]">
               <span>
                 {book.currentPage ?? 0} / {book.pages ?? 0}
               </span>
@@ -61,7 +61,7 @@ export const ReaderCard = ({ reader }) => {
               </span>
             </div>
             {book.startDate && (
-              <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1 flex items-center gap-1">
                 <Clock className="w-3 h-3 shrink-0" />
                 {getDaysReading(book.startDate)} dies
               </p>

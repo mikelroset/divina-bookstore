@@ -18,13 +18,13 @@ function WeeklyMiniChart({ data }) {
           <div key={d.date} className="flex-1 flex flex-col items-center gap-0.5">
             <div className="w-full h-9 flex flex-col justify-end items-center gap-0.5">
               {hasData && (
-                <span className="text-[10px] font-medium text-slate-700 leading-none">
+                <span className="text-[10px] font-medium text-[var(--color-text-primary)] leading-none">
                   {pagesRead}
                 </span>
               )}
               <div className="w-full h-6 flex items-end">
                 <div
-                  className="w-full bg-primary-300 rounded-t"
+                  className="w-full bg-[var(--color-primary)] rounded-t"
                   style={{
                     height: heightPct > 0 ? `${Math.max(heightPct, 8)}%` : "2px",
                     minHeight: heightPct > 0 ? "4px" : "2px",
@@ -32,7 +32,7 @@ function WeeklyMiniChart({ data }) {
                 />
               </div>
             </div>
-            <span className="text-[10px] text-slate-500">
+            <span className="text-[10px] text-[var(--color-text-secondary)]">
               {new Date(d.date + "T12:00:00").toLocaleDateString("ca-ES", { weekday: "short" }).slice(0, 2)}
             </span>
           </div>
@@ -65,7 +65,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
         </div>
         <button
           onClick={onCancel}
-          className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+          className="p-2 hover:bg-[var(--color-bg-secondary)] rounded-lg transition-colors"
           type="button"
           aria-label="Tancar"
         >
@@ -79,7 +79,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
             const eta = computeETA(editingBook);
             if (eta) {
               return (
-                <p className="text-primary-800">
+                <p className="text-[var(--color-primary)]">
                   Al teu ritme actual, acabaràs aquest llibre en {eta.daysLeft}{" "}
                   {eta.daysLeft === 1 ? "dia" : "dies"} (Data estimada: {eta.dateStr})
                 </p>
@@ -87,7 +87,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
             }
             if (editingBook.pageLog?.length > 0) {
               return (
-                <p className="text-slate-600 italic">
+                <p className="text-[var(--color-text-secondary)] italic">
                   Llegeix unes quantes pàgines per calcular el teu ritme!
                 </p>
               );
@@ -96,7 +96,7 @@ export const AddBookView = ({ onSave, onCancel, editingBook }) => {
           })()}
           {(editingBook.pageLog?.length > 0 || editingBook.currentPage > 0) && (
             <div className="mt-3">
-              <p className="text-xs text-slate-600 mb-1">Progrés última setmana</p>
+              <p className="text-xs text-[var(--color-text-secondary)] mb-1">Progrés última setmana</p>
               <WeeklyMiniChart data={getWeeklyPagesRead(editingBook.pageLog || [])} />
             </div>
           )}

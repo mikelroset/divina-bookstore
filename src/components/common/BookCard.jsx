@@ -20,13 +20,13 @@ export const BookCard = ({ book, onEdit, onDelete }) => {
         </span>
         </div>
       <BookTitle className="mb-1">{book.title}</BookTitle>
-      <p className="text-slate-600 text-sm mb-2">{book.author}</p>
+      <p className="text-[var(--color-text-secondary)] text-sm mb-2">{book.author}</p>
       <StarRating value={book.rating ?? 0} size="sm" className="mb-3" />
       </div>
       <div className="flex gap-2 mt-auto pt-3">
         <button
           onClick={() => onEdit(book)}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary-50 hover:bg-primary-100 text-primary-700 rounded-lg transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[var(--color-primary-soft)] hover:bg-[var(--color-primary)]/20 text-[var(--color-primary)] rounded-lg transition-colors"
         >
           <span className="text-sm">Editar</span>
         </button>

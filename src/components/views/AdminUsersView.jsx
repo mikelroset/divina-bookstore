@@ -94,12 +94,12 @@ export const AdminUsersView = ({ currentUser, onBack }) => {
         <button
           type="button"
           onClick={onBack}
-          className="p-2 -ml-2 rounded-lg hover:bg-slate-100 transition-colors"
+          className="p-2 -ml-2 rounded-lg hover:bg-[var(--color-bg-secondary)] transition-colors"
           aria-label="Tornar"
         >
-          <ChevronLeft className="w-6 h-6 text-slate-600" />
+          <ChevronLeft className="w-6 h-6 text-[var(--color-text-secondary)]" />
         </button>
-        <h1 className="text-2xl font-serif text-slate-800">Gestió d'usuaris</h1>
+        <h1 className="text-2xl font-serif text-[var(--color-text-primary)]">Gestió d'usuaris</h1>
       </div>
 
       <Box>
@@ -108,18 +108,18 @@ export const AdminUsersView = ({ currentUser, onBack }) => {
           <p className="text-red-600 text-sm mb-4">{error}</p>
         )}
         {loading ? (
-          <p className="text-slate-600 py-8 text-center">Carregant usuaris...</p>
+          <p className="text-[var(--color-text-secondary)] py-8 text-center">Carregant usuaris...</p>
         ) : users.length === 0 ? (
-          <p className="text-slate-600 py-8 text-center">No hi ha usuaris.</p>
+          <p className="text-[var(--color-text-secondary)] py-8 text-center">No hi ha usuaris.</p>
         ) : (
           <ul className="divide-y divide-slate-200">
             {users.map((u) => (
               <li key={u.uid} className="py-4 flex items-center justify-between gap-4">
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium text-slate-800 truncate">
+                  <p className="font-medium text-[var(--color-text-primary)] truncate">
                     {u.displayName || u.email || u.uid}
                   </p>
-                  <p className="text-sm text-slate-600 truncate">{u.email || u.uid}</p>
+                  <p className="text-sm text-[var(--color-text-secondary)] truncate">{u.email || u.uid}</p>
                   {u.disabled && (
                     <span className="inline-block mt-1 text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded">
                       Desactivat

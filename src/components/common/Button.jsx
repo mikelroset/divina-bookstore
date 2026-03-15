@@ -7,14 +7,14 @@ import { Link } from "react-router-dom";
  * Estats: normal, hover, disabled (opacity-50, cursor-not-allowed).
  */
 const BASE_CLASSES =
-  "inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed";
 
 const VARIANT_CLASSES = {
   primary:
-    "px-4 py-3 bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white shadow-sm",
+    "px-4 py-3 bg-[var(--color-primary)] hover:opacity-90 active:opacity-95 text-white shadow-sm",
   secondary:
-    "px-4 py-3 bg-white/80 border border-primary-500 text-slate-700 hover:bg-primary-50 hover:border-primary-400",
-  ghost: "px-4 py-3 text-primary-600 hover:text-primary-700 hover:bg-primary-50",
+    "px-4 py-3 bg-[var(--color-secondary-bg)] border border-[var(--color-border)] text-[var(--color-secondary-text)] hover:opacity-90",
+  ghost: "px-4 py-3 text-[var(--color-primary)] hover:bg-[var(--color-bg-secondary)]",
 };
 
 const SIZE_CLASSES = {
