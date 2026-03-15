@@ -80,7 +80,7 @@ export const LIBRARY_FILTER_OPTIONS = [
 ];
 
 export const STATUS_COLORS = {
-  pending: "bg-slate-100 text-slate-700 border-slate-300",
+  pending: "bg-[var(--color-secondary-bg)] text-[var(--color-text-primary)] border-[var(--color-border)]",
   reading: "bg-blue-100 text-blue-700 border-blue-300",
   completed: "bg-emerald-100 text-emerald-700 border-emerald-300",
   wishlist: "bg-amber-100 text-amber-700 border-amber-300",

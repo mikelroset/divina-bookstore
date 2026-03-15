@@ -2,22 +2,26 @@
  * Design tokens centralitzats per al Design System.
  * Es mapen a classes Tailwind i es poden usar per documentació o generació d'estils.
  *
+ * La UI usa variables CSS del tema (theme.css): --color-primary, --color-text-primary, etc.
+ * Aquests tokens són per referència o ús en JS; els components han de preferir var(--color-*).
+ *
  * Ús: import { TOKENS } from '../design-system/tokens';
  * Classes: TOKENS.input.base, TOKENS.spacing.md, etc.
  */
 export const TOKENS = {
   colors: {
+    /** Paleta primary: blau sky (light theme). Dark theme usa --color-primary del CSS. */
     primary: {
-      50: "#f0fdf4",
-      100: "#dcfce7",
-      200: "#bbf7d0",
-      300: "#86efac",
-      400: "#4ade80",
-      500: "#16a34a",
-      600: "#15803d",
-      700: "#166534",
-      800: "#14532d",
-      900: "#052e16",
+      50: "#f0f9ff",
+      100: "#e0f2fe",
+      200: "#bae6fd",
+      300: "#7dd3fc",
+      400: "#38bdf8",
+      500: "#0ea5e9",
+      600: "#0284c7",
+      700: "#0369a1",
+      800: "#075985",
+      900: "#0c4a6e",
     },
     accent: {
       500: "#d97706",
@@ -53,7 +57,7 @@ export const TOKENS = {
 
   /** Classes Tailwind per als components (per consistència) */
   input: {
-    base: "w-full px-4 py-2 bg-[var(--color-surface)]/80 border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/30 text-[var(--color-text-primary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150",
+    base: "w-full px-4 py-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/30 text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)]/70 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150",
     error: "border-[var(--color-error)] focus:border-[var(--color-error)] focus:ring-[var(--color-error)]/30",
   },
 

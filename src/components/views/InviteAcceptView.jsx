@@ -92,8 +92,8 @@ export function InviteAcceptView({ currentUser, addCommunityToUser, onSelectComm
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[40vh] px-4">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent" />
-        <p className="mt-4 text-slate-600">Carregant invitació...</p>
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-[var(--color-primary)] border-t-transparent" />
+        <p className="mt-4 text-[var(--color-text-secondary)]">Carregant invitació...</p>
       </div>
     );
   }
@@ -103,13 +103,13 @@ export function InviteAcceptView({ currentUser, addCommunityToUser, onSelectComm
       <div className="w-full max-w-md mx-auto px-4 py-12 min-w-0 box-border">
         <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center min-w-0">
           <AlertCircle className="w-12 h-12 mx-auto text-red-500 mb-4" />
-          <h2 className="text-xl font-serif text-slate-800 mb-2">Invitació no vàlida</h2>
-          <p className="text-slate-600 mb-6">{error ?? "Aquesta invitació no existeix o ha caducat."}</p>
-          <p className="text-sm text-slate-500 mb-4">Pots demanar que et tornin a enviar la invitació des de la comunitat.</p>
+          <h2 className="text-xl font-serif text-[var(--color-text-primary)] mb-2">Invitació no vàlida</h2>
+          <p className="text-[var(--color-text-secondary)] mb-6">{error ?? "Aquesta invitació no existeix o ha caducat."}</p>
+          <p className="text-sm text-[var(--color-text-secondary)] mb-4">Pots demanar que et tornin a enviar la invitació des de la comunitat.</p>
           <button
             type="button"
             onClick={() => navigate(ROUTES.COMMUNITY)}
-            className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600"
+            className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-xl hover:opacity-90 transition-colors"
           >
             Anar a Comunitat
           </button>
@@ -120,13 +120,13 @@ export function InviteAcceptView({ currentUser, addCommunityToUser, onSelectComm
 
   return (
     <div className="w-full max-w-md mx-auto px-4 py-12 min-w-0 box-border">
-      <div className="bg-white/90 backdrop-blur-sm border border-primary-500 rounded-2xl p-6 shadow-lg min-w-0">
-        <Mail className="w-12 h-12 mx-auto text-primary-600 mb-4" />
-        <h2 className="text-xl font-serif text-slate-800 mb-2">Invitació a la comunitat</h2>
-        <p className="text-slate-600 mb-4 break-words">
+      <div className="bg-white/90 backdrop-blur-sm border border-[var(--color-border)] rounded-2xl p-6 shadow-lg min-w-0">
+        <Mail className="w-12 h-12 mx-auto text-[var(--color-primary)] mb-4" />
+        <h2 className="text-xl font-serif text-[var(--color-text-primary)] mb-2">Invitació a la comunitat</h2>
+        <p className="text-[var(--color-text-secondary)] mb-4 break-words">
           T’han convidat a unir-te a <strong>{invite.communityName ?? invite.communityId}</strong>.
         </p>
-        <p className="text-sm text-slate-500 mb-6">
+        <p className="text-sm text-[var(--color-text-secondary)] mb-6">
           L’enllaç és vàlid per al correu amb què has iniciat sessió.
         </p>
         <div className="flex flex-wrap gap-3 justify-center">
@@ -134,7 +134,7 @@ export function InviteAcceptView({ currentUser, addCommunityToUser, onSelectComm
             type="button"
             onClick={handleReject}
             disabled={accepting || rejecting}
-            className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 disabled:opacity-50"
+            className="px-4 py-2 bg-[var(--color-secondary-bg)] text-[var(--color-secondary-text)] rounded-lg hover:opacity-90 disabled:opacity-50 transition-colors"
           >
             {rejecting ? "Rebutjant…" : "Rebutjar"}
           </button>
@@ -142,7 +142,7 @@ export function InviteAcceptView({ currentUser, addCommunityToUser, onSelectComm
             type="button"
             onClick={handleAccept}
             disabled={accepting || rejecting}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-white rounded-xl hover:opacity-90 disabled:opacity-50 transition-colors"
           >
             <UserCheck className="w-4 h-4" />
             {accepting ? "Acceptant…" : "Acceptar"}

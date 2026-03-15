@@ -70,7 +70,7 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
                 key={n.id}
                 className="flex items-center justify-between gap-2 py-2 border-b border-slate-100 last:border-0"
               >
-                <span className="text-slate-700 min-w-0">
+                <span className="text-[var(--color-text-primary)] min-w-0">
                   {t("home.someoneFinished", {
                     name: n.completedByUserName ?? t("home.someone"),
                     bookTitle: n.bookTitle ?? t("home.aBook"),
@@ -79,7 +79,7 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
                 <button
                   type="button"
                   onClick={() => handleDismissNotif(n.id)}
-                  className="shrink-0 p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-700 transition-colors"
+                  className="shrink-0 p-1.5 hover:bg-[var(--color-bg-secondary)] rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
                   aria-label={t("common.close")}
                 >
                   <X className="w-4 h-4 block" />
@@ -99,7 +99,7 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
                 key={enc.id}
                 className="flex items-center justify-between gap-2 py-2 border-b border-slate-100 last:border-0"
               >
-                <span className="text-slate-700 min-w-0">
+                <span className="text-[var(--color-text-primary)] min-w-0">
                   {t("home.encouragesYou", { name: enc.fromUserName ?? t("home.someone") })}
                   {enc.bookTitle ? (
                     <> {enc.bookTitle}</>
@@ -108,7 +108,7 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
                 <button
                   type="button"
                   onClick={() => handleDismissEncouragement(enc.id)}
-                  className="shrink-0 p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-700 transition-colors"
+                  className="shrink-0 p-1.5 hover:bg-[var(--color-bg-secondary)] rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
                   aria-label={t("common.close")}
                 >
                   <X className="w-4 h-4 block" />
@@ -162,7 +162,7 @@ export const HomeView = ({ user, stats, books, annualGoal = 0, streak = 0, onUpd
             height="sm"
             className="mb-2"
           />
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-[var(--color-text-secondary)]">
             {t("home.annualProgress", { completed: stats.completedBooks, goal: annualGoal })}
           </p>
         </Box>

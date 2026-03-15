@@ -16,13 +16,13 @@ function WeeklyMiniChart({ data }) {
           <div key={d.date} className="flex-1 flex flex-col items-center gap-0.5">
             <div className="w-full h-9 flex flex-col justify-end items-center gap-0.5">
               {hasData && (
-                <span className="text-[10px] font-medium text-slate-700 leading-none">
+                <span className="text-[10px] font-medium text-[var(--color-text-primary)] leading-none">
                   {pagesRead}
                 </span>
               )}
               <div className="w-full h-6 flex items-end">
                 <div
-                  className="w-full bg-primary-300 rounded-t"
+                  className="w-full bg-[var(--color-primary)] rounded-t"
                   style={{
                     height: heightPct > 0 ? `${Math.max(heightPct, 8)}%` : "2px",
                     minHeight: heightPct > 0 ? "4px" : "2px",
@@ -30,7 +30,7 @@ function WeeklyMiniChart({ data }) {
                 />
               </div>
             </div>
-            <span className="text-[10px] text-slate-500">
+            <span className="text-[10px] text-[var(--color-text-secondary)]">
               {new Date(d.date + "T12:00:00").toLocaleDateString("ca-ES", { weekday: "short" }).slice(0, 2)}
             </span>
           </div>
@@ -93,8 +93,8 @@ export function ReadingBookBlock({ book, onUpdateCurrentPage }) {
         className="w-24 h-36 object-cover rounded-lg shadow-md"
       />
       <div className="flex-1 min-w-0">
-        <h4 className="font-serif text-xl text-slate-800 mb-1">{book?.title ?? ""}</h4>
-        <p className="text-slate-600 text-sm mb-3">{book?.author ?? ""}</p>
+        <h4 className="font-serif text-xl text-[var(--color-text-primary)] mb-1">{book?.title ?? ""}</h4>
+        <p className="text-[var(--color-text-secondary)] text-sm mb-3">{book?.author ?? ""}</p>
         {book.currentPage != null && book.pages > 0 && (
           <div>
             <ProgressBar
@@ -104,14 +104,14 @@ export function ReadingBookBlock({ book, onUpdateCurrentPage }) {
               height="sm"
               className="mb-2"
             />
-            <p className="text-xs text-slate-600 mb-2">
+            <p className="text-xs text-[var(--color-text-secondary)] mb-2">
               {book.currentPage} / {book.pages} pàgines
             </p>
             {(() => {
               const eta = computeETA(book);
               if (eta) {
                 return (
-                  <p className="text-sm text-primary-700">
+                  <p className="text-sm text-[var(--color-primary)]">
                     Al teu ritme actual, acabaràs aquest llibre en{" "}
                     {eta.daysLeft} {eta.daysLeft === 1 ? "dia" : "dies"} (Data
                     estimada: {eta.dateStr})
@@ -120,7 +120,7 @@ export function ReadingBookBlock({ book, onUpdateCurrentPage }) {
               }
               if (book.pageLog && book.pageLog.length > 0) {
                 return (
-                  <p className="text-sm text-slate-600 italic">
+                  <p className="text-sm text-[var(--color-text-secondary)] italic">
                     Llegeix unes quantes pàgines per calcular el teu ritme!
                   </p>
                 );
@@ -137,7 +137,7 @@ export function ReadingBookBlock({ book, onUpdateCurrentPage }) {
         ) : null}
         {onUpdateCurrentPage && (
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <label className="text-sm text-slate-600 sr-only" htmlFor={`home-current-page-${book.id}`}>
+            <label className="text-sm text-[var(--color-text-secondary)] sr-only" htmlFor={`home-current-page-${book.id}`}>
               Pàgines llegides
             </label>
             <input
@@ -151,13 +151,13 @@ export function ReadingBookBlock({ book, onUpdateCurrentPage }) {
                 setSaveError(null);
               }}
               disabled={saving}
-              className="w-20 px-2 py-1.5 text-sm border border-primary-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 disabled:opacity-50"
+              className="w-20 px-2 py-1.5 text-sm border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30 disabled:opacity-50 bg-[var(--color-surface)] text-[var(--color-text-primary)]"
             />
             <button
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="px-3 py-1.5 text-sm font-medium bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white rounded-xl transition-colors"
+              className="px-3 py-1.5 text-sm font-medium bg-[var(--color-primary)] hover:opacity-90 disabled:opacity-50 text-white rounded-xl transition-colors"
             >
               {saving ? "Desant…" : "Actualitza progrés"}
             </button>
@@ -172,7 +172,7 @@ export function ReadingBookBlock({ book, onUpdateCurrentPage }) {
     </div>
       {book.pages > 0 && (book.pageLog?.length > 0 || book.currentPage > 0) && (
         <div className="mt-4 pt-4 border-t border-slate-100">
-          <p className="text-xs text-slate-600 mb-2">Progrés última setmana</p>
+          <p className="text-xs text-[var(--color-text-secondary)] mb-2">Progrés última setmana</p>
           <WeeklyMiniChart data={getWeeklyPagesRead(book.pageLog || [])} />
         </div>
       )}

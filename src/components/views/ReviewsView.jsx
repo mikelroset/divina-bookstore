@@ -235,7 +235,7 @@ export const ReviewsView = ({ currentUser, books }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500" />
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--color-border)]" />
       </div>
     );
   }
@@ -259,7 +259,7 @@ export const ReviewsView = ({ currentUser, books }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="sm:col-span-2 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--color-text-secondary)]" />
           <input
             type="text"
             placeholder="Cerca per títol, autor o membre..."
@@ -268,7 +268,7 @@ export const ReviewsView = ({ currentUser, books }) => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2.5 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
+            className="w-full pl-10 pr-4 py-2.5 bg-[var(--color-surface)]/80 border border-[var(--color-border)] rounded-xl focus:outline-none focus:focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/30"
           />
         </div>
         <input
@@ -279,7 +279,7 @@ export const ReviewsView = ({ currentUser, books }) => {
             setFilterAuthor(e.target.value);
             setCurrentPage(1);
           }}
-          className="px-4 py-2.5 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:border-primary-400"
+          className="px-4 py-2.5 bg-[var(--color-surface)]/80 border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-primary)]"
         />
         <input
           type="text"
@@ -289,7 +289,7 @@ export const ReviewsView = ({ currentUser, books }) => {
             setFilterMember(e.target.value);
             setCurrentPage(1);
           }}
-          className="px-4 py-2.5 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:border-primary-400"
+          className="px-4 py-2.5 bg-[var(--color-surface)]/80 border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-primary)]"
         />
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -301,7 +301,7 @@ export const ReviewsView = ({ currentUser, books }) => {
             setFilterDateFrom(e.target.value);
             setCurrentPage(1);
           }}
-          className="px-4 py-2.5 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:border-primary-400"
+          className="px-4 py-2.5 bg-[var(--color-surface)]/80 border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-primary)]"
         />
         <input
           type="date"
@@ -311,14 +311,14 @@ export const ReviewsView = ({ currentUser, books }) => {
             setFilterDateTo(e.target.value);
             setCurrentPage(1);
           }}
-          className="px-4 py-2.5 bg-white/80 border border-primary-500 rounded-xl focus:outline-none focus:border-primary-400"
+          className="px-4 py-2.5 bg-[var(--color-surface)]/80 border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-primary)]"
         />
       </div>
 
       {hasActiveFilters && (
         <button
           onClick={clearFilters}
-          className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+          className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary)]/80 font-medium"
         >
           Netejar filtres
         </button>
@@ -332,13 +332,13 @@ export const ReviewsView = ({ currentUser, books }) => {
 
       {filteredReviews.length === 0 ? (
         <Box className="text-center py-16 !bg-white/60">
-          <p className="text-slate-600 mb-2">
+          <p className="text-[var(--color-text-secondary)] mb-2">
             No s'han trobat ressenyes amb aquests criteris.
           </p>
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="text-primary-600 hover:text-primary-700 font-medium"
+              className="text-[var(--color-primary)] hover:text-[var(--color-primary)]/80 font-medium"
             >
               Netejar filtres
             </button>
@@ -387,10 +387,10 @@ export const ReviewsView = ({ currentUser, books }) => {
                 >
                   <div className="flex justify-between items-start gap-2">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-slate-800 truncate">
+                      <h3 className="font-semibold text-[var(--color-text-primary)] truncate">
                         {review.bookTitle}
                       </h3>
-                      <p className="text-sm text-slate-600 truncate">
+                      <p className="text-sm text-[var(--color-text-secondary)] truncate">
                         {review.bookAuthor}
                       </p>
                     </div>
@@ -409,14 +409,14 @@ export const ReviewsView = ({ currentUser, books }) => {
                       src={review.authorPhotoURL}
                       displayName={authorName}
                       alt={authorName}
-                      className="w-8 h-8 rounded-full border border-primary-500"
+                      className="w-8 h-8 rounded-full border border-[var(--color-border)]"
                     />
-                    <span className="text-sm text-slate-600">{authorName}</span>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-sm text-[var(--color-text-secondary)]">{authorName}</span>
+                    <span className="text-xs text-[var(--color-text-secondary)]">
                       {createdAt ? dateUtils.formatShortDate(createdAt) : ""}
                     </span>
                   </div>
-                  <div className="mt-3 text-slate-700">
+                  <div className="mt-3 text-[var(--color-text-primary)]">
                     {isExpanded ? (
                       <p className="whitespace-pre-wrap">{text}</p>
                     ) : (
@@ -428,7 +428,7 @@ export const ReviewsView = ({ currentUser, books }) => {
                           e.stopPropagation();
                           setExpandedId(isExpanded ? null : review.id);
                         }}
-                        className="mt-1 text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1"
+                        className="mt-1 text-[var(--color-primary)] hover:text-[var(--color-primary)]/80 text-sm font-medium flex items-center gap-1"
                       >
                         {isExpanded ? (
                           <>
@@ -454,11 +454,11 @@ export const ReviewsView = ({ currentUser, books }) => {
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
-                className="px-4 py-2 rounded-lg border border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-lg border border-[var(--color-border)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Anterior
               </button>
-              <span className="px-4 py-2 text-slate-600">
+              <span className="px-4 py-2 text-[var(--color-text-secondary)]">
                 {currentPage} / {totalFilteredPages}
               </span>
               <button
@@ -466,7 +466,7 @@ export const ReviewsView = ({ currentUser, books }) => {
                   setCurrentPage((p) => Math.min(totalFilteredPages, p + 1))
                 }
                 disabled={currentPage >= totalFilteredPages}
-                className="px-4 py-2 rounded-lg border border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-lg border border-[var(--color-border)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Següent
               </button>
@@ -478,7 +478,7 @@ export const ReviewsView = ({ currentUser, books }) => {
               <button
                 onClick={() => loadReviews(true)}
                 disabled={loadingMore}
-                className="px-6 py-2 text-primary-600 hover:text-primary-700 font-medium disabled:opacity-50"
+                className="px-6 py-2 text-[var(--color-primary)] hover:text-[var(--color-primary)]/80 font-medium disabled:opacity-50"
               >
                 {loadingMore ? "Carregant…" : "Carregar més ressenyes"}
               </button>
@@ -496,7 +496,7 @@ export const ReviewsView = ({ currentUser, books }) => {
             className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-xl font-semibold text-slate-800 mb-4">
+            <h3 className="text-xl font-semibold text-[var(--color-text-primary)] mb-4">
               Publicar ressenya
             </h3>
             <Select
@@ -528,14 +528,14 @@ export const ReviewsView = ({ currentUser, books }) => {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => !publishing && setShowPublishModal(false)}
-                className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                className="px-4 py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
               >
                 Cancel·lar
               </button>
               <button
                 onClick={handlePublish}
                 disabled={!publishBook || !publishText?.trim() || publishing}
-                className="px-4 py-2 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium"
+                className="px-4 py-2 bg-[var(--color-primary)] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium"
               >
                 {publishing ? "Publicant…" : "Publicar"}
               </button>

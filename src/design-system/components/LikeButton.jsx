@@ -25,8 +25,8 @@ export function LikeButton({
       disabled={disabled}
       className={`flex items-center font-medium rounded-lg transition-colors shrink-0 ${
         liked
-          ? "text-primary-600 bg-primary-50"
-          : "text-slate-500 hover:bg-slate-100"
+          ? "text-[var(--color-primary)] bg-[var(--color-primary-soft)]"
+          : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]"
       } ${sizeClasses[size]} ${className}`}
       aria-label={liked ? "Desfer like" : "Fer like"}
     >

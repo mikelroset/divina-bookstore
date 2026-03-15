@@ -215,7 +215,7 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
   if (authorized === null || authorized === false) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary-500 border-t-transparent" />
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-[var(--color-border)] border-t-transparent" />
       </div>
     );
   }
@@ -223,12 +223,12 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-serif text-slate-800">Gestió de comunitats</h2>
+        <h2 className="text-2xl font-serif text-[var(--color-text-primary)]">Gestió de comunitats</h2>
         {onBack && (
           <button
             type="button"
             onClick={onBack}
-            className="text-primary-700 hover:text-primary-800"
+            className="text-[var(--color-primary)] hover:opacity-90"
           >
             ← Tornar
           </button>
@@ -250,12 +250,12 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
           placeholder="Cercar comunitat..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-4 py-2 border border-primary-500 rounded-lg"
+          className="flex-1 px-4 py-2 border border-[var(--color-border)] rounded-lg"
         />
         <button
           type="button"
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] text-white rounded-xl hover:opacity-90"
         >
           <Plus className="w-4 h-4" /> Crear comunitat
         </button>
@@ -263,17 +263,17 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
 
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary-500 border-t-transparent" />
-          <p className="text-slate-600 mt-4">Carregant comunitats...</p>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[var(--color-border)] border-t-transparent" />
+          <p className="text-[var(--color-text-secondary)] mt-4">Carregant comunitats...</p>
         </div>
       ) : filteredCommunities.length === 0 ? (
         <Box padding="xl" className="text-center">
           <Users className="w-16 h-16 mx-auto text-slate-300 mb-4" />
-          <p className="text-slate-600 mb-4">Cap comunitat. Crea la primera.</p>
+          <p className="text-[var(--color-text-secondary)] mb-4">Cap comunitat. Crea la primera.</p>
           <button
             type="button"
             onClick={() => setShowCreate(true)}
-            className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600"
+            className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-xl hover:opacity-90"
           >
             Crear comunitat
           </button>
@@ -285,8 +285,8 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
               <Box padding="sm" className="!shadow">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <h3 className="font-serif text-lg text-slate-800">{c.name}</h3>
-                  <p className="text-sm text-slate-600">
+                  <h3 className="font-serif text-lg text-[var(--color-text-primary)]">{c.name}</h3>
+                  <p className="text-sm text-[var(--color-text-secondary)]">
                     {STATUS_LABELS[c.status] ?? c.status} · {c.memberCount} membres
                   </p>
                 </div>
@@ -294,7 +294,7 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
                   <button
                     type="button"
                     onClick={() => setEditingId(c.id)}
-                    className="p-2 text-primary-700 hover:bg-primary-100 rounded-lg"
+                    className="p-2 text-[var(--color-primary)] hover:bg-[var(--color-primary-soft)] rounded-lg"
                     aria-label="Editar"
                   >
                     <Edit2 className="w-4 h-4" />
@@ -321,7 +321,7 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
                   <button
                     type="button"
                     onClick={() => toggleExpand(c.id)}
-                    className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+                    className="p-2 text-[var(--color-text-secondary)] hover:bg-slate-100 rounded-lg"
                   >
                     {expandedId === c.id ? "Amagar membres" : "Veure membres"}
                   </button>
@@ -331,11 +331,11 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
               {expandedId === c.id && (
                 <div className="mt-4 pt-4 border-t border-slate-200">
                   {memberLoading && !members[c.id] ? (
-                    <p className="text-slate-500">Carregant membres...</p>
+                    <p className="text-[var(--color-text-secondary)]">Carregant membres...</p>
                   ) : (
                     <>
                       <div className="mb-4">
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                           Afegir membre per email
                         </label>
                         <div className="flex gap-2">
@@ -344,13 +344,13 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
                             placeholder="email@exemple.cat"
                             value={inviteEmail}
                             onChange={(e) => setInviteEmail(e.target.value)}
-                            className="flex-1 px-3 py-2 border border-primary-500 rounded-lg"
+                            className="flex-1 px-3 py-2 border border-[var(--color-border)] rounded-lg"
                           />
                           <button
                             type="button"
                             onClick={() => handleInvite(c.id)}
                             disabled={inviteLoading || !inviteEmail.trim()}
-                            className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 disabled:opacity-50"
+                            className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-xl hover:opacity-90 disabled:opacity-50"
                           >
                             Invitar
                           </button>
@@ -366,7 +366,7 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
                             className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0"
                           >
                             <div>
-                              <span className="font-medium text-slate-800">
+                              <span className="font-medium text-[var(--color-text-primary)]">
                                 {m.email || m.displayName || m.userId}
                               </span>
                               <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-slate-100">
@@ -410,7 +410,7 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
                                 <button
                                   type="button"
                                   onClick={() => handleUnblockMember(c.id, m.userId)}
-                                  className="flex items-center gap-1 px-2 py-1 text-sm bg-primary-100 text-primary-800 rounded"
+                                  className="flex items-center gap-1 px-2 py-1 text-sm bg-[var(--color-primary-soft)] text-[var(--color-text-primary)] rounded"
                                 >
                                   <UserCheck className="w-4 h-4" /> Desbloquejar
                                 </button>
@@ -433,7 +433,7 @@ export const AdminCommunitiesView = ({ currentUser, onBack }) => {
         <button
           type="button"
           onClick={() => loadCommunities(lastDoc)}
-          className="w-full py-2 border border-primary-500 rounded-lg text-primary-700 hover:bg-primary-50"
+          className="w-full py-2 border border-[var(--color-border)] rounded-lg text-[var(--color-primary)] hover:bg-[var(--color-primary-soft)]"
         >
           Carregar més
         </button>
@@ -485,25 +485,25 @@ function CreateCommunityModal({ onSave, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-        <h3 className="text-xl font-serif text-slate-800 mb-4">Crear comunitat</h3>
+        <h3 className="text-xl font-serif text-[var(--color-text-primary)] mb-4">Crear comunitat</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Nom *</label>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Nom *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border border-primary-500 rounded-lg"
+              className="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Descripció</label>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Descripció</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="w-full px-4 py-2 border border-primary-500 rounded-lg"
+              className="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg"
             />
           </div>
           <Select
@@ -517,13 +517,13 @@ function CreateCommunityModal({ onSave, onCancel }) {
           />
           {err && <p className="text-red-600 text-sm">{err}</p>}
           <div className="flex gap-2 justify-end">
-            <button type="button" onClick={onCancel} className="px-4 py-2 text-slate-600">
+            <button type="button" onClick={onCancel} className="px-4 py-2 text-[var(--color-text-secondary)]">
               Cancel·lar
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 disabled:opacity-50"
+              className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-xl hover:opacity-90 disabled:opacity-50"
             >
               {saving ? "Creant..." : "Crear"}
             </button>
@@ -561,25 +561,25 @@ function EditCommunityModal({ communityId, community, onSave, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-        <h3 className="text-xl font-serif text-slate-800 mb-4">Editar comunitat</h3>
+        <h3 className="text-xl font-serif text-[var(--color-text-primary)] mb-4">Editar comunitat</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Nom *</label>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Nom *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border border-primary-500 rounded-lg"
+              className="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Descripció</label>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Descripció</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="w-full px-4 py-2 border border-primary-500 rounded-lg"
+              className="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg"
             />
           </div>
           <Select
@@ -593,13 +593,13 @@ function EditCommunityModal({ communityId, community, onSave, onCancel }) {
           />
           {err && <p className="text-red-600 text-sm">{err}</p>}
           <div className="flex gap-2 justify-end">
-            <button type="button" onClick={onCancel} className="px-4 py-2 text-slate-600">
+            <button type="button" onClick={onCancel} className="px-4 py-2 text-[var(--color-text-secondary)]">
               Cancel·lar
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 disabled:opacity-50"
+              className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-xl hover:opacity-90 disabled:opacity-50"
             >
               {saving ? "Desant..." : "Desar"}
             </button>

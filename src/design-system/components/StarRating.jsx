@@ -30,7 +30,7 @@ export function StarRating({
           <Star
             key={i}
             className={`${s} shrink-0 ${
-              filled ? "fill-primary-500 text-primary-500" : "text-slate-300"
+              filled ? "fill-[var(--color-primary)] text-[var(--color-primary)]" : "text-[var(--color-border)]"
             }`}
           />
         );
@@ -40,7 +40,7 @@ export function StarRating({
             key={i}
             type="button"
             onClick={() => onChange?.(i + 1)}
-            className="p-0.5 rounded focus:outline-none focus:ring-2 focus:ring-primary-200"
+            className="p-0.5 rounded focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30"
             aria-label={`${i + 1} estrelles`}
           >
             {star}

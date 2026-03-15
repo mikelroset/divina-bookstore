@@ -12,8 +12,8 @@ import React from "react";
 export function PageTitle({ children, subtitle, className = "" }) {
   return (
     <div className={className}>
-      <h2 className="text-3xl font-serif text-slate-800 mb-2">{children}</h2>
-      {subtitle && <p className="text-slate-600">{subtitle}</p>}
+      <h2 className="text-3xl font-serif text-[var(--color-text-primary)] mb-2">{children}</h2>
+      {subtitle && <p className="text-[var(--color-text-secondary)]">{subtitle}</p>}
     </div>
   );
 }
@@ -21,9 +21,9 @@ export function PageTitle({ children, subtitle, className = "" }) {
 export function BoxTitle({ icon: Icon, children, className = "" }) {
   return (
     <h3
-      className={`text-sm font-medium text-slate-600 flex items-center gap-3 mb-4 ${className}`}
+      className={`text-sm font-medium text-[var(--color-text-secondary)] flex items-center gap-3 mb-4 ${className}`}
     >
-      {Icon && <Icon className="w-6 h-6 text-primary-600" />}
+      {Icon && <Icon className="w-6 h-6 text-[var(--color-primary)]" />}
       {children}
     </h3>
   );
@@ -32,7 +32,7 @@ export function BoxTitle({ icon: Icon, children, className = "" }) {
 export function BookTitle({ children, className = "" }) {
   return (
     <h3
-      className={`font-serif text-lg text-slate-800 line-clamp-2 ${className}`}
+      className={`font-serif text-lg text-[var(--color-text-primary)] line-clamp-2 ${className}`}
     >
       {children}
     </h3>
@@ -42,7 +42,7 @@ export function BookTitle({ children, className = "" }) {
 export function SectionTitle({ children, className = "" }) {
   return (
     <h3
-      className={`text-sm font-medium text-primary-800 uppercase tracking-wide ${className}`}
+      className={`text-sm font-medium text-[var(--color-primary)] uppercase tracking-wide ${className}`}
     >
       {children}
     </h3>

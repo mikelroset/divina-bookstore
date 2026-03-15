@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Sun, Moon, Monitor } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import { Avatar } from "../common/Avatar";
 import { ROUTES } from "../../utils/constants";
 import { useTheme } from "../../context/ThemeContext";
@@ -9,7 +9,6 @@ import { useTheme } from "../../context/ThemeContext";
 const THEME_OPTIONS = [
   { value: "light", icon: Sun },
   { value: "dark", icon: Moon },
-  { value: "system", icon: Monitor },
 ];
 
 export const Header = ({ user }) => {

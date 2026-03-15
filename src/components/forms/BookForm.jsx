@@ -3,7 +3,13 @@ import { useTranslation } from "react-i18next";
 import { Search, Globe } from "lucide-react";
 import { STATUS_LABELS } from "../../utils/constants";
 import { validateISBN } from "../../utils/helpers";
-import { Box, Select, StarRating, TextInput, Textarea } from "../../design-system";
+import {
+  Box,
+  Select,
+  StarRating,
+  TextInput,
+  Textarea,
+} from "../../design-system";
 import { BookCover } from "../common/BookCover";
 
 const defaultBook = {
@@ -84,7 +90,8 @@ export const BookForm = ({
 
     const ot = formData.originalTitle?.trim();
     if (!ot) {
-      newErrors.originalTitle = "El títol original és obligatori per agrupar ressenyes correctament.";
+      newErrors.originalTitle =
+        "El títol original és obligatori per agrupar ressenyes correctament.";
     }
 
     if (formData.pages && formData.pages < 0) {
@@ -156,9 +163,6 @@ export const BookForm = ({
       {/* Gènere i Estat */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            Gènere
-          </label>
           {genreOptions?.length > 0 ? (
             <Select
               label="Gènere"
@@ -272,8 +276,8 @@ export const BookForm = ({
 
       {/* URL Portada */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-slate-700">
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <label className="text-sm font-medium text-[var(--color-text-primary)] shrink-0">
             URL de la Portada
           </label>
           {onSearchCover && (
@@ -291,7 +295,10 @@ export const BookForm = ({
                     formData.author,
                   );
                   if (url) handleChange("coverUrl", url);
-                  else alert("No s'ha trobat cap portada. Pots afegir-la manualment.");
+                  else
+                    alert(
+                      "No s'ha trobat cap portada. Pots afegir-la manualment.",
+                    );
                 } catch {
                   alert("Error al buscar la portada. Torna-ho a intentar.");
                 } finally {
@@ -299,25 +306,26 @@ export const BookForm = ({
                 }
               }}
               disabled={searchingCover || !formData.title?.trim()}
-              className="inline-flex items-center gap-2 whitespace-nowrap text-sm px-3 py-1 bg-primary-500 hover:bg-primary-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
+              className="inline-flex items-center gap-2 whitespace-nowrap text-sm px-3 py-1.5 bg-[var(--color-primary)] hover:opacity-90 disabled:bg-[var(--color-border)] disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
             >
               {searchingCover ? (
                 <>
                   <Spinner className="shrink-0" /> Buscant...
                 </>
               ) : (
-                <><Search className="w-4 h-4 shrink-0" /> Buscar portada</>
+                <>
+                  <Search className="w-4 h-4 shrink-0" /> Buscar portada
+                </>
               )}
             </button>
           )}
         </div>
         <TextInput
-          label="URL de la Portada"
           type="url"
           value={formData.coverUrl}
           onChange={(e) => handleChange("coverUrl", e.target.value)}
           placeholder="https://..."
-          className="[&_label]:sr-only"
+          aria-label="URL de la Portada"
         />
         {formData.coverUrl && formData.coverUrl.startsWith("http") && (
           <div className="mt-2">
@@ -332,8 +340,8 @@ export const BookForm = ({
 
       {/* Descripció */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-slate-700">
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <label className="text-sm font-medium text-[var(--color-text-primary)] shrink-0">
             Descripció
           </label>
           {onSearchDescription && (
@@ -351,7 +359,8 @@ export const BookForm = ({
                     formData.author,
                   );
                   if (description) handleChange("description", description);
-                  else alert("No s'ha trobat cap descripció per aquest llibre.");
+                  else
+                    alert("No s'ha trobat cap descripció per aquest llibre.");
                 } catch {
                   alert("Error al buscar la descripció. Torna-ho a intentar.");
                 } finally {
@@ -359,14 +368,16 @@ export const BookForm = ({
                 }
               }}
               disabled={searchingDescription || !formData.title?.trim()}
-              className="inline-flex items-center gap-2 whitespace-nowrap text-sm px-3 py-1 bg-primary-500 hover:bg-primary-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
+              className="inline-flex items-center gap-2 whitespace-nowrap text-sm px-3 py-1.5 bg-[var(--color-primary)] hover:opacity-90 disabled:bg-[var(--color-border)] disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
             >
               {searchingDescription ? (
                 <>
                   <Spinner className="shrink-0" /> Traduint...
                 </>
               ) : (
-                <><Globe className="w-4 h-4 shrink-0" /> Buscar descripció</>
+                <>
+                  <Globe className="w-4 h-4 shrink-0" /> Buscar descripció
+                </>
               )}
             </button>
           )}
@@ -393,14 +404,14 @@ export const BookForm = ({
         <button
           type="button"
           onClick={handleSubmit}
-          className="flex-1 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
+          className="flex-1 bg-[var(--color-primary)] hover:opacity-90 text-white py-3 rounded-xl font-medium shadow-lg transition-all"
         >
           {initialData ? "Actualitzar Llibre" : "Afegir Llibre"}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors"
+          className="px-6 py-3 bg-[var(--color-secondary-bg)] hover:opacity-90 text-[var(--color-secondary-text)] rounded-xl font-medium transition-colors"
         >
           Cancel·lar
         </button>

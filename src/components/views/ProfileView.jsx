@@ -70,35 +70,35 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
             src={user.photoURL}
             alt={user.displayName ? t("common.avatarOf", { name: user.displayName }) : t("common.avatarUnavailable")}
             displayName={user.displayName}
-            className="w-20 h-20 rounded-full border-4 border-primary-500 shadow-lg"
+            className="w-20 h-20 rounded-full border-4 border-[var(--color-primary)] shadow-lg"
           />
           <div>
-            <h3 className="text-2xl font-serif text-slate-800">
+            <h3 className="text-2xl font-serif text-[var(--color-text-primary)]">
               {user.displayName}
             </h3>
-            <p className="text-slate-600">{user.email}</p>
+            <p className="text-[var(--color-text-secondary)]">{user.email}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <Box padding="sm">
-            <p className="text-sm text-slate-600 mb-1">{t("profile.totalBooks")}</p>
-            <p className="text-3xl font-serif text-slate-800">
+            <p className="text-sm text-[var(--color-text-secondary)] mb-1">{t("profile.totalBooks")}</p>
+            <p className="text-3xl font-serif text-[var(--color-text-primary)]">
               {stats.totalBooks}
             </p>
           </Box>
           <Box padding="sm">
-            <p className="text-sm text-slate-600 mb-1">{t("profile.completedBooks")}</p>
-            <p className="text-3xl font-serif text-slate-800">
+            <p className="text-sm text-[var(--color-text-secondary)] mb-1">{t("profile.completedBooks")}</p>
+            <p className="text-3xl font-serif text-[var(--color-text-primary)]">
               {stats.completedBooks}
             </p>
           </Box>
         </div>
 
         <Box padding="md" className="mb-6">
-          <p className="text-sm text-slate-600 mb-3">{t("profile.badges")}</p>
+          <p className="text-sm text-[var(--color-text-secondary)] mb-3">{t("profile.badges")}</p>
           {badgesLoading ? (
-            <p className="text-sm text-slate-500">{t("profile.loadingBadges")}</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">{t("profile.loadingBadges")}</p>
           ) : (
             <BadgeGrid unlockedIds={unlockedIds} />
           )}
@@ -108,15 +108,15 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
           <div className="mb-6 space-y-4">
             <Box padding="sm">
               <div className="flex justify-between items-center mb-2">
-                <p className="text-sm text-slate-600">{t("profile.totalPoints")}</p>
-                <p className="text-2xl font-serif text-primary-800">{totalPoints}</p>
+                <p className="text-sm text-[var(--color-text-secondary)]">{t("profile.totalPoints")}</p>
+                <p className="text-2xl font-serif text-[var(--color-text-primary)]">{totalPoints}</p>
               </div>
               <p className={`text-sm mb-2 font-medium ${levelColorClass}`}>
                 {levelDisplayName}
               </p>
               {toNextLevel > 0 && nextLevelDisplayName && (
                 <div className="space-y-1 mb-3">
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-[var(--color-text-secondary)]">
                     {t("profile.progressTo", { level: nextLevelDisplayName, pct: toNextLevelProgressPct })}
                   </p>
                   <ProgressBar
@@ -130,21 +130,21 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
               <button
                 type="button"
                 onClick={() => setLevelsInfoOpen(!levelsInfoOpen)}
-                className="flex items-center gap-2 text-xs text-slate-600 hover:text-primary-600 transition-colors"
+                className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
               >
                 <Award className="w-4 h-4" />
                 {levelsInfoOpen ? t("profile.hide") : t("profile.viewAllLevels")}
                 {levelsInfoOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               </button>
               {levelsInfoOpen && (
-                <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-primary-200 bg-white/50 p-2">
+                <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]/50 p-2">
                   <ul className="space-y-1 text-xs">
                     {CATALOG.map((entry) => (
                       <li key={entry.level} className="flex justify-between gap-2 py-0.5">
                         <span className={getLevelInfo(entry.level).colorClass}>
                           {getLevelDisplayName(getLevelInfo(entry.level))}
                         </span>
-                        <span className="text-slate-500 shrink-0">
+                        <span className="text-[var(--color-text-secondary)] shrink-0">
                           {getPointsForLevel(entry.level)} {t("profile.points")}
                         </span>
                       </li>
@@ -158,9 +158,9 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                 type="checkbox"
                 checked={showInLeaderboard}
                 onChange={(e) => setShowInLeaderboard(e.target.checked)}
-                className="rounded border-primary-500 text-primary-600 focus:ring-primary-200"
+                className="rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]/30"
               />
-              <span className="text-sm text-slate-700">{t("profile.showInLeaderboard")}</span>
+              <span className="text-sm text-[var(--color-text-primary)]">{t("profile.showInLeaderboard")}</span>
             </label>
           </div>
         )}
@@ -196,7 +196,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                 setInputStr(num > 0 ? String(num) : "");
               }}
               placeholder={t("profile.annualGoalPlaceholder")}
-              className="w-full rounded-xl border border-primary-500 px-4 py-2 text-slate-800 mb-4"
+              className="w-full rounded-xl border border-[var(--color-border)] px-4 py-2 text-[var(--color-text-primary)] mb-4 bg-[var(--color-surface)]"
             />
             {goal > 0 && (
               <>
@@ -207,7 +207,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
                   height="md"
                   className="mb-2"
                 />
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-[var(--color-text-secondary)]">
                   {t("profile.annualProgress", { completed, goal })}
                 </p>
               </>
@@ -220,14 +220,14 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
             <button
               type="button"
               onClick={() => navigate(ROUTES.ADMIN_COMMUNITIES)}
-              className="w-full bg-primary-100 hover:bg-primary-200 text-primary-800 py-3 rounded-xl font-medium border border-primary-500 transition-all"
+              className="w-full bg-[var(--color-primary-soft)] hover:opacity-90 text-[var(--color-text-primary)] py-3 rounded-xl font-medium border border-[var(--color-primary)] transition-all"
             >
               {t("profile.adminCommunities")}
             </button>
             <button
               type="button"
               onClick={() => navigate(ROUTES.ADMIN_USERS)}
-              className="w-full bg-primary-100 hover:bg-primary-200 text-primary-800 py-3 rounded-xl font-medium border border-primary-500 transition-all"
+              className="w-full bg-[var(--color-primary-soft)] hover:opacity-90 text-[var(--color-text-primary)] py-3 rounded-xl font-medium border border-[var(--color-primary)] transition-all"
             >
               {t("profile.adminUsers")}
             </button>
@@ -236,7 +236,7 @@ export const ProfileView = ({ user, onLogout, stats, annualGoal = 0, setAnnualGo
 
         <button
           onClick={onLogout}
-          className="w-full bg-slate-700 hover:bg-slate-800 text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
+          className="w-full bg-[var(--color-text-secondary)] hover:opacity-90 text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
         >
           {t("profile.logout")}
         </button>

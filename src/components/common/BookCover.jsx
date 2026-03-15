@@ -12,11 +12,11 @@ export function BookCover({ src, alt = "Portada no disponible", className = "w-f
   if (showPlaceholder) {
     return (
       <div
-        className={`${className} flex items-center justify-center bg-slate-200 rounded-xl shadow-md`}
+        className={`${className} flex items-center justify-center bg-[var(--color-bg-secondary)] rounded-xl shadow-md`}
         role="img"
         aria-label={alt}
       >
-        <BookOpen className="w-12 h-12 text-slate-400" aria-hidden />
+        <BookOpen className="w-12 h-12 text-[var(--color-text-secondary)]" aria-hidden />
       </div>
     );
   }

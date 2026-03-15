@@ -30,7 +30,7 @@ function BadgeTooltip({ badge, unlocked, onClose }) {
         aria-hidden
       />
       <div
-        className="relative z-10 w-full max-w-xs rounded-xl border border-primary-500 bg-white p-5 shadow-2xl"
+        className="relative z-10 w-full max-w-xs rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-center mb-3">
@@ -41,15 +41,15 @@ function BadgeTooltip({ badge, unlocked, onClose }) {
             loading="lazy"
           />
         </div>
-        <p className="font-semibold text-slate-800 text-sm text-center">{badge.name}</p>
-        <p className="text-xs text-slate-600 mt-1 text-center">{badge.description}</p>
-        <p className="text-xs text-primary-600 mt-2 text-center">
+        <p className="font-semibold text-[var(--color-text-primary)] text-sm text-center">{badge.name}</p>
+        <p className="text-xs text-[var(--color-text-secondary)] mt-1 text-center">{badge.description}</p>
+        <p className="text-xs text-[var(--color-primary)] mt-2 text-center">
           {unlocked ? "Desbloquejat" : `Condició: ${getConditionLabel(badge)}`}
         </p>
         <button
           type="button"
           onClick={onClose}
-          className="mt-4 w-full py-2 text-sm text-primary-600 hover:underline font-medium rounded-lg hover:bg-primary-50 transition-colors"
+          className="mt-4 w-full py-2 text-sm text-[var(--color-primary)] hover:underline font-medium rounded-lg hover:bg-[var(--color-primary-soft)] transition-colors"
         >
           Tancar
         </button>
@@ -94,7 +94,7 @@ export function BadgeCard({ badge, unlocked }) {
       <button
         type="button"
         onClick={() => setShowTooltip((s) => !s)}
-        className="flex flex-col items-center justify-center w-14 h-14 flex-shrink-0 rounded-xl hover:bg-primary-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300"
+        className="flex flex-col items-center justify-center w-14 h-14 flex-shrink-0 rounded-xl hover:bg-[var(--color-primary-soft)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50"
         aria-label={badge.name}
       >
         <img
@@ -104,7 +104,7 @@ export function BadgeCard({ badge, unlocked }) {
           loading="lazy"
         />
       </button>
-      <span className="text-xs font-medium text-slate-700 mt-1.5 text-center line-clamp-2 w-full px-0.5">
+      <span className="text-xs font-medium text-[var(--color-text-primary)] mt-1.5 text-center line-clamp-2 w-full px-0.5">
         {badge.name}
       </span>
       {showTooltip && (
